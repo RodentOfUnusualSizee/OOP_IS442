@@ -25,3 +25,6 @@ replay_pid*
 
 # React App specific
 /node_modules/
+
+# .DS_Store
+.DS_Store
