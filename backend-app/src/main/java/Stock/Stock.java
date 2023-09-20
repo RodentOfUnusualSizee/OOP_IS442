@@ -2,7 +2,7 @@ package Stock;
 
 import org.springframework.stereotype.Service;
 
-@Service
+@Service //@Controller @Respository
 public class Stock {
     private String symbol;
     private String companyName;
