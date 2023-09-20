@@ -1,8 +1,4 @@
 package org.system.backendapp;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 public class UserActivity {
     private LocalDateTime lastLogin;
     private String lastActivity;
