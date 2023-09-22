@@ -1,9 +1,15 @@
 package com.app.Stock;
 
+import javax.persistence.*;
+
 import org.springframework.stereotype.Service;
 
-@Service //@Controller @Respository
+@Entity //@Controller @Respository
+@Table(name = "stocks") // Specify a custom table name
 public class Stock {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
+    private String stockId;
     private String symbol;
     private String companyName;
     private String exchangeTraded;

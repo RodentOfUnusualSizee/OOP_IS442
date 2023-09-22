@@ -1,12 +1,15 @@
 package com.app.User;
 
 import java.time.LocalDateTime;
-import org.springframework.stereotype.Service;
+import javax.persistence.*;
 
-import jakarta.persistence.Entity;
 
 @Entity
+@Table(name = "user_activity") // Specify a custom table name
 public class UserActivity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
+    private long activityId;
     private LocalDateTime lastLogin;
     private String lastActivity;
 

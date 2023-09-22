@@ -1,10 +1,8 @@
 package com.app.User;
-
 import org.springframework.stereotype.Service;
 
-import jakarta.persistence.Entity;
 
-@Entity
+@Service
 public class Admin extends User {
     public Admin(String email, String password, String firstName, String lastName, String role) {
         super(email, password, firstName, lastName, role);

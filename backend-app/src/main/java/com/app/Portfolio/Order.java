@@ -1,21 +1,27 @@
 package com.app.Portfolio;
-import org.springframework.stereotype.Service;
+import javax.persistence.*;
 
 import com.app.Stock.Stock;
 
-@Service
-public class Investment {
-    private int investmentID;
+@Entity
+@Table(name = "user_order") // Specify a custom table name
+public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
+    private int orderID;
+
+    @OneToOne // Define a one-to-one relationship
     private Stock stock;
+
     private float price;
     private char position;
     private int quantity;
     // ------------------ Getters and Setters (Start) ------------------
-    public int getInvestmentID() {
-        return investmentID;
+    public int getOrderID() {
+        return orderID;
     }
-    public void setInvestmentID(int investmentID) {
-        this.investmentID = investmentID;
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
     }
     public Stock getStock() {
         return stock;

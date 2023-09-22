@@ -1,22 +1,30 @@
 package com.app.User;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import org.springframework.stereotype.Service;
+import java.util.*;
 
 import com.app.Portfolio.Portfolio;
-import jakarta.persistence.Entity;
+
+import javax.persistence.*;
 
 @Entity
+@Table(name = "users") // Specify a custom table name
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
     private long id;
+
+    @Column(unique = true) // Assuming email should be unique
     private String email;
     private String password;
     private String firstName;
     private String lastName;
     private String role;
+
+    @OneToOne(cascade = CascadeType.ALL) // Define the relationship with UserActivity
+    @JoinColumn(name = "activity_id")
     private UserActivity activity;
-    private ArrayList<Portfolio> portfolios;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Portfolio> portfolios;
 
     // Constructor
     public User(String email, String password, String firstName, String lastName, String role) {
@@ -25,9 +33,11 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+        this.portfolios = new ArrayList<>();
     }
 
     // ------------------ Getters and Setters (Start) ------------------
+    
     public String getEmail() {
         return email;
     }
@@ -76,11 +86,11 @@ public class User {
         this.activity = activity;
     }
 
-    public ArrayList<Portfolio> getPortfolios() {
+    public List<Portfolio> getPortfolios() {
         return portfolios;
     }
 
-    public void setPortfolios(ArrayList<Portfolio> portfolios) {
+    public void setPortfolios(List<Portfolio> portfolios) {
         this.portfolios = portfolios;
     }
 

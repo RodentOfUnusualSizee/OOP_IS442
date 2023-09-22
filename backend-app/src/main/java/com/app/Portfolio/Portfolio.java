@@ -1,23 +1,31 @@
 package com.app.Portfolio;
-import java.util.ArrayList;
-import org.springframework.stereotype.Service;
+import java.util.*;
 
-@Service
+import javax.persistence.*;
+import com.app.User.User;
+@Entity
+@Table(name = "user_portfolio") // Specify a custom table name
 public class Portfolio {
-    private int porfolioID;
+    @ManyToOne
+    @JoinColumn(name = "user_id") // Specify the correct foreign key column
+    private User user;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
+    private int portfolioID;
     private String portfolioName;
     private String strategyDesc;
     private float capitalUSD;
-    private ArrayList<Investment> investments;
+    private ArrayList<Order> orders;
 
     // ------------------ Getters and Setters (Start) ------------------
 
     public int getPorfolioID() {
-        return porfolioID;
+        return portfolioID;
     }
 
-    public void setPorfolioID(int porfolioID) {
-        this.porfolioID = porfolioID;
+    public void setPorfolioID(int portfolioID) {
+        this.portfolioID = portfolioID;
     }
 
     public String getPortfolioName() {
@@ -44,13 +52,14 @@ public class Portfolio {
         this.capitalUSD = capitalUSD;
     }
 
-    public ArrayList<Investment> getInvestments() {
-        return investments;
+    public ArrayList<Order> getOrders() {
+        return orders;
     }
 
-    public void setInvestments(ArrayList<Investment> investments) {
-        this.investments = investments;
+    public void setOrders(ArrayList<Order> orders) {
+        this.orders = orders;
     }
+    
 
     // ------------------- Getters and Setters (End) -------------------
 }
