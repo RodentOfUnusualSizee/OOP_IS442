@@ -1,8 +1,11 @@
 package com.app.User;
+
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
-@Service
+import jakarta.persistence.Entity;
+
+@Entity
 public class UserActivity {
     private LocalDateTime lastLogin;
     private String lastActivity;
