@@ -1,8 +1,8 @@
-package User;
+package com.app.User;
 import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 
-import Portfolio.Portfolio;
+import com.app.Portfolio.Portfolio;
 
 @Service
 public class User {

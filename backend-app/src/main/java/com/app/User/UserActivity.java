@@ -1,4 +1,4 @@
-package User;
+package com.app.User;
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
-package Portfolio;
+package com.app.Portfolio;
 import org.springframework.stereotype.Service;
 
-import Stock.Stock;
+import com.app.Stock.Stock;
 
 @Service
 public class Investment {

@@ -1,4 +1,4 @@
-package Stock;
+package com.app.Stock;
 import java.util.ArrayList;
 import org.springframework.stereotype.Service;
 
