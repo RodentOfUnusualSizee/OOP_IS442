@@ -5,10 +5,14 @@ module.exports = {
     './src/*.{js,jsx,ts,tsx}'
   ],
   theme: {
-    colors: {
-      'gs-blue': '#749AC7',
-      'gs-white': '#FFFFFF',
-    },
+    extend:(
+      {
+        colors: {
+          'gs-blue': '#749AC7',
+          'gs-white': '#FFFFFF',
+        },
+      }
+    ),
   },
   plugins: [],
 }
