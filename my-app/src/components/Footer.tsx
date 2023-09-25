@@ -2,8 +2,8 @@ import React from 'react';
 
 const Footer = () => {
     return (
-            <footer className="bg-gsgray90 fixed bottom-0 w-full z-10">
-                <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
+            <footer className="bg-gsgray90 w-full z-10">
+                <div className="mx-auto max-w-5xl px-4 py-4 sm:px-6 lg:px-8">
                     <div className="flex justify-center text-gswhite">
                         <img src='/images/gs-blue.png' className='h-16 w-auto' />
                     </div>

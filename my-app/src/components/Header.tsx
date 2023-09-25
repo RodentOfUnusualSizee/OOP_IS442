@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 
 
 interface HeaderProps {
@@ -11,30 +12,26 @@ const Header = ({ management, userType, login }: HeaderProps) => {
     const userLinks = [
         {
             name: "Portfolio",
-            link: "/portfolio"
+            link: "userhome"
         },
         {
             name: "Stocks",
-            link: "/stocks"
-        },
-        {
-            name: "Invest",
-            link: "/invest"
+            link: "stockhome"
         }
     ];
 
     const adminLinks = [
         {
             name: "User Management",
-            link: "/user-management"
+            link: "adminhome"
         },
         {
             name: "Portfolio Watch",
-            link: "/portfolio-watch"
+            link: "audit"
         },
         {
             name: "Data Management",
-            link: "/data-management"
+            link: "datamanagement"
 
         }
     ];
@@ -47,10 +44,10 @@ const Header = ({ management, userType, login }: HeaderProps) => {
     return (
         <header className="bg-gsgray90">
             <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
-                <a className="block text-white-600" href="/">
+                <Link to={"/"} className="block text-white-600">
                     <span className="sr-only">Home</span>
                     <img src='/images/gs-white.png' className='h-8 w-auto' />
-                </a>
+                </Link>
 
                 <div className="flex flex-1 items-center justify-end md:justify-between">
                     <nav aria-label="Global" className="hidden md:block">
@@ -59,9 +56,9 @@ const Header = ({ management, userType, login }: HeaderProps) => {
                                 <ul className="flex items-center gap-6 text-sm">
                                     {userLinks.map(({ name, link }) => (
                                         <li key={link}>
-                                            <a className="text-white hover:text-gray-500/75" href={link}>
+                                            <Link to={link} className="text-white hover:text-gray-500/75">
                                                 {name}
-                                            </a>
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>
@@ -69,9 +66,9 @@ const Header = ({ management, userType, login }: HeaderProps) => {
                                 <ul className="flex items-center gap-6 text-sm">
                                     {adminLinks.map(({ name, link }) => (
                                         <li key={link}>
-                                            <a className="text-white hover:text-gray-500/75" href={link}>
+                                            <Link to={link} className="text-white hover:text-gray-500/75">
                                                 {name}
-                                            </a>
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>
@@ -81,12 +78,12 @@ const Header = ({ management, userType, login }: HeaderProps) => {
                     <div className="flex items-center gap-4">
                         {!isLogin ? (
                             <div className="sm:flex sm:gap-4">
-                                <a className="block rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200" href="/">Login</a>
-                                <a className="hidden rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200 sm:block" href="/">Register</a>
+                                <Link to={"/"} className="block rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200" >Login</Link>
+                                <Link to={"registration"} className="hidden rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200 sm:block" >Register</Link>
                             </div>
                         ) : (
                             <div className="sm:flex sm:gap-4">
-                                <a className="hidden rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200 sm:block" href="/">Log Out</a>
+                                <Link to={"/"} className="hidden rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200 sm:block" >Log Out</Link>
                             </div>
                         )}
 
