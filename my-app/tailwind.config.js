@@ -8,8 +8,9 @@ module.exports = {
     extend:(
       {
         colors: {
-          'gs-blue': '#749AC7',
-          'gs-white': '#FFFFFF',
+          'gsblue': '#749AC7',
+          'gswhite': '#FFFFFF',
+          'gsgray90': '#1C2B36'
         },
       }
     ),
