@@ -10,7 +10,9 @@
     "@types/node": "^16.18.50",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "autoprefixer": "^10.4.16",
     "axios": "^1.5.0",
+    "postcss": "^8.4.30",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^2.1.3",
@@ -20,7 +22,7 @@
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts --openssl-legacy-provider build",
-    "build:tailwind": "tailwindcss build src/index.css -o src/tailwind.css",
+    "build:tailwind": "tailwindcss build -i src/index.css -o src/tailwind.css --watch",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
