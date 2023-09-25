@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { fetchData, postData } from './api/APIUtilsTemplate'; // Adjust the path as needed
 import Header from './components/Header';
+import Footer from './components/Footer';
 import logo from './logo.svg';
 import './App.css';
 import './tailwind.css';
@@ -43,6 +44,7 @@ function App() {
           React and Tailwind CSS in action
         </p>
       </div>
+      <Footer></Footer>
     </div>
   );
 }
