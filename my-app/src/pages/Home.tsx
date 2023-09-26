@@ -7,63 +7,81 @@ import '../styles/home.css';
 function Home() {
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
+    const [homePage] = React.useState<boolean>(true);
 
     return (
         <div>
-            <Header management={true} userType="admin" login={false}></Header>
-            <div className="container mx-auto max-w-screen-xl h-screen bg-gray-200 rounded-l shadow border p-8 m-10 grid place-items-center">
-                <div className="">
-                    <img src="/images/gs-blue.png" className="w-20 mb-6 mx-auto"></img>
-                    <p className="text-4xl text-gray-700 font-bold mb-5">
-                        Portfolio Performance Analyser App
-                    </p>
-                    <p className="container mx-auto text-sm">
-                        <button className=" bg-gsblue60 hover:bg-gsblue70 focus:outline-none focus:ring-2 focus:ring-black w-20 mx-2 px-2 py-2 text-white rounded-sm font-light" onClick={() => setLoginClicked(true)} >Login</button>
-                        <button className=" bg-gsblue60 hover:bg-gsblue70 focus:outline-none focus:ring-2 focus:ring-black w-20 mx-2 px-2 py-2 text-white rounded-sm font-light">Register</button>
-                    </p>
-                    {loginClicked ? (
-                        <CSSTransition
+            <Header management={false} userType="admin" login={false}></Header>
+            <div className="container mx-auto max-w-screen-xl h-screen rounded-l p-8 grid place-items-center">
+                {loginClicked ? (
+                    <CSSTransition
                             in={loginClicked}
                             timeout={300}
                             classNames="fade"
                             unmountOnExit
-                        >
-                            <div>
-                                <form className="bg-white shadow-md rounded p-8 m-10">
-
-                                    <div className="mb-4">
-                                        {/*
-                              <label className="block text-gray-700 text-sm font-bold mb-2" >
+                            onExit={()=>setLoginClicked(false)}
+                    >
+                        <div>
+                            <img src="/images/gs-blue.png" className="w-20 mb-6 mx-auto"></img>
+                            <p className="text-4xl text-gray-700 font-bold mb-5">
+                                Portfolio Performance Analyser App
+                            </p>
+                            <form className="bg-white shadow-md rounded p-8 m-10">
+                                <button onClick={()=>setLoginClicked(false)} className="font-bold py-2 px-4 rounded inline-flex place-items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+                                </button>
+                                <div className="mb-4">
+                                {/*
+                                <label className="block text-gray-700 text-sm font-bold mb- 2" >
                                 User ID
-                              </label>
+                                </label>
                               */}
-                                        <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight" id="username" type="text" placeholder="Enter ID">
-                                        </input>
-                                    </div>
-                                    <div className="mb-4">
-                                        {/* <label className="block text-gray-700 text-sm font-bold mb-2">
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight" id="username" type="text" placeholder="User ID">
+                                    </input>
+                                </div>
+                                <div className="mb-4">
+                                {/* <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Password
                               </label> */}
-                                        <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight" id="password" type="password" placeholder="Enter Password">
-                                        </input>
-                                    </div>
-                                    <div className="">
-                                        <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-bold w-30 py-2 px-2 rounded mx-2" type="button">
-                                            User Login
-                                        </button>
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight" id="password" type="password" placeholder="Password">
+                                    </input>
+                                </div>
+                                <div className="">
+                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="button">
+                                        User Login
+                                    </button>
 
-                                        <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-bold w-30 py-2 px-2 rounded mx-2" type="button">
-                                            Admin Login
-                                        </button>
-                                    </div>
-                                    <a className="inline-block align-baseline font-bold text-xs mt-2 text-gsblue60 hover:bg-gsblue50" href="#">
+                                    <button   className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="button">
+                                        Admin Login
+                                    </button>
+                                </div>
+                                <div>
+                                    <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50" href="#">
                                         Forgot Password?
                                     </a>
-                                </form>
-                            </div>
-                        </CSSTransition>
-                    ) : null}
-                </div>
+                                </div>
+                                <div>
+                                    <span className="text-xs mx-1">Not a user yet?</span>                            
+                                    <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50" href="registration">
+                                    Register here
+                                    </a>
+                                </div>
+
+                            </form>
+                        </div>
+                    </CSSTransition>
+                    ) :
+                    <div>
+                        <img src="/images/gs-blue.png" className="w-20 mb-6 mx-auto"></img>
+                        <p className="text-4xl text-gray-700 font-bold mb-5">
+                            Portfolio Performance Analyser App
+                        </p>
+                        <p className="container mx-auto text-sm">
+                            <button className=" bg-gsblue60 hover:bg-gsblue70 focus:outline-none focus:ring-2 focus:ring-black w-20 mx-2 px-2 py-2 text-white rounded-sm font-light" onClick={() => setLoginClicked(true)} >Login</button>
+                            <button className=" bg-gsblue60 hover:bg-gsblue70 focus:outline-none focus:ring-2 focus:ring-black w-20 mx-2 px-2 py-2 text-white rounded-sm font-light"><a href="registration">Register</a></button>
+                        </p>
+                    </div>
+                    }
             </div>
             <Footer></Footer>
         </div>
