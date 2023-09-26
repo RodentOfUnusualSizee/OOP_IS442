@@ -34,3 +34,4 @@ replay_pid*
 
 # tailwind.css
 /src/tailwind.css
+./src/tailwind.css

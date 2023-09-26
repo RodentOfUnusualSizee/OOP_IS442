@@ -30,7 +30,7 @@ function UserHome() {
         <div>
             <div className="UserHome">
                 <Header management={true} userType={"user"} login={true} ></Header>
-                <div className="bg-white py-12 sm:py-16 my-8">
+                <div className="bg-white py-12 sm:py-12 my-2">
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl lg:text-center">
                             <h2 className="text-base font-semibold leading-7 text-indigo-600">Management</h2>
@@ -44,7 +44,7 @@ function UserHome() {
                         </div>
                     </div>
                 </div>
-                <div className="mx-auto mt-16 max-w-2xl my-16 sm:mt-20 lg:mt-24 lg:max-w-4xl text-center">
+                <div className="mx-auto mt-16 max-w-2xl my-16 sm:mt-20 lg:mt-24 lg:max-w-4xl text-left">
                     <Table tableData={sampleData} tableHeaders={headers} tableTitle='Sample Table' tableDescription='sample description' tableAction='View Portfolio' ></Table>
                 </div>
                 <div className="mx-auto mt-16 max-w-2xl my-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
