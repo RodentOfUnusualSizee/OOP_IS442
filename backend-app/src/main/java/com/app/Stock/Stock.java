@@ -9,12 +9,13 @@ import org.springframework.stereotype.Service;
 public class Stock {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
-    private String stockId;
     private String symbol;
     private String companyName;
     private String exchangeTraded;
     private String currency;
     private String companySector;
+    private StockSeries stockPrices;
+    private String stockId;
 
     // ------------------ Getters and Setters (Start) ------------------
 
