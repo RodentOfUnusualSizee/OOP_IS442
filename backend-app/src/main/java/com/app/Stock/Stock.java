@@ -15,7 +15,7 @@ public class Stock {
     private String currency;
     private String companySector;
     private StockSeries stockPrices;
-    private String stockId;
+    // private String stockId;
 
     // ------------------ Getters and Setters (Start) ------------------
 
@@ -58,6 +58,16 @@ public class Stock {
     public void setCompanySector(String companySector) {
         this.companySector = companySector;
     }
+
+    public StockSeries getStockPrices() {
+        return stockPrices;
+    }
+
+    public void setStockPrices(StockSeries stockPrices) {
+        this.stockPrices = stockPrices;
+    }
+
+    
 
     // ------------------- Getters and Setters (End) -------------------
 }
