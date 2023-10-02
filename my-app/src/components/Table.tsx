@@ -3,18 +3,13 @@ import React from 'react';
 
 interface TableProps {
     // TODO: improve to include buttons configurations
-    tableData: DataItem[];
+    tableData: any[];
     tableHeaders: string[];
     tableTitle: string;
     tableDescription: string;
     tableAction: string;
 }
 
-interface DataItem {
-    id: number;
-    name: string;
-    value: string;
-}
 
 const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAction }: TableProps) => {
     return (
