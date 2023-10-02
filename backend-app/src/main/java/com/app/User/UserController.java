@@ -1,13 +1,17 @@
 package com.app.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -38,5 +42,27 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     public void deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
+    }
+
+    @GetMapping("/{userId}/activity-log")
+    public ResponseEntity<UserActivityLog> getUserActivityLog(@PathVariable Long userId) {
+        UserActivityLog activityLog = userService.getUserActivityLog(userId);
+        if (activityLog != null) {
+            return ResponseEntity.ok(activityLog);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{userId}/add-event")
+    public ResponseEntity<String> addEventForUser(
+            @PathVariable Long userId,
+            @RequestBody UserEvent userEvent) {
+        String result = userService.addEventForUser(userId, userEvent);
+        if (result != null) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

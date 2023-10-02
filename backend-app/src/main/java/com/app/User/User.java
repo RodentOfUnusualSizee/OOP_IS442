@@ -1,5 +1,6 @@
 package com.app.User;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import com.app.Portfolio.Portfolio;
@@ -22,9 +23,14 @@ public class User {
 
     @OneToOne(cascade = CascadeType.ALL) // Define the relationship with UserActivity
     @JoinColumn(name = "activity_id")
-    private UserActivity activity;
+    private UserActivityLog userActivityLog;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Portfolio> portfolios;
+
+    // Constructor requirement by Hibernate (used by Spring Data JPA)
+    public User() {
+    }
 
     // Constructor
     public User(String email, String password, String firstName, String lastName, String role) {
@@ -33,11 +39,12 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.role = role;
+        this.userActivityLog = new UserActivityLog();
         this.portfolios = new ArrayList<>();
     }
 
     // ------------------ Getters and Setters (Start) ------------------
-    
+
     public String getEmail() {
         return email;
     }
@@ -78,12 +85,16 @@ public class User {
         this.role = role;
     }
 
-    public UserActivity getActivity() {
-        return activity;
+    public UserActivityLog getUserActivityLog() {
+        return this.userActivityLog;
     }
 
-    public void setActivity(UserActivity activity) {
-        this.activity = activity;
+    public void setUserActivityLog(UserActivityLog userActivityLog) {
+        this.userActivityLog = userActivityLog;
+    }
+
+    public void addNewActivityEvent(String event, LocalDateTime timestamp) {
+        this.userActivityLog.addNewEvent(event, timestamp);
     }
 
     public List<Portfolio> getPortfolios() {
