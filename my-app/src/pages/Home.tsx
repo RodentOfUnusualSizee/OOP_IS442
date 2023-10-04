@@ -9,6 +9,45 @@ function Home() {
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
     const [homePage] = React.useState<boolean>(true);
 
+    const [username, setUsername] = React.useState<string>("");
+    const [password, setPassword] = React.useState<string>("");
+
+    const submitLogin = (e: React.FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        // Name of button clicked - which kind of login to use
+        const buttonName = e.currentTarget.name;
+        //Can use the below to check consts
+        alert("Username: " + username + ", Password: " + password + ", Button: " + buttonName);
+
+        if (buttonName == "userLogin") {
+            //User Login - Add API call below to verify username and password for USER
+
+
+
+            // Change true condition below to API call result
+            if(true){
+                window.location.href = "/Portfolio";
+            }
+            else{
+                // simple alert for now
+                alert("Invalid username or password");
+            }
+        } else if (buttonName == "adminLogin") {
+            //User Login - Add API call below to verify username and password for ADMIN
+
+
+            // Change true condition below to API call result
+            if(true){
+                window.location.href = "/Portfolio";
+            }
+            else{
+                alert("Invalid username or password");
+            }
+        }
+    }
+
+
+
     return (
         <div>
             <Header management={false} userType="admin" login={false}></Header>
@@ -36,22 +75,36 @@ function Home() {
                                 User ID
                                 </label>
                               */}
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight" id="username" type="text" placeholder="User ID">
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
+                                    id="username" 
+                                    type="text" 
+                                    placeholder="User ID"
+                                    value = {username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    required
+                                    >
                                     </input>
                                 </div>
                                 <div className="mb-4">
                                 {/* <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Password
-                              </label> */}
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight" id="password" type="password" placeholder="Password">
+                                </label> 
+                                */}
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
+                                    id="password" 
+                                    type="password" 
+                                    placeholder="Password"
+                                    value = {password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required>
                                     </input>
                                 </div>
-                                <div className="">
-                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="button">
+                                <div id="loginButtons">
+                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="userLogin">
                                         User Login
                                     </button>
 
-                                    <button   className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="button">
+                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="adminLogin">
                                         Admin Login
                                     </button>
                                 </div>

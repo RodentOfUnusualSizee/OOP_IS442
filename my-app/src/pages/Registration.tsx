@@ -3,24 +3,99 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 function Registration() {
+
+    const [email, setEmail] = React.useState<string>("");
+    const [userID, setUserID] = React.useState<string>("");
+    const [password, setPassword] = React.useState<string>("");
+    const [confirmPassword, setConfirmPassword] = React.useState<string>("");
+
+    const submitRegistration = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        //Can use the below to check consts
+        alert("Email: " + email + ", User ID: " + userID + ", Password: " + password);
+        alert(password == confirmPassword);
+
+        if(password != confirmPassword){
+            alert("Passwords do not match");
+            return; // skip below code
+        }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        //password regex to check if it clears all the requirements
+        // comment out the checkers if you dont need them
+        if(passwordRegex.test(password)){
+            alert("Password is good");
+        }
+        else{
+            alert("Password is bad");
+        }
+        
+        //api call to register user 
+
+    }
+
+    const passwordReqs = () => {
+        const lengthRegex = /^.{8,25}$/;
+        const upperLowerRegex = /^(?=.*[a-z])(?=.*[A-Z])/;
+        const symbolRegex = /^(?=.*[@$!%*?&])/;
+        const numberRegex = /^(?=.*\d)/;
+        
+        if(lengthRegex.test(password)){
+            document.getElementById("rq1")!.style.color = "green";
+        } else{
+            document.getElementById("rq1")!.style.color = "red";
+        }
+
+        if(upperLowerRegex.test(password)){
+            document.getElementById("rq2")!.style.color = "green";
+        }else{
+            document.getElementById("rq2")!.style.color = "red";
+        }
+
+        if(symbolRegex.test(password)){
+            document.getElementById("rq3")!.style.color = "green";
+        }else{
+            document.getElementById("rq3")!.style.color = "red";
+        }
+
+        if(numberRegex.test(password)){
+            document.getElementById("rq4")!.style.color = "green";
+        }else{
+            document.getElementById("rq4")!.style.color = "red";
+        }
+    }
+
     return (
         <div className="Registration">
             <Header management={false} userType="admin" login={false}></Header>
             <div className="container mx-auto max-w-screen-xl h-screen grid place-items-center">
-            <form className="w-full max-w-lg">
+            <form className="w-full max-w-lg" onSubmit={submitRegistration}>
                 <div className="flex flex-wrap -mx-3 mb-6">
                     <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                     <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
                         Email Address
                     </label>
-                    <input className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="grid-first-name" type="text" placeholder="example@gmail.com">
+                    <input className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" 
+                    id="email" 
+                    type="text" 
+                    placeholder="example@gmail.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    >
                     </input>
                     </div>
                     <div className="w-full md:w-1/2 px-3">
                     <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
                         User ID
                     </label>
-                    <input className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-last-name" type="text" placeholder="User ID">
+                    <input className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="userID" 
+                    type="text" 
+                    placeholder="User ID"
+                    value={userID}
+                    onChange={(e) => setUserID(e.target.value)}
+                    required
+                    >
                     </input>
                     <span className="text-xs text-gsgrey40 font-light">• You can use your email as your ID </span>
                     </div>
@@ -30,13 +105,21 @@ function Registration() {
                     <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
                         Password
                     </label>
-                    <input maxLength= {25} className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-password" type="password" placeholder="******************">
+                    <input maxLength= {25} className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
+                    id="password" 
+                    type="password" 
+                    placeholder="******************"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyUp={passwordReqs}
+                    required
+                    >
                     </input>
                     <ul className="">
-                        <li className="text-xs font-thin">• Your password can be 8-25 characters long</li>
-                        <li className="text-xs font-thin">• Include at least one Uppercase and Lowercase Character</li>
-                        <li className="text-xs font-thin" >• At least 1 symbol used</li>
-                        <li className="text-xs font-thin">• At least 1 number used</li>
+                        <li className="text-xs font-thin" id="rq1">• Your password can be 8-25 characters long</li>
+                        <li className="text-xs font-thin" id="rq2">• Include at least one Uppercase and Lowercase Character</li>
+                        <li className="text-xs font-thin" id="rq3">• At least 1 symbol used</li>
+                        <li className="text-xs font-thin" id="rq4">• At least 1 number used</li>
                     </ul>
                     </div>
                 </div>
@@ -45,43 +128,23 @@ function Registration() {
                     <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
                         Confirm Password
                     </label>
-                    <input maxLength= {25} className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="password" type="password" placeholder="******************">
+                    <input maxLength= {25} className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
+                    id="confirmPassword" 
+                    type="password" 
+                    placeholder="******************"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    >
                     </input>
                     </div>
                 </div>
                 <div className="flex flex-wrap -mx-3 mb-6">
                     <div className="w-full px-3">
-                        <button className="px-2 py-2 w-24 rounded-sm text-gswhite bg-gsgreen50 hover:bg-gsgreen60">Sign Up</button>
+                        <button className="px-2 py-2 w-24 rounded-sm text-gswhite bg-gsgreen50 hover:bg-gsgreen60" type="submit">Sign Up</button>
                     </div>
                 </div>
             </form>
-                {/*}
-                <form className="">
-                        <div className="mx-auto max-w-lg">
-                            <div className="py-1">
-                                <span className="px-1 text-sm text-gray-600">Username</span>
-                                <input placeholder="" type="text" className="text-md block px-3 py-2 rounded-lg w-full bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none">
-                            </input>
-                            </div>
-                            <div className="py-1">
-                                <span className="px-1 text-sm text-gray-600">Email</span>
-                                <input placeholder="" type="email" className="text-md block px-3 py-2 rounded-lg w-full bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none">
-                            </input>
-                            </div>
-                            <div className="py-1">
-                                <span className="px-1 text-sm text-gray-600">Password</span>
-                                <input placeholder="" type="password" x-model="password" className="text-md block px-3 py-2 rounded-lg w-full bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none">
-                            </input>
-                            </div>
-                            <div className="py-1">
-                                <span className="px-1 text-sm text-gray-600">Password Confirm</span>
-                                <input placeholder="" type="password" x-model="password_confirm" className="text-md block px-3 py-2 rounded-lg w-full bg-white border-2 border-gray-300 placeholder-gray-600 shadow-md focus:placeholder-gray-500 focus:bg-white focus:border-gray-600 focus:outline-none">
-                            </input>
-                            </div>
-
-                        </div>
-                    </form>
-                    */}
             </div>
             <Footer></Footer>
         </div>
