@@ -1,23 +1,18 @@
 package com.app.Stock;
 import java.util.*;
-import org.springframework.stereotype.Service;
+import javax.persistence.*;
 
-@Service
+@Entity
+@Table(name = "stock_series")
 public class StockSeries {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToMany(mappedBy = "stockSeries", cascade = CascadeType.ALL)
     private List<StockDataPoint> priceData;
-    // private Stock stock;
     private String dataInterval;
     private String dataSource;
-
-    // ------------------ Getters and Setters (Start) ------------------
-
-    // public Stock getStock() {
-    //     return stock;
-    // }
-
-    // public void setStock(Stock stock) {
-    //     this.stock = stock;
-    // }
 
     public List<StockDataPoint> getPriceData() {
         return priceData;
@@ -43,7 +38,4 @@ public class StockSeries {
         this.dataSource = dataSource;
     }
 
-    
-
-    // ------------------- Getters and Setters (End) -------------------
 }

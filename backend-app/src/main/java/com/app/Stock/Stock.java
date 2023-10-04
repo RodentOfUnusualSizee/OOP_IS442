@@ -2,11 +2,11 @@ package com.app.Stock;
 
 import javax.persistence.*;
 
-@Entity //@Controller @Respository
-@Table(name = "stocks") // Specify a custom table name
+@Entity
+@Table(name = "stocks")
 public class Stock {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String symbol;
     private String companyName;
     private String exchangeTraded;
@@ -14,9 +14,6 @@ public class Stock {
     private String companySector;
     @Transient
     private StockSeries stockPrices;
-    // private String stockId;
-
-    // ------------------ Getters and Setters (Start) ------------------
 
     public String getSymbol() {
         return symbol;
@@ -66,7 +63,4 @@ public class Stock {
         this.stockPrices = stockPrices;
     }
 
-    
-
-    // ------------------- Getters and Setters (End) -------------------
 }

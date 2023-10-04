@@ -1,13 +1,21 @@
 package com.app.Stock;
 import java.time.LocalDateTime;
-import org.springframework.stereotype.Service;
 
-@Service
+import javax.persistence.*;
+
+@Entity
+@Table(name = "stock_data_points")
 public class StockDataPoint {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private LocalDateTime timeStamp;
     private float price;
     private int volume;
-    // ------------------ Getters and Setters (Start) ------------------
+
+    @ManyToOne
+    @JoinColumn(name = "stock_series_id")
+    private StockSeries stockSeries;
 
     public LocalDateTime getTimeStamp() {
         return timeStamp;
@@ -33,5 +41,4 @@ public class StockDataPoint {
         this.volume = volume;
     }
 
-    // ------------------- Getters and Setters (End) -------------------
 }
