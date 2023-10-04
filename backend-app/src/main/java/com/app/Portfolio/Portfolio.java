@@ -2,6 +2,8 @@ package com.app.Portfolio;
 import java.util.*;
 
 import javax.persistence.*;
+
+import com.app.Order.Order;
 import com.app.User.User;
 @Entity
 @Table(name = "user_portfolio") // Specify a custom table name

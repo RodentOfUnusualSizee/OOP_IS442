@@ -1,4 +1,4 @@
-package com.app.User;
+package com.app.UserActivityLog;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

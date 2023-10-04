@@ -1,7 +1,9 @@
-package com.app.Stock;
+package com.app.StockDataPoint;
 import java.time.LocalDateTime;
 
 import javax.persistence.*;
+
+import com.app.StockSeries.StockSeries;
 
 @Entity
 @Table(name = "stock_data_points")

@@ -2,6 +2,8 @@ package com.app.Stock;
 
 import javax.persistence.*;
 
+import com.app.StockSeries.StockSeries;
+
 @Entity
 @Table(name = "stocks")
 public class Stock {

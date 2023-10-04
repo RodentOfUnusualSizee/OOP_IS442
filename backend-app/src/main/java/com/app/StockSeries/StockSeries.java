@@ -1,6 +1,8 @@
-package com.app.Stock;
+package com.app.StockSeries;
 import java.util.*;
 import javax.persistence.*;
+
+import com.app.StockDataPoint.StockDataPoint;
 
 @Entity
 @Table(name = "stock_series")

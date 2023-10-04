@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import com.app.Portfolio.Portfolio;
+import com.app.UserActivityLog.UserActivityLog;
 
 import javax.persistence.*;
 
