@@ -34,8 +34,6 @@ public class UserController {
 
     @GetMapping("/get/{id}")
     public User getUser(@PathVariable Long id) {
-        // Here, you might want to handle the case when the user is not found in the
-        // database
         return userService.getUser(id);
     }
 
