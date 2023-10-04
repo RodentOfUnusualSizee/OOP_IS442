@@ -19,16 +19,28 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public User update(User user) {
+        return userRepository.save(user);
     }
 
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+    
     public List<User> findAll() {
         return userRepository.findAll();
     }
-
+    
     public void deleteById(Long id) {
         userRepository.deleteById(id);
+    }
+    
+    public boolean existsById(Long id) {
+        return userRepository.existsById(id);
+    }
+
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
     public UserActivityLog getUserActivityLog(Long userId) {
