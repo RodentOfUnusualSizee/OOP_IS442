@@ -9,7 +9,11 @@ then run to start : ./mvnw spring-boot:run
 # For Mac Babies
 1. Navigate to the backend-app directory if you are not already there.
 2. Run the following command to make 'mvnw' executable:
-\t chmod +x mvnw
-3. Then, try running the Spring Boot application commands again:
-\t ./mvnw clean install
-\t ./mvnw spring-boot:run
+<ul>
+  <li>chmod +x mvnw</li>
+</ul>
+4. Then, try running the Spring Boot application commands again:
+<ul>
+  <li>./mvnw clean install</li>
+  <li>./mvnw spring-boot:run</li>
+</ul>
