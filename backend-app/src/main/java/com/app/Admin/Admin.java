@@ -1,4 +1,5 @@
-package com.app.User;
+package com.app.Admin;
+import com.app.User.User;
 import org.springframework.stereotype.Service;
 
 
