@@ -12,7 +12,9 @@ public class Stock {
     private String exchangeTraded;
     private String currency;
     private String companySector;
-    @Transient
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_series_id")
     private StockSeries stockPrices;
 
     public String getSymbol() {
