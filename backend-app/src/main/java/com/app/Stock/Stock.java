@@ -2,8 +2,6 @@ package com.app.Stock;
 
 import javax.persistence.*;
 
-import org.springframework.stereotype.Service;
-
 @Entity //@Controller @Respository
 @Table(name = "stocks") // Specify a custom table name
 public class Stock {
@@ -14,6 +12,7 @@ public class Stock {
     private String exchangeTraded;
     private String currency;
     private String companySector;
+    @Transient
     private StockSeries stockPrices;
     // private String stockId;
 
