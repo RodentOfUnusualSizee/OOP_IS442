@@ -106,7 +106,30 @@ public class User {
         this.portfolios = portfolios;
     }
 
+    
     // ------------------- Getters and Setters (End) -------------------
+    
+    // Method to add a new portfolio
+    public void addPortfolio(Portfolio portfolio) {
+        this.portfolios.add(portfolio);
+        portfolio.setUser(this);
+    }
+    
+    // Method to update an existing portfolio
+    public void updatePortfolio(Portfolio portfolio) {
+        for (int i = 0; i < this.portfolios.size(); i++) {
+            if (this.portfolios.get(i).getPorfolioID() == portfolio.getPorfolioID()) {
+                this.portfolios.set(i, portfolio);
+                break;
+            }
+        }
+    }
+    
+    // Method to delete a portfolio
+    public void deletePortfolio(int portfolioID) {
+        this.portfolios.removeIf(p -> p.getPorfolioID() == portfolioID);
+    }
+    
 
     public boolean verifyLogin() {
         return true;
