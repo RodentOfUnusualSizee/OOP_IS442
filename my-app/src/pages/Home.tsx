@@ -3,13 +3,16 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CSSTransition } from 'react-transition-group';
 import '../styles/home.css';
+import axios from 'axios';
 
 function Home() {
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
-    const [homePage] = React.useState<boolean>(true);
+    // const [homePage, setHomePage] = React.useState<boolean>(false);
+    let homePage = false; // cause setHomePage is async, doesn't update immediately, so prints false and doesn't redirect to homepage
 
-    const [username, setUsername] = React.useState<string>("");
+    // const [username, setUsername] = React.useState<string>("");
+    const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
 
     const submitLogin = (e: React.FormEvent<HTMLButtonElement>) => {
@@ -17,32 +20,55 @@ function Home() {
         // Name of button clicked - which kind of login to use
         const buttonName = e.currentTarget.name;
         //Can use the below to check consts
-        alert("Username: " + username + ", Password: " + password + ", Button: " + buttonName);
+        // alert("Username: " + username + ", Password: " + password + ", Button: " + buttonName);
+        alert("Email: " + email + ", Password: " + password + ", Button: " + buttonName);
+
 
         if (buttonName == "userLogin") {
             //User Login - Add API call below to verify username and password for USER
+            axios.get("http://localhost:8080/api/user/getUserByEmail/" + email)
+                .then(function (response) {
+                    console.log(response);
+                    if (response["data"]["password"] == password){
+                        // setHomePage(true);
+                        homePage = true
+                        localStorage.setItem("userId", response["data"]["id"]);
+
+                        if(homePage){
+                            window.location.href = "/UserHome";
+                        }
+                        else{
+                            alert("Invalid username or password");
+                        }
+
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
 
 
+        //     // Change true condition below to API call result
+        //     if(homePage){
+        //         // window.location.href = "/Portfolio";
+        //         window.location.href = "/UserHome";
+        //     }
+        //     else{
+        //         // simple alert for now
+        //         alert("Invalid username or password");
+        //     }
+        // } else if (buttonName == "adminLogin") {
+        //     //User Login - Add API call below to verify username and password for ADMIN
 
-            // Change true condition below to API call result
-            if(true){
-                window.location.href = "/Portfolio";
-            }
-            else{
-                // simple alert for now
-                alert("Invalid username or password");
-            }
-        } else if (buttonName == "adminLogin") {
-            //User Login - Add API call below to verify username and password for ADMIN
 
-
-            // Change true condition below to API call result
-            if(true){
-                window.location.href = "/Portfolio";
-            }
-            else{
-                alert("Invalid username or password");
-            }
+        //     // Change true condition below to API call result
+        //     if(homePage){
+        //         // window.location.href = "/Portfolio";
+        //         window.location.href = "/UserHome";
+        //     }
+        //     else{
+        //         alert("Invalid username or password");
+        //     }
         }
     }
 
@@ -75,13 +101,22 @@ function Home() {
                                 User ID
                                 </label>
                               */}
-                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
+                                    {/* <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
                                     id="username" 
                                     type="text" 
                                     placeholder="User ID"
                                     value = {username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
+                                    >
+                                    </input> */}
+                                    <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
+                                        id="email" 
+                                        type="text" 
+                                        placeholder="Email"
+                                        value = {email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
                                     >
                                     </input>
                                 </div>

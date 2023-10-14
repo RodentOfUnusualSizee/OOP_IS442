@@ -1,3 +1,5 @@
+import React, { useEffect } from 'react';
+
 interface TableProps {
     tableData: any[];
     tableHeaders: { header: string; key: string }[];
