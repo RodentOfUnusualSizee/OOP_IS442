@@ -2,6 +2,8 @@
 package com.app.Portfolio;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import com.app.User.User;
 import com.app.User.UserService;
 import com.app.Position.Position;
 import com.app.Position.PositionService;
+import com.app.WildcardResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
@@ -26,9 +29,15 @@ public class PortfolioController {
 
     // Endpoint to create a new portfolio
     @PostMapping("/create")
-    public Portfolio createPortfolio(@RequestBody Portfolio portfolio) {
+    @ResponseBody
+    public ResponseEntity<WildcardResponse> createPortfolio(@RequestBody Portfolio portfolio) {
         // return portfolio;
-        return portfolioService.addPortfolio(portfolio);
+         WildcardResponse result = portfolioService.addPortfolio(portfolio);
+        if (result.getData() != null) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(500).body(result); // 401 Unauthorized
+        }
     }
 
     // Endpoint to update an existing portfolio
@@ -51,13 +60,16 @@ public class PortfolioController {
 
     // Endpoint to retrieve all portfolios of a user
     @GetMapping("/getAllByUser/{userID}")
-    public List<Portfolio> getAllPortfoliosByUser(@PathVariable Long userID) {
-        Optional<User> userOptional = userService.findById(userID);
-        if (userOptional.isPresent()) {
-            return portfolioService.getAllPortfoliosByUser(userOptional.get());
+    @ResponseBody
+    public ResponseEntity<WildcardResponse> getAllPortfoliosByUser(@PathVariable Long userID) {
+        try{
+            Optional<User> userOptional = userService.findById(userID);
+            List<Portfolio> res = portfolioService.getAllPortfoliosByUser(userOptional.get());
+            return ResponseEntity.ok(new WildcardResponse(true, "Success", res));
         }
-
-        return new ArrayList<>();
+        catch(Exception e){
+            return ResponseEntity.status(404).body(new WildcardResponse(false, e.getMessage(), null));
+        }
     }
 
     /// POSIITION FUNCTIONS

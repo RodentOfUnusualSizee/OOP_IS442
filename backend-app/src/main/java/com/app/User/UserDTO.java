@@ -5,7 +5,6 @@ import java.util.*;
 public class UserDTO {
     private long id;
     private String email;
-    private String password;
     private String firstName;
     private String lastName;
     private String role;
@@ -20,9 +19,6 @@ public class UserDTO {
     }
     public String getEmail() {
         return email;
-    }
-    public String getPassword() {
-        return password;
     }
     public String getFirstName() {
         return firstName;
@@ -43,9 +39,6 @@ public class UserDTO {
     }
     public void setEmail(String email) {
         this.email = email;
-    }
-    public void setPassword(String password) {
-        this.password = password;
     }
     public void setFirstName(String firstName) {
         this.firstName = firstName;

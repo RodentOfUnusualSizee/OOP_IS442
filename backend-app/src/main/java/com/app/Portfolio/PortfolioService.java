@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import com.app.User.User;
 import com.app.User.UserService;
+import com.app.WildcardResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class PortfolioService {
     @Autowired
     private UserService userService;
 
-    public Portfolio addPortfolio(Portfolio portfolio) {
+    public WildcardResponse addPortfolio(Portfolio portfolio) {
         // Here you need the userId to be present in the Portfolio object or passed
         // separately.
         // return portfolio;
@@ -57,7 +58,7 @@ public class PortfolioService {
     }
 
     // Method to retrieve all portfolios of a user
-    public List<Portfolio> getAllPortfoliosByUser(User user) {
+    public List<Portfolio> getAllPortfoliosByUser(User user) { 
         return user.getPortfolios();
     }
 }
