@@ -2,22 +2,22 @@ package com.app.Stock;
 
 import javax.persistence.*;
 
-import org.springframework.stereotype.Service;
+import com.app.StockSeries.StockSeries;
 
-@Entity //@Controller @Respository
-@Table(name = "stocks") // Specify a custom table name
+@Entity
+@Table(name = "stocks")
 public class Stock {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String symbol;
     private String companyName;
     private String exchangeTraded;
     private String currency;
     private String companySector;
-    private StockSeries stockPrices;
-    // private String stockId;
 
-    // ------------------ Getters and Setters (Start) ------------------
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "stock_series_id")
+    private StockSeries stockPrices;
 
     public String getSymbol() {
         return symbol;
@@ -67,7 +67,4 @@ public class Stock {
         this.stockPrices = stockPrices;
     }
 
-    
-
-    // ------------------- Getters and Setters (End) -------------------
 }

@@ -1,8 +1,9 @@
-package com.app.User;
+
+package com.app.Portfolio;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserActivityLogRepository extends JpaRepository<UserActivityLog, Long> {
+public interface PortfolioRepository extends JpaRepository<Portfolio, Integer> {
 }

@@ -1,4 +1,4 @@
-package com.app.Portfolio;
+package com.app.Order;
 import javax.persistence.*;
 
 import com.app.Stock.Stock;

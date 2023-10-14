@@ -1,9 +1,11 @@
-package com.app.User;
+package com.app.UserActivityLog;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
+
+import com.app.User.UserEvent;
 
 @Entity
 @Table(name = "user_activity")

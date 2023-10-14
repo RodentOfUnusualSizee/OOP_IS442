@@ -1,7 +1,8 @@
 package com.app.UserTest;
 
-import com.app.User.UserActivityLog;
 import com.app.User.UserEvent;
+import com.app.UserActivityLog.UserActivityLog;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

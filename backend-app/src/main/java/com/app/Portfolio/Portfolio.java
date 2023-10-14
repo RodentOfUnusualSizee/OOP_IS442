@@ -2,6 +2,8 @@ package com.app.Portfolio;
 import java.util.*;
 
 import javax.persistence.*;
+
+import com.app.Order.Order;
 import com.app.User.User;
 @Entity
 @Table(name = "user_portfolio") // Specify a custom table name
@@ -13,7 +15,8 @@ public class Portfolio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
     private int portfolioID;
-    private String portfolioName;
+    private Long userIdid;
+    private String portfolioName;    
     private String strategyDesc;
     private float capitalUSD;
     private ArrayList<Order> orders;
@@ -61,5 +64,20 @@ public class Portfolio {
     }
     
 
+    
+    // Method to set the user of the portfolio
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Long getUserId() {
+        return this.userIdid;
+    }
+    
     // ------------------- Getters and Setters (End) -------------------
+    
 }
