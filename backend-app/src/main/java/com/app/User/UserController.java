@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.app.Portfolio.Portfolio;
 import com.app.UserActivityLog.UserActivityLog;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -35,10 +37,37 @@ public class UserController {
         return userService.update(user);
     }
 
+    // @GetMapping("/get/{id}")
+    // public User getUser(@PathVariable Long id) {
+    //     return userService.getUser(id);
+    // }
+
     @GetMapping("/get/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+    public UserDTO getUser(@PathVariable Long id) {
+        User user = userService.getUser(id);
+
+        // Create a UserDTO instance and map the fields
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setPassword(user.getPassword());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setRole(user.getRole());
+
+        // Map portfolio IDs as integers
+        if (user.getPortfolios() != null) {
+            userDTO.setPortfolioIds(
+                user.getPortfolios().stream()
+                    .map(Portfolio::getPortfolioID)
+                    .collect(Collectors.toList())
+            );
+        }
+
+        return userDTO;
     }
+
+    
 
     @GetMapping("/get/all")
     public List<User> getAllUsers() {
