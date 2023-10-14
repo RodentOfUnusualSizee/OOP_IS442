@@ -11,13 +11,18 @@ function UserHome() {
         value: string;
     }
 
-    const sampleData: DataItem[] = [
-        { id: 1, name: "Item 1", value: "Value 1" },
-        { id: 2, name: "Item 2", value: "Value 2" },
-        { id: 3, name: "Item 3", value: "Value 3" },
+    const tableData = [
+        { id: 1, name: 'John', age: 30, email: 'john@example.com' },
+        { id: 2, name: 'Jane', age: 25, email: 'jane@example.com' },
+        { id: 3, name: 'Bob', age: 40, email: 'bob@example.com' },
     ];
 
-    const headers: string[] = ["Name", "Value"];
+    const tableHeaders = [
+        { header: 'ID', key: 'id' },
+        { header: 'Name', key: 'name' },
+        { header: 'Age', key: 'age' },
+        { header: 'Email', key: 'email' },
+    ];
 
     const samplePortfolioData = [
         { name: "Portfolio 1", strategy: "Strategy A", capital: 10000 },
@@ -45,7 +50,7 @@ function UserHome() {
                     </div>
                 </div>
                 <div className="mx-auto mt-16 max-w-2xl my-16 sm:mt-20 lg:mt-24 lg:max-w-4xl text-left">
-                    <Table tableData={sampleData} tableHeaders={headers} tableTitle='Sample Table' tableDescription='sample description' tableAction='View Portfolio' ></Table>
+                    <Table tableData={tableData} tableHeaders={tableHeaders} tableTitle='Sample Table' tableDescription='sample description' tableAction='View Portfolio' ></Table>
                 </div>
                 <div className="mx-auto mt-16 max-w-2xl my-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
                     <PortfolioCard portfolioList={samplePortfolioData}></PortfolioCard>
