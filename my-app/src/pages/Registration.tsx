@@ -1,18 +1,22 @@
 import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import axios from 'axios';
 
 function Registration() {
 
     const [email, setEmail] = React.useState<string>("");
-    const [userID, setUserID] = React.useState<string>("");
+    // const [userID, setUserID] = React.useState<string>("");
+    const [firstName, setFirstName] = React.useState<string>("");
+    const [lastName, setLastName] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
     const [confirmPassword, setConfirmPassword] = React.useState<string>("");
 
     const submitRegistration = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         //Can use the below to check consts
-        alert("Email: " + email + ", User ID: " + userID + ", Password: " + password);
+        // alert("Email: " + email + ", User ID: " + userID + ", Password: " + password);
+        alert("Email: " + email + ", First Name: " + firstName +  + ", Last Name: " + lastName + ", Password: " + password);
         alert(password == confirmPassword);
 
         if(password != confirmPassword){
@@ -31,7 +35,26 @@ function Registration() {
         }
         
         //api call to register user 
+        let config = {
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+            }
+        }
 
+        axios.post("http://localhost:8080/api/user/create", {
+            "email": email,
+            "password": password,
+            "firstName": firstName,
+            "lastName": lastName,
+            "role": "user"
+        }, config)
+        .then(function (response) {
+            console.log(response);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
     }
 
     const passwordReqs = () => {
@@ -70,8 +93,40 @@ function Registration() {
             <Header management={false} userType="admin" login={false}></Header>
             <div className="container mx-auto max-w-screen-xl h-screen grid place-items-center">
             <form className="w-full max-w-lg" onSubmit={submitRegistration}>
+
                 <div className="flex flex-wrap -mx-3 mb-6">
-                    <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                        <div className="w-full md:w-1/2 px-3">
+                            <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
+                                First Name
+                            </label>
+                            <input className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="firstName" 
+                            type="text" 
+                            placeholder="John"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            required
+                            >
+                            </input>
+                        </div>
+
+                        <div className="w-full md:w-1/2 px-3">
+                            <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
+                                Last Name
+                            </label>
+                            <input className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="lastName" 
+                            type="text" 
+                            placeholder="Doe"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            required
+                            >
+                            </input>
+                        </div>
+                </div>
+
+                <div className="flex flex-wrap -mx-3 mb-6">
+                    {/* <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0"> */}
+                    <div className="w-full px-3">
                     <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
                         Email Address
                     </label>
@@ -84,7 +139,7 @@ function Registration() {
                     required
                     >
                     </input>
-                    </div>
+                    {/* </div>
                     <div className="w-full md:w-1/2 px-3">
                     <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
                         User ID
@@ -97,7 +152,7 @@ function Registration() {
                     required
                     >
                     </input>
-                    <span className="text-xs text-gsgrey40 font-light">• You can use your email as your ID </span>
+                    <span className="text-xs text-gsgrey40 font-light">• You can use your email as your ID </span> */}
                     </div>
                 </div>
                 <div className="flex flex-wrap -mx-3 mb-6">
