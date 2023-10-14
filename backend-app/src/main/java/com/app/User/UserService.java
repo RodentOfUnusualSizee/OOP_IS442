@@ -3,9 +3,12 @@ package com.app.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.app.Portfolio.Portfolio;
+import com.app.Portfolio.PortfolioRepository;
 import com.app.UserActivityLog.UserActivityLog;
 import com.app.UserActivityLog.UserActivityLogRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,15 +36,15 @@ public class UserService {
     public User getUser(Long id) {
         return userRepository.findById(id).orElse(null);
     }
-    
+
     public List<User> findAll() {
         return userRepository.findAll();
     }
-    
+
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
-    
+
     public boolean existsById(Long id) {
         return userRepository.existsById(id);
     }
@@ -76,6 +79,27 @@ public class UserService {
         userRepository.save(user);
 
         return "Event added successfully.";
+    }
+
+    @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    public Portfolio addPortfolioToUser(Long userId, Portfolio portfolio) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+        if (user.getPortfolios() == null) {
+            user.setPortfolios(new ArrayList<>());
+        }
+
+        user.getPortfolios().add(portfolio);
+        portfolio.setUser(user);
+        // return portfolio;
+        return portfolioRepository.save(portfolio);
+
+        // // Since the cascade type is set on User, saving Portfolio should be enough.
+        // return portfolioRepository.save(portfolio);
+        // return portfolioRepository.save(portfolio);
+
     }
 
 }

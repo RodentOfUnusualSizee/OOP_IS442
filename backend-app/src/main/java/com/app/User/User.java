@@ -2,12 +2,15 @@ package com.app.User;
 
 import java.time.LocalDateTime;
 import java.util.*;
-
 import com.app.Portfolio.Portfolio;
 import com.app.UserActivityLog.UserActivityLog;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Table(name = "users") // Specify a custom table name
 public class User {
@@ -27,6 +30,7 @@ public class User {
     private UserActivityLog userActivityLog;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Portfolio> portfolios;
 
     // Constructor requirement by Hibernate (used by Spring Data JPA)
@@ -106,30 +110,28 @@ public class User {
         this.portfolios = portfolios;
     }
 
-    
     // ------------------- Getters and Setters (End) -------------------
-    
+
     // Method to add a new portfolio
     public void addPortfolio(Portfolio portfolio) {
         this.portfolios.add(portfolio);
         portfolio.setUser(this);
     }
-    
+
     // Method to update an existing portfolio
     public void updatePortfolio(Portfolio portfolio) {
         for (int i = 0; i < this.portfolios.size(); i++) {
-            if (this.portfolios.get(i).getPorfolioID() == portfolio.getPorfolioID()) {
+            if (this.portfolios.get(i).getPortfolioID() == portfolio.getPortfolioID()) {
                 this.portfolios.set(i, portfolio);
                 break;
             }
         }
     }
-    
+
     // Method to delete a portfolio
     public void deletePortfolio(int portfolioID) {
-        this.portfolios.removeIf(p -> p.getPorfolioID() == portfolioID);
+        this.portfolios.removeIf(p -> p.getPortfolioID() == portfolioID);
     }
-    
 
     public boolean verifyLogin() {
         return true;

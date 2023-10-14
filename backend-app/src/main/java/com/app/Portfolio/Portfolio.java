@@ -1,33 +1,41 @@
 package com.app.Portfolio;
+
 import java.util.*;
 
 import javax.persistence.*;
 
 import com.app.Order.Order;
 import com.app.User.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "portfolioID")
 @Entity
 @Table(name = "user_portfolio") // Specify a custom table name
 public class Portfolio {
-    @ManyToOne
-    @JoinColumn(name = "user_id") // Specify the correct foreign key column
-    private User user;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
     private int portfolioID;
-    private Long userIdid;
-    private String portfolioName;    
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
+
+    private String portfolioName;
     private String strategyDesc;
     private float capitalUSD;
     private ArrayList<Order> orders;
 
     // ------------------ Getters and Setters (Start) ------------------
 
-    public int getPorfolioID() {
+    public int getPortfolioID() {
         return portfolioID;
     }
 
-    public void setPorfolioID(int portfolioID) {
+    public void setPortfolioID(int portfolioID) {
         this.portfolioID = portfolioID;
     }
 
@@ -62,9 +70,7 @@ public class Portfolio {
     public void setOrders(ArrayList<Order> orders) {
         this.orders = orders;
     }
-    
 
-    
     // Method to set the user of the portfolio
     public void setUser(User user) {
         this.user = user;
@@ -74,10 +80,6 @@ public class Portfolio {
         return user;
     }
 
-    public Long getUserId() {
-        return this.userIdid;
-    }
-    
     // ------------------- Getters and Setters (End) -------------------
-    
+
 }

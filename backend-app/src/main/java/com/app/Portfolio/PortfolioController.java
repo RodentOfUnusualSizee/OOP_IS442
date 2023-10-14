@@ -24,8 +24,8 @@ public class PortfolioController {
     // Endpoint to create a new portfolio
     @PostMapping("/create")
     public Portfolio createPortfolio(@RequestBody Portfolio portfolio) {
-        return portfolio;
-        // return portfolioService.addPortfolio(portfolio);
+        // return portfolio;
+        return portfolioService.addPortfolio(portfolio);
     }
     
     // Endpoint to update an existing portfolio
