@@ -8,16 +8,28 @@ import com.app.StockSeries.StockSeries;
 @Table(name = "stocks")
 public class Stock {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String symbol;
     private String companyName;
     private String exchangeTraded;
     private String currency;
     private String companySector;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "stock_series_id")
-    private StockSeries stockPrices;
+    // Hide for now cause not ready
+    // @OneToOne(cascade = CascadeType.ALL)
+    // @JoinColumn(name = "stock_series_id")
+    // private StockSeries stockPrices;
+
+    public Stock() {
+        // Default constructor
+    }
+
+    public Stock(String symbol, String companyName, String exchangeTraded, String currency, String companySector) {
+        this.symbol = symbol;
+        this.companyName = companyName;
+        this.exchangeTraded = exchangeTraded;
+        this.currency = currency;
+        this.companySector = companySector;
+    }
 
     public String getSymbol() {
         return symbol;
@@ -59,12 +71,12 @@ public class Stock {
         this.companySector = companySector;
     }
 
-    public StockSeries getStockPrices() {
-        return stockPrices;
-    }
+    // Commenting out the getter and setter for stockPrices
+    // public StockSeries getStockPrices() {
+    // return stockPrices;
+    // }
 
-    public void setStockPrices(StockSeries stockPrices) {
-        this.stockPrices = stockPrices;
-    }
-
+    // public void setStockPrices(StockSeries stockPrices) {
+    // this.stockPrices = stockPrices;
+    // }
 }

@@ -4,7 +4,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
-import com.app.Order.Order;
+import com.app.Position.Position;
 import com.app.User.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "portfolioID")
 @Entity
-@Table(name = "user_portfolio") // Specify a custom table name
+@Table(name = "user_portfolio")
 public class Portfolio {
 
     @Id
@@ -27,7 +27,7 @@ public class Portfolio {
     private String portfolioName;
     private String strategyDesc;
     private float capitalUSD;
-    private ArrayList<Order> orders;
+    private ArrayList<Position> positions;
 
     // ------------------ Getters and Setters (Start) ------------------
 
@@ -63,12 +63,12 @@ public class Portfolio {
         this.capitalUSD = capitalUSD;
     }
 
-    public ArrayList<Order> getOrders() {
-        return orders;
+    public ArrayList<Position> getPositions() {
+        return positions;
     }
 
-    public void setOrders(ArrayList<Order> orders) {
-        this.orders = orders;
+    public void setPositions(ArrayList<Position> positions) {
+        this.positions = positions;
     }
 
     // Method to set the user of the portfolio
