@@ -10,6 +10,7 @@ import java.util.*;
 
 import javax.persistence.EntityNotFoundException;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
