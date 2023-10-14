@@ -3,6 +3,7 @@ import Table from '../components/Table';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
+import axios from 'axios';
 
 function UserHome() {
     interface DataItem {
@@ -24,11 +25,22 @@ function UserHome() {
         { header: 'Email', key: 'email' },
     ];
 
-    const samplePortfolioData = [
+    let samplePortfolioData = [
         { name: "Portfolio 1", strategy: "Strategy A", capital: 10000 },
         { name: "Portfolio 2", strategy: "Strategy B", capital: 15000 },
         { name: "Portfolio 3", strategy: "Strategy C", capital: 20000 },
     ];
+
+    const userId = localStorage.getItem("userId");
+
+    axios.get("http://localhost:8080/api/portfolio/getAllByUser/" + userId)
+        .then(function (response) {
+            console.log(response);
+            samplePortfolioData = response["data"];
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
 
 
     return (
