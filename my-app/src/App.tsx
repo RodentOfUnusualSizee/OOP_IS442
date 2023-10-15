@@ -22,7 +22,7 @@ function App() {
     // Make a GET request
     fetchData()
       .then((data) => {
-        console.log('GET Request Response:', data);
+        // console.log('GET Request Response:', data);
       })
       .catch((error) => {
         console.error('Error making GET request:', error);
@@ -36,7 +36,7 @@ function App() {
     };
     postData(postPayload)
       .then((data) => {
-        console.log('POST Request Response:', data);
+        // console.log('POST Request Response:', data);
       })
       .catch((error) => {
         console.error('Error making POST request:', error);

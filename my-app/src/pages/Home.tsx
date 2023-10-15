@@ -28,10 +28,14 @@ function Home() {
                 "email": email,
                 "password": password
             }).then(function (response) {
+
                 homePage = response["data"]["success"];
+                localStorage.setItem("userId", response["data"]["data"]["id"]);
 
                 if(homePage){
-                    window.location.href = "/UserHome";
+                    setTimeout(function(){
+                        window.location.href = "/UserHome";
+                    },300)
                 }
                 else{
                     alert("Invalid username or password");
