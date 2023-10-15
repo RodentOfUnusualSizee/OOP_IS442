@@ -1,54 +1,58 @@
-package com.app.StockTimeSeriesAPI;
+package com.app.StockTimeSeriesAPI.Daily;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import com.app.StockTimeSeriesAPI.StockTimeSeriesDTO.DailyStockData;
-import com.app.StockTimeSeriesAPI.StockTimeSeriesDTO.MetaData;
+import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO.DailyStockData;
+import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO.MetaData;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import io.github.cdimascio.dotenv.Dotenv;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/stock/timeSeries")
+@RequestMapping("/api/stock/dailyTimeSeries")
 public class DailyController {
 
     @Autowired
     private RestTemplate restTemplate;
 
-    @GetMapping("/daily/{symbol}")
-    // StockTimeSeriesDTO
-    public Map<String, Object> getDailyTimeSeries(@PathVariable String symbol) {
-        // public Map<String, Object> getDailyTimeSeries(@PathVariable String symbol,
-        // @RequestParam String apiKey) {
+    private String apiKey;
 
-        // String apiUrl = String.format(
-        // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s",
-        // symbol, apiKey);
-        String apiUrl = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=OKRP7XRTHZE2LCWM";
+    @GetMapping("/{symbol}")
+    public StockTimeSeriesDailyDTO getDailyTimeSeries(@PathVariable String symbol) {
+
+        Dotenv dotenv = Dotenv.load();
+        this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
+
+        String apiUrl = String.format(
+                "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s",
+                symbol, apiKey);
 
         ResponseEntity<Map> response = restTemplate.getForEntity(apiUrl, Map.class);
 
         Map<String, Object> responseBody = response.getBody();
 
-        // Implement your mapping logic to map the response to your StockTimeSeriesDTO.
+        // Implement your mapping logic to map the response to your StockTimeSeriesDailyDTO.
         // Note: Normally, you would want to create a service layer to handle the
         // business logic
         // and keep your controller clean.
-        StockTimeSeriesDTO stockTimeSeriesDTO = mapResponseToDTO(responseBody);
+        StockTimeSeriesDailyDTO StockTimeSeriesDailyDTO = mapResponseToDTO(responseBody);
 
-        // Pass stockTimeSeriesDTO to your internal system here
+        // Pass StockTimeSeriesDailyDTO to your internal system here
 
-        // return stockTimeSeriesDTO;
-        return responseBody;
+        return StockTimeSeriesDailyDTO;
+        // return responseBody;
     }
 
-    private StockTimeSeriesDTO mapResponseToDTO(Map<String, Object> responseBody) {
-        StockTimeSeriesDTO stockTimeSeriesDTO = new StockTimeSeriesDTO();
+    private StockTimeSeriesDailyDTO mapResponseToDTO(Map<String, Object> responseBody) {
+        StockTimeSeriesDailyDTO StockTimeSeriesDailyDTO = new StockTimeSeriesDailyDTO();
         MetaData metaData = new MetaData();
-        Map<Date, DailyStockData> timeSeriesDaily = new HashMap<>();
+        Map<String, DailyStockData> timeSeriesDaily = new HashMap<>();
 
         // Parsing MetaData
         Map<String, String> apiMetaData = (Map<String, String>) responseBody.get("Meta Data");
@@ -57,14 +61,14 @@ public class DailyController {
         metaData.setLastRefreshed(apiMetaData.get("3. Last Refreshed"));
         metaData.setOutputSize(apiMetaData.get("4. Output Size"));
         metaData.setTimeZone(apiMetaData.get("5. Time Zone"));
-        stockTimeSeriesDTO.setMetaData(metaData);
+        StockTimeSeriesDailyDTO.setMetaData(metaData);
 
         // Parsing Time Series (Daily)
         Map<String, Map<String, String>> apiTimeSeriesDaily = (Map<String, Map<String, String>>) responseBody
                 .get("Time Series (Daily)");
 
         // Date format in API response is: "yyyy-MM-dd"
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         for (Map.Entry<String, Map<String, String>> entry : apiTimeSeriesDaily.entrySet()) {
             DailyStockData dailyStockData = new DailyStockData();
@@ -75,14 +79,14 @@ public class DailyController {
             dailyStockData.setVolume(Long.parseLong(entry.getValue().get("5. volume")));
 
             try {
-                Date dateKey = dateFormat.parse(entry.getKey());
+                String dateKey = entry.getKey();
                 timeSeriesDaily.put(dateKey, dailyStockData);
             } catch (Exception e) {
                 e.printStackTrace(); // Consider better exception handling
             }
         }
-        stockTimeSeriesDTO.setTimeSeries(timeSeriesDaily);
+        StockTimeSeriesDailyDTO.setTimeSeries(timeSeriesDaily);
 
-        return stockTimeSeriesDTO;
+        return StockTimeSeriesDailyDTO;
     }
 }

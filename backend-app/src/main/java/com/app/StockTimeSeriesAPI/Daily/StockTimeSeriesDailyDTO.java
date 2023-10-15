@@ -1,26 +1,26 @@
-package com.app.StockTimeSeriesAPI;
+package com.app.StockTimeSeriesAPI.Daily;
 import java.util.*;
 
 // Stock Time Series Data Transfer Object
-public class StockTimeSeriesDTO {
+public class StockTimeSeriesDailyDTO {
 
     private MetaData metaData;
-    private Map<Date, DailyStockData> timeSeries;
+    private Map<String, DailyStockData> dailyTimeSeries;
 
     // Getters
     public MetaData getMetaData() {
         return metaData;
     }
-    public Map<Date, DailyStockData> getTimeSeries() {
-        return timeSeries;
+    public Map<String, DailyStockData> getTimeSeries() {
+        return dailyTimeSeries;
     }
 
     // Setters
     public void setMetaData(MetaData metaData) {
         this.metaData = metaData;
     }
-    public void setTimeSeries(Map<Date, DailyStockData> timeSeries) {
-        this.timeSeries = timeSeries;
+    public void setTimeSeries(Map<String, DailyStockData> dailyTimeSeries) {
+        this.dailyTimeSeries = dailyTimeSeries;
     }
 
     // Inner class for Meta Data
