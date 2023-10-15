@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import com.app.User.User;
 import com.app.User.UserService;
 import com.app.Position.Position;
@@ -16,6 +18,7 @@ import com.app.WildcardResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/portfolio")
@@ -32,7 +35,7 @@ public class PortfolioController {
     @ResponseBody
     public ResponseEntity<WildcardResponse> createPortfolio(@RequestBody Portfolio portfolio) {
         // return portfolio;
-         WildcardResponse result = portfolioService.addPortfolio(portfolio);
+        WildcardResponse result = portfolioService.addPortfolio(portfolio);
         if (result.getData() != null) {
             return ResponseEntity.ok(result);
         } else {
@@ -62,14 +65,73 @@ public class PortfolioController {
     @GetMapping("/getAllByUser/{userID}")
     @ResponseBody
     public ResponseEntity<WildcardResponse> getAllPortfoliosByUser(@PathVariable Long userID) {
-        try{
+        // Refactored : 15/10/2023
+        try {
+            // 1. Fetch the user by the provided userID
             Optional<User> userOptional = userService.findById(userID);
-            List<Portfolio> res = portfolioService.getAllPortfoliosByUser(userOptional.get());
-            return ResponseEntity.ok(new WildcardResponse(true, "Success", res));
+
+            // 2. If user doesn't exist, return a 404 response
+            if (!userOptional.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new WildcardResponse(false, "User not found", null));
+            }
+
+            // 3. Fetch all portfolios associated with the user
+            List<Portfolio> portfolios = portfolioService.getAllPortfoliosByUser(userOptional.get());
+            List<PortfolioDTO> responseTemplates = new ArrayList<>();
+
+            // 4. Loop through each portfolio to transform its data into the required format
+            for (Portfolio portfolio : portfolios) {
+                // 4.1 Compute the cumulative positions for this portfolio
+                List<Map<String, Object>> cumPositions = computeCumPositions(portfolio.getPositions());
+
+                // 4.2 Create a DTO (Data Transfer Object) and add it to the response list
+                responseTemplates.add(new PortfolioDTO(portfolio, cumPositions));
+            }
+
+            // 5. Return the formatted portfolios in the response
+            return ResponseEntity.ok(new WildcardResponse(true, "Success", responseTemplates));
+
+        } catch (Exception e) {
+            // 6. Handle unexpected errors
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new WildcardResponse(false, e.getMessage(), null));
         }
-        catch(Exception e){
-            return ResponseEntity.status(404).body(new WildcardResponse(false, e.getMessage(), null));
+    }
+
+    private List<Map<String, Object>> computeCumPositions(List<Position> positions) {
+        // 1. Group positions by their stock symbol
+        Map<String, List<Position>> groupedPositions = positions.stream()
+                .collect(Collectors.groupingBy(Position::getStockSymbol));
+
+        List<Map<String, Object>> cumPositions = new ArrayList<>();
+
+        // 2. Loop through each group of positions (grouped by stock symbol)
+        for (Map.Entry<String, List<Position>> entry : groupedPositions.entrySet()) {
+            String stockSymbol = entry.getKey();
+            List<Position> symbolPositions = entry.getValue();
+
+            // 2.1 Compute the average price for this stock symbol
+            Double averagePrice = symbolPositions.stream()
+                    .mapToDouble(p -> p.getPrice() * p.getQuantity())
+                    .sum() / symbolPositions.stream().mapToDouble(Position::getQuantity).sum();
+
+            // 2.2 Compute the total quantity for this stock symbol
+            Integer totalQuantity = symbolPositions.stream()
+                    .mapToInt(Position::getQuantity)
+                    .sum();
+
+            // 2.3 Create a cumulative position map
+            Map<String, Object> cumPosition = new HashMap<>();
+            cumPosition.put("stockSymbol", stockSymbol);
+            cumPosition.put("averagePrice", averagePrice);
+            cumPosition.put("totalQuantity", totalQuantity);
+
+            // 2.4 Add this cumulative position map to the list
+            cumPositions.add(cumPosition);
         }
+
+        return cumPositions;
     }
 
     /// POSIITION FUNCTIONS
@@ -88,40 +150,70 @@ public class PortfolioController {
                 .orElseThrow(() -> new RuntimeException("Position not found"));
     }
 
-    // Create a new position for a portfolio
     @PostMapping("/{portfolioID}/position/create")
-    public Portfolio createPositionForPortfolio(@PathVariable int portfolioID, @RequestBody Position position) {
-        Portfolio portfolio = portfolioService.getPortfolio(portfolioID)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+    public ResponseEntity<WildcardResponse> createPositionForPortfolio(@PathVariable int portfolioID,
+            @RequestBody Position position) {
+        // Refactored : 15/10/2023
+        // 1. Fetch the portfolio
+        Optional<Portfolio> optionalPortfolio = portfolioService.getPortfolio(portfolioID);
+        if (!optionalPortfolio.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new WildcardResponse(false, "Portfolio not found", null));
+        }
+        Portfolio portfolio = optionalPortfolio.get();
 
-        // Save the position using PositionService
-        Position savedPosition = positionService.save(position);
-
-        if (portfolio.getPositions() == null) {
-            portfolio.setPositions(new ArrayList<Position>());
+        // 2. Validate if there's enough capital for the new position
+        if (PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, position)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new WildcardResponse(false, "Portfolio not enough capital", position));
         }
 
-        // Update capitalUSD
-        float currentValue = portfolio.getCapitalUSD();
-        float newDiff = position.getPrice() * position.getQuantity();
-        portfolio.setCapitalUSD(currentValue - newDiff);
+        // 3. Save the position
+        Position savedPosition = positionService.save(position);
 
+        // 4. Update the portfolio with the new position
+        if (portfolio.getPositions() == null) {
+            portfolio.setPositions(new ArrayList<>());
+        }
         portfolio.getPositions().add(savedPosition);
-        return portfolioService.updatePortfolio(portfolio);
+        Portfolio updatedPortfolio = portfolioService.updatePortfolio(portfolio);
+
+        // 5. Return the result
+        return ResponseEntity.ok(new WildcardResponse(true, "Success", updatedPortfolio));
     }
 
     // Update a position in a portfolio
     @PutMapping("/{portfolioID}/position/update")
-    public Portfolio updatePositionInPortfolio(@PathVariable int portfolioID, @RequestBody Position updatedPosition) {
-        Portfolio portfolio = portfolioService.getPortfolio(portfolioID)
-                .orElseThrow(() -> new RuntimeException("Portfolio not found"));
+    public ResponseEntity<WildcardResponse> updatePositionInPortfolio(@PathVariable int portfolioID,
+            @RequestBody Position updatedPosition) {
+        // Refactored : 15/10/2023
+        // 1. Fetch the portfolio
+        Optional<Portfolio> optionalPortfolio = portfolioService.getPortfolio(portfolioID);
+        if (!optionalPortfolio.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new WildcardResponse(false, "Portfolio not found", null));
+        }
+        Portfolio portfolio = optionalPortfolio.get();
 
-        // Update the position using PositionService
+        // 2. Validate if there's enough capital to update the position
+        if (PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, updatedPosition)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new WildcardResponse(false, "Portfolio not enough capital", null));
+        }
+
+        // 3. Update and save the position
         Position savedPosition = positionService.save(updatedPosition);
 
-        portfolio.getPositions().removeIf(pos -> pos.getPositionID() == savedPosition.getPositionID());
-        portfolio.getPositions().add(savedPosition);
-        return portfolioService.updatePortfolio(portfolio);
+        // 4. Update the portfolio with the saved position (removing the old position if
+        // it exists)
+        if (portfolio.getPositions() != null) {
+            portfolio.getPositions().removeIf(pos -> pos.getPositionID() == savedPosition.getPositionID());
+            portfolio.getPositions().add(savedPosition);
+        }
+
+        // 5. Return the updated portfolio within a ResponseEntity
+        Portfolio updatedPortfolio = portfolioService.updatePortfolio(portfolio);
+        return ResponseEntity.ok(new WildcardResponse(true, "Position updated successfully", updatedPortfolio));
     }
 
     // Delete a position from a portfolio

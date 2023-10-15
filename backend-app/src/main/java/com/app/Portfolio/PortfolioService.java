@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.app.User.User;
 import com.app.User.UserService;
 import com.app.WildcardResponse;
+import com.app.Position.Position;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,5 +61,15 @@ public class PortfolioService {
     // Method to retrieve all portfolios of a user
     public List<Portfolio> getAllPortfoliosByUser(User user) { 
         return user.getPortfolios();
+    }
+
+    public static boolean checkPortfolioCapitalForNewPosition(Portfolio portfolio, Position position){
+        float currentValue = portfolio.getCapitalUSD();
+        float newDiff = position.getPrice() * position.getQuantity();
+        portfolio.setCapitalUSD(currentValue - newDiff);
+        if (portfolio.getCapitalUSD() > 0) {
+            return false;
+        }
+        return true;
     }
 }
