@@ -33,9 +33,7 @@ function Home() {
                 localStorage.setItem("userId", response["data"]["data"]["id"]);
 
                 if(homePage){
-                    setTimeout(function(){
-                        window.location.href = "/UserHome";
-                    },300)
+                    window.location.href = "/UserHome";
                 }
                 else{
                     alert("Invalid username or password");

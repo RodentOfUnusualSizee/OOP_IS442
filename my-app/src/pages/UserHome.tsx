@@ -13,19 +13,7 @@ function UserHome() {
     }
 
     const [tableData, setTableData] = React.useState([]);
-
-    // let tableData = [
-    //     { id: 1, name: 'John', age: 30, email: 'john@example.com' },
-    //     { id: 2, name: 'Jane', age: 25, email: 'jane@example.com' },
-    //     { id: 3, name: 'Bob', age: 40, email: 'bob@example.com' },
-    // ];
-
-    // const tableHeaders = [
-    //     { header: 'ID', key: 'id' },
-    //     { header: 'Name', key: 'name' },
-    //     { header: 'Age', key: 'age' },
-    //     { header: 'Email', key: 'email' },
-    // ];
+    const [hasFetchedData, setHasFetchedData] = React.useState(false);
 
     const tableHeaders = [
         { header: 'PORTFOLIO ID', key: 'portfolioID' },
@@ -41,17 +29,30 @@ function UserHome() {
 
     const userId = localStorage.getItem("userId");
 
-    axios.get("http://localhost:8080/api/portfolio/getAllByUser/" + userId)
-        .then(function (response) {
+    // axios.get("http://localhost:8080/api/portfolio/getAllByUser/" + userId)
+    //     .then(function (response) {
 
-            // console.log(response);
-            console.log("hello");
-            setTableData(response["data"]["data"])
+    //         // console.log(response);
+    //         console.log("hello");
+    //         setTableData(response["data"]["data"])
 
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
+    //     })
+    //     .catch(function (error) {
+    //         console.log(error);
+    //     })
+
+    React.useEffect(() => {
+        if (!hasFetchedData) {
+            axios.get(`http://localhost:8080/api/portfolio/getAllByUser/${userId}`)
+                .then(response => {
+                setTableData(response.data.data);
+                setHasFetchedData(true);
+                })
+                .catch(error => {
+                console.log(error);
+                });
+            }
+    }, [userId]);
 
 
     return (
