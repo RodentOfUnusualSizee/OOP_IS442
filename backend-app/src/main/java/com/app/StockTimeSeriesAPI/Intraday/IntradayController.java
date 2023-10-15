@@ -66,10 +66,6 @@ public class IntradayController {
 
         // Parsing Time Series (Intraday)
         String getString = String.format("Time Series (%smin)", interval);
-        System.out.println("FUCKER START");
-        System.out.println(interval);
-        System.out.println(getString);
-        System.out.println("FUCKER END");
         Map<String, Map<String, String>> apiTimeSeriesIntraday = (Map<String, Map<String, String>>) responseBody
                 .get(getString);
 
