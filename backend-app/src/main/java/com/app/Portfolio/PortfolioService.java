@@ -4,6 +4,8 @@ package com.app.Portfolio;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Date;
+
 import com.app.User.User;
 import com.app.User.UserService;
 import com.app.WildcardResponse;
@@ -21,28 +23,19 @@ public class PortfolioService {
     @Autowired
     private UserService userService;
 
+    // Method to add a portfolio
     public WildcardResponse addPortfolio(Portfolio portfolio) {
         // Here you need the userId to be present in the Portfolio object or passed
         // separately.
         // return portfolio;
+        portfolio.setCreatedTimestamp(new Date());
+        portfolio.setLastModifiedTimestamp(new Date());
         return userService.addPortfolioToUser(portfolio.getUser().getId(), portfolio);
     }
-    // // Method to add a portfolio
-    // public Portfolio addPortfolio(Portfolio portfolio) {
-    // System.out.println(portfolio);
-    // return portfolio;
-    // User user = userService.getUser(portfolio.getUserId());
-    // // portfolio.setUser(user);
-    // // user.addPortfolio(portfolio);
-    // // return portfolioRepository.save(portfolio);
-    // }
-    // // public Portfolio addPortfolio(Portfolio portfolio) {
-    // // return portfolioRepository.save(portfolio);
-    // // }
 
-    // Method to update a portfolio
     public Portfolio updatePortfolio(Portfolio portfolio) {
         if (portfolioRepository.existsById(portfolio.getPortfolioID())) {
+            portfolio.setLastModifiedTimestamp(new Date());
             return portfolioRepository.save(portfolio);
         }
         return null;
@@ -59,11 +52,11 @@ public class PortfolioService {
     }
 
     // Method to retrieve all portfolios of a user
-    public List<Portfolio> getAllPortfoliosByUser(User user) { 
+    public List<Portfolio> getAllPortfoliosByUser(User user) {
         return user.getPortfolios();
     }
 
-    public static boolean checkPortfolioCapitalForNewPosition(Portfolio portfolio, Position position){
+    public static boolean checkPortfolioCapitalForNewPosition(Portfolio portfolio, Position position) {
         float currentValue = portfolio.getCapitalUSD();
         float newDiff = position.getPrice() * position.getQuantity();
         portfolio.setCapitalUSD(currentValue - newDiff);

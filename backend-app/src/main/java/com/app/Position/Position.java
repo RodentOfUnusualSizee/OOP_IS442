@@ -4,12 +4,13 @@ import java.io.Serializable;
 
 import javax.persistence.*;
 import com.app.Stock.Stock;
+import java.util.Date;
 
 @Entity
 @Table(name = "user_position")
-public class Position implements Serializable{
+public class Position implements Serializable {
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
     private int positionID;
@@ -18,6 +19,12 @@ public class Position implements Serializable{
     private float price;
     private String position;
     private int quantity;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTimestamp;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModifiedTimestamp;
 
     public Position() {
     }
@@ -28,6 +35,7 @@ public class Position implements Serializable{
         this.price = price;
         this.position = position;
         this.quantity = quantity;
+        this.createdTimestamp = new Date();
     }
 
     // ------------------ Getters and Setters (Start) ------------------
@@ -71,4 +79,20 @@ public class Position implements Serializable{
         this.quantity = quantity;
     }
     // ------------------- Getters and Setters (End) -------------------
+
+    public Date getCreatedTimestamp() {
+        return createdTimestamp;
+    }
+
+    public void setCreatedTimestamp(Date createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
+    }
+
+    public Date getLastModifiedTimestamp() {
+        return lastModifiedTimestamp;
+    }
+
+    public void setLastModifiedTimestamp(Date lastModifiedTimestamp) {
+        this.lastModifiedTimestamp = lastModifiedTimestamp;
+    }
 }

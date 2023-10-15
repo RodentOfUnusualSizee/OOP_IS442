@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Date;
 
 @Service
 public class PositionService {
@@ -14,6 +15,10 @@ public class PositionService {
 
     // Save (Create or Update) a Position
     public Position save(Position position) {
+        if (position.getPositionID() == 0) {
+            position.setCreatedTimestamp(new Date());
+        }
+        position.setLastModifiedTimestamp(new Date());
         return positionRepository.save(position);
     }
 
