@@ -8,7 +8,6 @@ import axios from 'axios';
 function Home() {
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
-    // const [homePage, setHomePage] = React.useState<boolean>(false);
     let homePage = false; // cause setHomePage is async, doesn't update immediately, so prints false and doesn't redirect to homepage
 
     // const [username, setUsername] = React.useState<string>("");
@@ -20,55 +19,27 @@ function Home() {
         // Name of button clicked - which kind of login to use
         const buttonName = e.currentTarget.name;
         //Can use the below to check consts
-        // alert("Username: " + username + ", Password: " + password + ", Button: " + buttonName);
         alert("Email: " + email + ", Password: " + password + ", Button: " + buttonName);
 
 
         if (buttonName == "userLogin") {
             //User Login - Add API call below to verify username and password for USER
-            axios.get("http://localhost:8080/api/user/getUserByEmail/" + email)
-                .then(function (response) {
-                    console.log(response);
-                    if (response["data"]["password"] == password){
-                        // setHomePage(true);
-                        homePage = true
-                        localStorage.setItem("userId", response["data"]["id"]);
+            axios.post("http://localhost:8080/api/user/login", {
+                "email": email,
+                "password": password
+            }).then(function (response) {
+                homePage = response["data"]["success"];
 
-                        if(homePage){
-                            window.location.href = "/UserHome";
-                        }
-                        else{
-                            alert("Invalid username or password");
-                        }
-
-                    }
+                if(homePage){
+                    window.location.href = "/UserHome";
+                }
+                else{
+                    alert("Invalid username or password");
+                }
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
-
-
-        //     // Change true condition below to API call result
-        //     if(homePage){
-        //         // window.location.href = "/Portfolio";
-        //         window.location.href = "/UserHome";
-        //     }
-        //     else{
-        //         // simple alert for now
-        //         alert("Invalid username or password");
-        //     }
-        // } else if (buttonName == "adminLogin") {
-        //     //User Login - Add API call below to verify username and password for ADMIN
-
-
-        //     // Change true condition below to API call result
-        //     if(homePage){
-        //         // window.location.href = "/Portfolio";
-        //         window.location.href = "/UserHome";
-        //     }
-        //     else{
-        //         alert("Invalid username or password");
-        //     }
         }
     }
 
@@ -96,20 +67,6 @@ function Home() {
                                 <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
                                 </button>
                                 <div className="mb-4">
-                                {/*
-                                <label className="block text-gray-700 text-sm font-bold mb- 2" >
-                                User ID
-                                </label>
-                              */}
-                                    {/* <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
-                                    id="username" 
-                                    type="text" 
-                                    placeholder="User ID"
-                                    value = {username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    required
-                                    >
-                                    </input> */}
                                     <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
                                         id="email" 
                                         type="text" 
@@ -121,10 +78,6 @@ function Home() {
                                     </input>
                                 </div>
                                 <div className="mb-4">
-                                {/* <label className="block text-gray-700 text-sm font-bold mb-2">
-                                Password
-                                </label> 
-                                */}
                                     <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
                                     id="password" 
                                     type="password" 
