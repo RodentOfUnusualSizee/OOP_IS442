@@ -11,6 +11,7 @@ import com.app.StockTimeSeriesAPI.StockTimeSeriesDTO.MetaData;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@RestController
 @RequestMapping("/api/stock/timeSeries")
 public class DailyController {
 
@@ -19,20 +20,19 @@ public class DailyController {
 
     @GetMapping("/daily/{symbol}")
     // StockTimeSeriesDTO
-    public Map<String, Object> getDailyTimeSeries(@PathVariable String symbol,
-            @RequestParam String apiKey) {
-                
+    public Map<String, Object> getDailyTimeSeries(@PathVariable String symbol) {
+        // public Map<String, Object> getDailyTimeSeries(@PathVariable String symbol,
+        // @RequestParam String apiKey) {
+
         // String apiUrl = String.format(
-        //         "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s",
-        //         symbol, apiKey);
-        String apiUrl = String.format(
-                "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=OKRP7XRTHZE2LCWM",
-                symbol, apiKey);
+        // "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=%s&apikey=%s",
+        // symbol, apiKey);
+        String apiUrl = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=OKRP7XRTHZE2LCWM";
 
         ResponseEntity<Map> response = restTemplate.getForEntity(apiUrl, Map.class);
-        
+
         Map<String, Object> responseBody = response.getBody();
-                
+
         // Implement your mapping logic to map the response to your StockTimeSeriesDTO.
         // Note: Normally, you would want to create a service layer to handle the
         // business logic
