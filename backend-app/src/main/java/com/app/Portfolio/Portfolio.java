@@ -29,7 +29,27 @@ public class Portfolio {
     private float capitalUSD;
     private ArrayList<Position> positions;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdTimestamp;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModifiedTimestamp;
+
     // ------------------ Getters and Setters (Start) ------------------
+    public Portfolio() {
+    }
+
+    public Portfolio(int portfolioID, User user, String portfolioName, String strategyDesc, float capitalUSD,
+            ArrayList<Position> positions) {
+        this.portfolioID = portfolioID;
+        this.user = user;
+        this.portfolioName = portfolioName;
+        this.strategyDesc = strategyDesc;
+        this.capitalUSD = capitalUSD;
+        this.positions = positions;
+        this.createdTimestamp = new Date();
+        this.lastModifiedTimestamp = new Date();
+    }
 
     public int getPortfolioID() {
         return portfolioID;
@@ -82,4 +102,19 @@ public class Portfolio {
 
     // ------------------- Getters and Setters (End) -------------------
 
+    public Date getCreatedTimestamp() {
+        return createdTimestamp;
+    }
+
+    public void setCreatedTimestamp(Date createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
+    }
+
+    public Date getLastModifiedTimestamp() {
+        return lastModifiedTimestamp;
+    }
+
+    public void setLastModifiedTimestamp(Date lastModifiedTimestamp) {
+        this.lastModifiedTimestamp = lastModifiedTimestamp;
+    }
 }

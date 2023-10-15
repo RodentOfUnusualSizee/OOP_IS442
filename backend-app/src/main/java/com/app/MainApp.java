@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 public class MainApp {
@@ -29,9 +30,15 @@ public class MainApp {
             Stock apple = new Stock("AAPL", "Apple Inc.", "NASDAQ", "USD", "Technology");
             stockService.saveStock(apple);
 
-            // You can add more mock stocks 
-            // Stock microsoft = new Stock("MSFT", "Microsoft Corp.", "NASDAQ", "USD", "Technology");
+            // You can add more mock stocks
+            // Stock microsoft = new Stock("MSFT", "Microsoft Corp.", "NASDAQ", "USD",
+            // "Technology");
             // stockService.saveStock(microsoft);
         };
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

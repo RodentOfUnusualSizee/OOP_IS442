@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/portfolio")
 public class PortfolioController {
@@ -83,8 +82,13 @@ public class PortfolioController {
 
             // 4. Loop through each portfolio to transform its data into the required format
             for (Portfolio portfolio : portfolios) {
-                // 4.1 Compute the cumulative positions for this portfolio
-                List<Map<String, Object>> cumPositions = computeCumPositions(portfolio.getPositions());
+                List<Map<String, Object>> cumPositions = null; // Initialize cumPositions as null
+
+                // Check if the positions list is not null and not empty
+                if (portfolio.getPositions() != null && !portfolio.getPositions().isEmpty()) {
+                    // 4.1 Compute the cumulative positions for this portfolio
+                    cumPositions = computeCumPositions(portfolio.getPositions());
+                }
 
                 // 4.2 Create a DTO (Data Transfer Object) and add it to the response list
                 responseTemplates.add(new PortfolioDTO(portfolio, cumPositions));
