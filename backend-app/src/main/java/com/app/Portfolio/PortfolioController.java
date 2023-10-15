@@ -19,7 +19,6 @@ import com.app.WildcardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/portfolio")

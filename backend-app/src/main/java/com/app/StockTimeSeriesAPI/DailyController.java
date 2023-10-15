@@ -10,7 +10,7 @@ import com.app.StockTimeSeriesAPI.StockTimeSeriesDTO.MetaData;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/stock/timeSeries")
 public class DailyController {
