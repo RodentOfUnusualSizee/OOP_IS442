@@ -22,9 +22,9 @@ function UserHome() {
     ];
 
     let samplePortfolioData = [
-        { name: "Portfolio 1", strategy: "Strategy A", capital: 10000 },
-        { name: "Portfolio 2", strategy: "Strategy B", capital: 15000 },
-        { name: "Portfolio 3", strategy: "Strategy C", capital: 20000 },
+        { id: 1, name: "Portfolio 1", strategy: "Strategy A", capital: 10000 },
+        {  id: 2, name: "Portfolio 2", strategy: "Strategy B", capital: 15000 },
+        {  id: 3, name: "Portfolio 3", strategy: "Strategy C", capital: 20000 },
     ];
 
     const userId = localStorage.getItem("userId");

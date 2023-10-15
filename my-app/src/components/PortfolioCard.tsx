@@ -1,5 +1,6 @@
 import React from 'react';
 import { EyeIcon } from "@heroicons/react/24/solid";
+import { Link } from 'react-router-dom';
 
 interface PortfolioCardProps {
     portfolioList: Portfolio[];
@@ -7,6 +8,7 @@ interface PortfolioCardProps {
 }
 
 interface Portfolio {
+    id: number;
     name: string;
     strategy: string;
     capital: number;
@@ -42,7 +44,7 @@ const PortfolioCard = ({portfolioList}: PortfolioCardProps) => {
                                         className="relative inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
                                     >
                                         <EyeIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                                        View Portfolio
+                                        <Link to={`/portfolio?id=${portfolio.id}`}>View Portfolio</Link>
                                     </a>
                                 </div>
                             </div>
