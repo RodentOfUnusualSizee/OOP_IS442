@@ -93,12 +93,12 @@ function Portfolio() {
         <div>
             <Header management={true} userType={"user"} login={true} ></Header>
             <div>
-                <div className="lg:flex lg:items-center lg:justify-between my-6 px-4">
+                <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
+                    <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                        {samplePortfolioData.name}
+                    </h3>
                     <div className="min-w-0 flex-1">
-                        <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                            {samplePortfolioData.name}
-                        </h3>
-                        <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
+                        <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6 mx-2">
                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                 <BriefcaseIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
                                 {samplePortfolioData.strategy}
@@ -125,7 +125,7 @@ function Portfolio() {
                         </span>
                     </div>
                 </div>
-                <div className="my-2">
+                <div className="my-2 px-6">
                     <h3 className="text-base font-semibold leading-6 text-gray-900">Portfolio Stats</h3>
                     <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
                         {stats.map((item) => (

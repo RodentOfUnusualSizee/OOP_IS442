@@ -8,15 +8,15 @@ interface TableProps {
     tableAction: string;
 }
 
-const Table = ({tableData,tableHeaders,tableTitle,tableDescription,tableAction}: TableProps) => {
+const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAction }: TableProps) => {
     return (
         <div>
+            <h1 className="text-base font-semibold leading-6 text-gray-900">
+                {tableTitle}
+            </h1>
             <div>
                 <div className="sm:flex sm:items-center">
                     <div className="sm:flex-auto">
-                        <h1 className="text-base font-semibold leading-6 text-gray-900">
-                            {tableTitle}
-                        </h1>
                         <p className="mt-2 text-sm text-gray-700">{tableDescription}</p>
                     </div>
                     <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
