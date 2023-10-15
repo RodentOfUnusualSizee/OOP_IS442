@@ -12,17 +12,25 @@ function UserHome() {
         value: string;
     }
 
-    const tableData = [
-        { id: 1, name: 'John', age: 30, email: 'john@example.com' },
-        { id: 2, name: 'Jane', age: 25, email: 'jane@example.com' },
-        { id: 3, name: 'Bob', age: 40, email: 'bob@example.com' },
-    ];
+    const [tableData, setTableData] = React.useState([]);
+
+    // let tableData = [
+    //     { id: 1, name: 'John', age: 30, email: 'john@example.com' },
+    //     { id: 2, name: 'Jane', age: 25, email: 'jane@example.com' },
+    //     { id: 3, name: 'Bob', age: 40, email: 'bob@example.com' },
+    // ];
+
+    // const tableHeaders = [
+    //     { header: 'ID', key: 'id' },
+    //     { header: 'Name', key: 'name' },
+    //     { header: 'Age', key: 'age' },
+    //     { header: 'Email', key: 'email' },
+    // ];
 
     const tableHeaders = [
-        { header: 'ID', key: 'id' },
-        { header: 'Name', key: 'name' },
-        { header: 'Age', key: 'age' },
-        { header: 'Email', key: 'email' },
+        { header: 'PORTFOLIO ID', key: 'portfolioID' },
+        { header: 'PORTFOLIO NAME', key: 'portfolioName' },
+        { header: 'STRATEGY DESCRIPTION', key: 'strategyDesc' },
     ];
 
     let samplePortfolioData = [
@@ -35,12 +43,15 @@ function UserHome() {
 
     axios.get("http://localhost:8080/api/portfolio/getAllByUser/" + userId)
         .then(function (response) {
-            console.log(response);
-            samplePortfolioData = response["data"];
+
+            // console.log(response);
+            console.log("hello");
+            setTableData(response["data"]["data"])
+
         })
         .catch(function (error) {
             console.log(error);
-        });
+        })
 
 
     return (
