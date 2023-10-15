@@ -29,6 +29,7 @@ function Registration() {
         // comment out the checkers if you dont need them
         if(passwordRegex.test(password)){
             alert("Password is good");
+            window.location.href = '/';
         }
         else{
             alert("Password is bad");

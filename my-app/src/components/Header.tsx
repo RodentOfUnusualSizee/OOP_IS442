@@ -78,8 +78,8 @@ const Header = ({ management, userType, login }: HeaderProps) => {
                     <div className="flex items-center gap-4">
                         {!isLogin ? (
                             <div className="sm:flex sm:gap-4">
-                                <Link to={"/"} className="block rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200" >Login</Link>
-                                <Link to={"registration"} className="hidden rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200 sm:block" >Register</Link>
+                                {/* <Link to={"/"} className="block rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200" >Login</Link>
+                                <Link to={"registration"} className="hidden rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200 sm:block" >Register</Link> */}
                             </div>
                         ) : (
                             <div className="sm:flex sm:gap-4">

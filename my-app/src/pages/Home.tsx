@@ -67,9 +67,9 @@ function Home() {
                                 Portfolio Performance Analyser App
                             </p>
                             <form className="bg-white shadow-md rounded p-8 m-10">
-                                <button onClick={()=>setLoginClicked(false)} className="font-bold py-2 px-4 rounded inline-flex place-items-start">
+                                {/* <button onClick={()=>setLoginClicked(false)} className="font-bold py-2 px-4 rounded inline-flex place-items-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
-                                </button>
+                                </button> */}
                                 <div className="mb-4">
                                     <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
                                         id="email" 
@@ -96,18 +96,18 @@ function Home() {
                                         User Login
                                     </button>
 
-                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="adminLogin">
+                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2 my-2" type="submit" onClick={submitLogin} name="adminLogin">
                                         Admin Login
                                     </button>
                                 </div>
                                 <div>
-                                    <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50" href="#">
+                                    <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50 my-2" href="#">
                                         Forgot Password?
                                     </a>
                                 </div>
                                 <div>
                                     <span className="text-xs mx-1">Not a user yet?</span>                            
-                                    <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50" href="registration">
+                                    <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50 my-2" href="registration">
                                     Register here
                                     </a>
                                 </div>
