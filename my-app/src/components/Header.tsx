@@ -42,7 +42,7 @@ const Header = ({ management, userType, login }: HeaderProps) => {
 
 
     return (
-        <header className="bg-gsgray90 sticky top-0">
+        <header className="bg-gsgray90">
             <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
                 <Link to={"/"} className="block text-white-600">
                     <span className="sr-only">Home</span>
