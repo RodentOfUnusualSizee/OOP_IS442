@@ -1,18 +1,24 @@
 # OOP_IS442
 
-to run backend (WINDOWS) MAC DK YET GOOD LUCK ASK CHATGPT
-first run this to set env, cd to /backend-app : $env:JAVA_HOME="C:\Program Files\Java\jdk-17"
-then run : ./mvnw clean install
-then run to start : ./mvnw spring-boot:run
+## Frontend
+run the following commands
+1. cd my-app
+2. npm i
+3. npm start
 
-# For Mac Babies
-1. Navigate to the backend-app directory if you are not already there.
-2. Run the following command to make 'mvnw' executable:
-<ul>
-  <li>chmod +x mvnw</li>
-</ul>
-4. Then, try running the Spring Boot application commands again:
-<ul>
-  <li>./mvnw clean install</li>
-  <li>./mvnw spring-boot:run</li>
-</ul>
+## Backend
+### Windows
+run the following commands
+1. $env:JAVA_HOME="C:\Program Files\Java\jdk-17"
+2. cd backend-app
+3. ./mvnw clean install
+4. ./mvnw spring-boot:run
+
+### Mac
+run the following commands
+1. export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-16.0.1.jdk/Contents/Home
+2. cd backend-app
+3. mvn clean install
+4. mvn spring-boot:run
+
+
