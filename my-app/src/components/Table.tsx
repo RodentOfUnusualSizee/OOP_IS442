@@ -18,9 +18,6 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
                 <div className="sm:flex-auto">
                     <p className="mt-2 text-sm text-gray-700">{tableDescription}</p>
                 </div>
-                <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                    {tableAction}
-                </div>
             </div>
             <div className="flex flex-col mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -30,13 +27,17 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
                                 <thead className="bg-gray-50">
                                     <tr>
                                         {tableHeaders.map((header) => (
-                                            <th
-                                                key={header.key}
-                                                scope="col"
-                                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                            >
-                                                {header.header}
-                                            </th>
+                                            header.key.toLowerCase() === 'action' ? (
+                                                <th key={header.key} />
+                                            ) : (
+                                                <th
+                                                    key={header.key}
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    {header.header}
+                                                </th>
+                                            )
                                         ))}
                                     </tr>
                                 </thead>
@@ -44,12 +45,23 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
                                     {tableData.map((row) => (
                                         <tr key={row.id}>
                                             {tableHeaders.map((header) => (
-                                                <td
-                                                    key={header.key}
-                                                    className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
-                                                >
-                                                    {row[header.key]}
-                                                </td>
+                                                header.key === 'action' ? (
+                                                    <td key={header.key}>
+                                                        <button
+                                                            type="button"
+                                                            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                        >
+                                                            {tableAction}
+                                                        </button>
+                                                    </td>
+                                                ) : (
+                                                    <td
+                                                        key={header.key}
+                                                        className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                                                    >
+                                                        {row[header.key]}
+                                                    </td>
+                                                )
                                             ))}
                                         </tr>
                                     ))}

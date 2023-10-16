@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Home from './pages/Home';
 import AdminHome from './pages/AdminHome';
-import Audit from "./pages/Audit";
+import Audit from './pages/Audit';
 import DataManagement from './pages/DataManagement';
 import Order from './pages/Order';
 import Portfolio from './pages/Portfolio';
@@ -12,6 +12,8 @@ import StockHome from './pages/StockHome';
 import UserHome from './pages/UserHome';
 import Registration from './pages/Registration';
 import Stock from './pages/Stock';
+import Sandbox from './pages/Sandbox';
+
 
 import './App.css';
 
@@ -56,6 +58,7 @@ function App() {
         <Route path="userhome" element={<UserHome />} />
         <Route path="registration" element={<Registration />} />
         <Route path="stock" element={<Stock />} />
+        <Route path="sandbox" element={<Sandbox />} />
       </Routes>
     </div>
   );

@@ -20,8 +20,8 @@ function Portfolio() {
         { id: 1, name: "Portfolio 1", strategy: "Strategy A", capital: 10000 };
 
     const stats = [
-        { name: 'Capital Change ($) ', stat: '$980' },
-        { name: 'Capital Change (%)', stat: '58.16%' },
+        { name: 'Capital Change ($) ', stat: '+$980' },
+        { name: 'Capital Change (%)', stat: '+58.16%' },
         { name: 'Days since Portfolio Active', stat: '30 days' },
     ]
 
@@ -129,9 +129,13 @@ function Portfolio() {
                     <h3 className="text-base font-semibold leading-6 text-gray-900">Portfolio Stats</h3>
                     <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
                         {stats.map((item) => (
-                            <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                            <div
+                                key={item.name}
+                                className={`overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 ${item.stat.includes('-') ? 'text-red-500' : item.stat.includes('+') ? 'text-green-500' : 'text-gray-900'
+                                    }`}
+                            >
                                 <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
-                                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{item.stat}</dd>
+                                <dd className="mt-1 text-3xl font-semibold tracking-tight">{item.stat}</dd>
                             </div>
                         ))}
                     </dl>
