@@ -80,7 +80,7 @@ function Portfolio() {
     ];
 
     const tableTitle = 'Stocks';
-    const tableDescription = 'List of stocks and related data';
+    const tableDescription = 'List of stocks in portfolio and related data';
     const tableAction = "View Stock";
 
     //End of sample data
