@@ -3,7 +3,8 @@ import Table from '../components/Table';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
-import axios from 'axios';
+// import axios from 'axios';
+import { getPortfolioByUserId } from '../utils/api';
 
 function UserHome() {
     interface DataItem {
@@ -31,16 +32,28 @@ function UserHome() {
 
     React.useEffect(() => {
         if (!hasFetchedData) {
-            axios.get(`http://localhost:8080/api/portfolio/getAllByUser/${userId}`)
-                .then(response => {
-                setTableData(response.data.data);
+            const login = getPortfolioByUserId(userId);
+            login.then((response) => {
+                setTableData(response.data);
                 setHasFetchedData(true);
-                })
-                .catch(error => {
+            }).catch((error) => {
                 console.log(error);
-                });
+            });
             }
     }, [userId]);
+
+    // React.useEffect(() => {
+    //     if (!hasFetchedData) {
+    //         axios.get(`http://localhost:8080/api/portfolio/getAllByUser/${userId}`)
+    //             .then(response => {
+    //             setTableData(response.data.data);
+    //             setHasFetchedData(true);
+    //             })
+    //             .catch(error => {
+    //             console.log(error);
+    //             });
+    //         }
+    // }, [userId]);
 
 
     return (
