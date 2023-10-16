@@ -1,7 +1,7 @@
 import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import axios from 'axios';
+import { registerUser } from '../utils/api';
 
 function Registration() {
 
@@ -35,19 +35,34 @@ function Registration() {
         }
         
         // api call to register user 
-        axios.post("http://localhost:8080/api/user/create", {
+        let data = {
             "email": email,
             "password": password,
             "firstName": firstName,
             "lastName": lastName,
             "role": "user"
-        })
-        .then(function (response) {
+        }
+
+        const register = registerUser(data);
+        register.then((response) => {
             console.log(response);
-        })
-        .catch(function (error) {
+        }).catch((error) => {
             console.log(error);
         });
+
+        // axios.post("http://localhost:8080/api/user/create", {
+        //     "email": email,
+        //     "password": password,
+        //     "firstName": firstName,
+        //     "lastName": lastName,
+        //     "role": "user"
+        // })
+        // .then(function (response) {
+        //     console.log(response);
+        // })
+        // .catch(function (error) {
+        //     console.log(error);
+        // });
     }
 
     const passwordReqs = () => {

@@ -3,7 +3,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CSSTransition } from 'react-transition-group';
 import '../styles/home.css';
-import axios from 'axios';
+// import axios from 'axios';
+import { loginUser } from '../utils/api';
 
 function Home() {
 
@@ -24,24 +25,44 @@ function Home() {
 
         if (buttonName == "userLogin") {
             //User Login - Add API call below to verify username and password for USER
-            axios.post("http://localhost:8080/api/user/login", {
+            let data = {
                 "email": email,
                 "password": password
-            }).then(function (response) {
+            }
 
-                homePage = response["data"]["success"];
-                localStorage.setItem("userId", response["data"]["data"]["id"]);
+            const login = loginUser(data);
+                login.then((response) => {
+                    homePage = response["success"];
+                    localStorage.setItem("userId", response["data"]["id"])
 
-                if(homePage){
-                    window.location.href = "/UserHome";
-                }
-                else{
-                    alert("Invalid username or password");
-                }
-                })
-                .catch(function (error) {
+                    if(homePage){
+                        window.location.href = "/UserHome";
+                    }
+                    else{
+                        alert("Invalid username or password");
+                    }
+                }).catch((error) => {
                     console.log(error);
                 });
+
+            // axios.post("http://localhost:8080/api/user/login", {
+            //     "email": email,
+            //     "password": password
+            // }).then(function (response) {
+
+            //     homePage = response["data"]["success"];
+            //     localStorage.setItem("userId", response["data"]["data"]["id"]);
+
+            //     if(homePage){
+            //         window.location.href = "/UserHome";
+            //     }
+            //     else{
+            //         alert("Invalid username or password");
+            //     }
+            //     })
+            //     .catch(function (error) {
+            //         console.log(error);
+            //     });
         }
     }
 
