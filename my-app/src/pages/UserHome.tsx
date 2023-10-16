@@ -29,18 +29,6 @@ function UserHome() {
 
     const userId = localStorage.getItem("userId");
 
-    // axios.get("http://localhost:8080/api/portfolio/getAllByUser/" + userId)
-    //     .then(function (response) {
-
-    //         // console.log(response);
-    //         console.log("hello");
-    //         setTableData(response["data"]["data"])
-
-    //     })
-    //     .catch(function (error) {
-    //         console.log(error);
-    //     })
-
     React.useEffect(() => {
         if (!hasFetchedData) {
             axios.get(`http://localhost:8080/api/portfolio/getAllByUser/${userId}`)

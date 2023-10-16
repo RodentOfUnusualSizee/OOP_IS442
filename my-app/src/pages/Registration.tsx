@@ -6,7 +6,6 @@ import axios from 'axios';
 function Registration() {
 
     const [email, setEmail] = React.useState<string>("");
-    // const [userID, setUserID] = React.useState<string>("");
     const [firstName, setFirstName] = React.useState<string>("");
     const [lastName, setLastName] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
@@ -14,7 +13,7 @@ function Registration() {
 
     const submitRegistration = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        //Can use the below to check consts
+        // can use the below to check consts
         // alert("Email: " + email + ", User ID: " + userID + ", Password: " + password);
         alert("Email: " + email + ", First Name: " + firstName +  + ", Last Name: " + lastName + ", Password: " + password);
         alert(password == confirmPassword);
@@ -25,7 +24,7 @@ function Registration() {
         }
 
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        //password regex to check if it clears all the requirements
+        // password regex to check if it clears all the requirements
         // comment out the checkers if you dont need them
         if(passwordRegex.test(password)){
             alert("Password is good");
@@ -35,21 +34,14 @@ function Registration() {
             alert("Password is bad");
         }
         
-        //api call to register user 
-        let config = {
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
-            }
-        }
-
+        // api call to register user 
         axios.post("http://localhost:8080/api/user/create", {
             "email": email,
             "password": password,
             "firstName": firstName,
             "lastName": lastName,
             "role": "user"
-        }, config)
+        })
         .then(function (response) {
             console.log(response);
         })
@@ -140,20 +132,6 @@ function Registration() {
                     required
                     >
                     </input>
-                    {/* </div>
-                    <div className="w-full md:w-1/2 px-3">
-                    <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
-                        User ID
-                    </label>
-                    <input className="appearance-none block w-full bg-gsgray20 text-gsgrey70 border border-gsgray40 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="userID" 
-                    type="text" 
-                    placeholder="User ID"
-                    value={userID}
-                    onChange={(e) => setUserID(e.target.value)}
-                    required
-                    >
-                    </input>
-                    <span className="text-xs text-gsgrey40 font-light">• You can use your email as your ID </span> */}
                     </div>
                 </div>
                 <div className="flex flex-wrap -mx-3 mb-6">
