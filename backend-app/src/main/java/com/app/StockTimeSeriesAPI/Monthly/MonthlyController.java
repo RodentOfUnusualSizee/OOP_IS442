@@ -23,33 +23,28 @@ public class MonthlyController {
 
     private String apiKey;
 
+    private Map<String, Map<String, Object>> stockDataCache = new HashMap<>();
+
     @GetMapping("/{symbol}")
-    // public StockTimeSeriesMonthlyDTO getMonthlyTimeSeries(@PathVariable String symbol) {
     public Map<String, Object> getMonthlyTimeSeries(@PathVariable String symbol) {
+        // Check if data for the given symbol exists in cache
+        if (stockDataCache.containsKey(symbol)) {
+            return stockDataCache.get(symbol);
+        }
 
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
 
         String apiUrl = String.format(
-                "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=IBM&apikey=OKRP7XRTHZE2LCWM",
+                "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=%s&apikey=%s",
                 symbol, apiKey);
-        // String apiUrl = String.format(
-        //         "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=%s&apikey=%s",
-        //         symbol, apiKey);
 
         ResponseEntity<Map> response = restTemplate.getForEntity(apiUrl, Map.class);
-
         Map<String, Object> responseBody = response.getBody();
 
-        // Implement your mapping logic to map the response to your StockTimeSeriesMonthlyDTO.
-        // Note: Normally, you would want to create a service layer to handle the
-        // business logic
-        // and keep your controller clean.
-        StockTimeSeriesMonthlyDTO StockTimeSeriesMonthlyDTO = mapResponseToDTO(responseBody);
+        // Save the result into the cache
+        stockDataCache.put(symbol, responseBody);
 
-        // Pass StockTimeSeriesMonthlyDTO to your internal system here
-
-        // return StockTimeSeriesMonthlyDTO;
         return responseBody;
     }
 

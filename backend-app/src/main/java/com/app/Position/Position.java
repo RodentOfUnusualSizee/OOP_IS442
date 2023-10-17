@@ -26,16 +26,21 @@ public class Position implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedTimestamp;
 
+    @Temporal(TemporalType.DATE)
+    private Date positionAddDate;
+
     public Position() {
     }
 
-    public Position(int positionID, String stockSymbol, float price, String position, int quantity) {
+    public Position(int positionID, String stockSymbol, float price, String position, int quantity,
+            Date positionAddDate) {
         this.positionID = positionID;
         this.stockSymbol = stockSymbol;
         this.price = price;
         this.position = position;
         this.quantity = quantity;
         this.createdTimestamp = new Date();
+        this.positionAddDate = positionAddDate;
     }
 
     // ------------------ Getters and Setters (Start) ------------------
@@ -94,5 +99,13 @@ public class Position implements Serializable {
 
     public void setLastModifiedTimestamp(Date lastModifiedTimestamp) {
         this.lastModifiedTimestamp = lastModifiedTimestamp;
+    }
+
+    public Date getPositionAddDate() {
+        return positionAddDate;
+    }
+
+    public void setPositionAddDate(Date positionAddDate) {
+        this.positionAddDate = positionAddDate;
     }
 }

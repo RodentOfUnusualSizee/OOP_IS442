@@ -19,6 +19,7 @@ import com.app.WildcardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/portfolio")
@@ -166,7 +167,7 @@ public class PortfolioController {
                     .body(new WildcardResponse(false, "Portfolio not found", null));
         }
         Portfolio portfolio = optionalPortfolio.get();
-
+        
         // 2. Validate if there's enough capital for the new position
         if (PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, position)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
