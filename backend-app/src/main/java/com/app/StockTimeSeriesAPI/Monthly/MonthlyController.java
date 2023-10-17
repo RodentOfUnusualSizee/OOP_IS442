@@ -13,7 +13,7 @@ import java.util.*;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
-@CrossOrigin(origins = "http://localhost:3000")
+// Postman: http://localhost:8080/api/stock/monthlyTimeSeries/{TickerSymbol}
 @RestController
 @RequestMapping("/api/stock/monthlyTimeSeries")
 public class MonthlyController {

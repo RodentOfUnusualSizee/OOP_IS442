@@ -13,6 +13,8 @@ import java.util.*;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
+// Postman: http://localhost:8080/api/stock/intradayTimeSeries/{TickerSymbol}/{Interval}
+// {Interval} = 1,5,15,30,60
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/stock/intradayTimeSeries")
