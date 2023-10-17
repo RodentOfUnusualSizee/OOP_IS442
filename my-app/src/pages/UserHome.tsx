@@ -74,9 +74,6 @@ function UserHome() {
                         </div>
                     </div>
                 </div>
-                <div className="mx-auto mt-16 max-w-2xl my-16 sm:mt-20 lg:mt-24 lg:max-w-4xl text-left">
-                    <Table tableData={tableData} tableHeaders={tableHeaders} tableTitle='Sample Table' tableDescription='sample description' tableAction='View Portfolio' ></Table>
-                </div>
                 <div className="mx-auto mt-16 max-w-2xl my-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
                     <PortfolioCard portfolioList={samplePortfolioData}></PortfolioCard>
                 </div>
