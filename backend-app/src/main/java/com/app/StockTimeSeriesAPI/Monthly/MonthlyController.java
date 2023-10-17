@@ -25,11 +25,14 @@ public class MonthlyController {
 
     private String apiKey;
 
-    private Map<String, Map<String, Object>> stockDataCache = new HashMap<>();
+
+    private Map<String, StockTimeSeriesMonthlyDTO> stockDataCache = new HashMap<>();
 
     @GetMapping("/{symbol}")
-    public Map<String, Object> getMonthlyTimeSeries(@PathVariable String symbol) {
-        // Check if data for the given symbol exists in cache
+    // public StockTimeSeriesMonthlyDTO getMonthlyTimeSeries(@PathVariable String
+    // symbol) {
+    public StockTimeSeriesMonthlyDTO getMonthlyTimeSeries(@PathVariable String symbol) {
+        // check if data for the given symbol exists in cache
         if (stockDataCache.containsKey(symbol)) {
             return stockDataCache.get(symbol);
         }
@@ -40,14 +43,24 @@ public class MonthlyController {
         String apiUrl = String.format(
                 "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=%s&apikey=%s",
                 symbol, apiKey);
+        // String apiUrl = String.format(
+        // "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=%s&apikey=%s",
+        // symbol, apiKey);
 
         ResponseEntity<Map> response = restTemplate.getForEntity(apiUrl, Map.class);
         Map<String, Object> responseBody = response.getBody();
 
-        // Save the result into the cache
-        stockDataCache.put(symbol, responseBody);
+        // Implement your mapping logic to map the response to your
+        // StockTimeSeriesMonthlyDTO.
+        // Note: Normally, you would want to create a service layer to handle the
+        // business logic
+        // and keep your controller clean.
+        StockTimeSeriesMonthlyDTO StockTimeSeriesMonthlyDTO = mapResponseToDTO(responseBody);
+        stockDataCache.put(symbol, StockTimeSeriesMonthlyDTO);
+        // Pass StockTimeSeriesMonthlyDTO to your internal system here
 
-        return responseBody;
+        return StockTimeSeriesMonthlyDTO;
+        // return responseBody;
     }
 
     private StockTimeSeriesMonthlyDTO mapResponseToDTO(Map<String, Object> responseBody) {
@@ -60,8 +73,7 @@ public class MonthlyController {
         metaData.setInformation(apiMetaData.get("1. Information"));
         metaData.setSymbol(apiMetaData.get("2. Symbol"));
         metaData.setLastRefreshed(apiMetaData.get("3. Last Refreshed"));
-        metaData.setOutputSize(apiMetaData.get("4. Output Size"));
-        metaData.setTimeZone(apiMetaData.get("5. Time Zone"));
+        metaData.setTimeZone(apiMetaData.get("4. Time Zone"));
         StockTimeSeriesMonthlyDTO.setMetaData(metaData);
 
         // Parsing Time Series (Monthly)

@@ -25,6 +25,8 @@ public class IntradayController {
 
     private String apiKey;
 
+    private Map<String, Map<String, Object>> stockDataCache = new HashMap<>();
+
     @GetMapping("/{symbol}/{interval}")
     public StockTimeSeriesIntradayDTO getIntradayTimeSeries(@PathVariable String symbol, @PathVariable String interval) {
 

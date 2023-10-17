@@ -29,7 +29,7 @@ public class StockTimeSeriesMonthlyDTO {
         private String information;
         private String symbol;
         private String lastRefreshed;
-        private String outputSize;
+        // private String outputSize;
         private String timeZone;
 
         // Getters
@@ -42,9 +42,9 @@ public class StockTimeSeriesMonthlyDTO {
         public String getLastRefreshed() {
             return lastRefreshed;
         }
-        public String getOutputSize() {
-            return outputSize;
-        }
+        // public String getOutputSize() {
+        //     return outputSize;
+        // }
         public String getTimeZone() {
             return timeZone;
         }
@@ -59,9 +59,9 @@ public class StockTimeSeriesMonthlyDTO {
         public void setLastRefreshed(String lastRefreshed) {
             this.lastRefreshed = lastRefreshed;
         }
-        public void setOutputSize(String outputSize) {
-            this.outputSize = outputSize;
-        }
+        // public void setOutputSize(String outputSize) {
+        //     this.outputSize = outputSize;
+        // }
         public void setTimeZone(String timeZone) {
             this.timeZone = timeZone;
         }

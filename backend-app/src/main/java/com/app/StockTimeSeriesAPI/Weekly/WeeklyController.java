@@ -24,8 +24,13 @@ public class WeeklyController {
 
     private String apiKey;
 
+    private Map<String, StockTimeSeriesWeeklyDTO> stockDataCache = new HashMap<>();
+
     @GetMapping("/{symbol}")
     public StockTimeSeriesWeeklyDTO getWeeklyTimeSeries(@PathVariable String symbol) {
+        if (stockDataCache.containsKey(symbol)) {
+            return stockDataCache.get(symbol);
+        }
 
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
@@ -38,12 +43,13 @@ public class WeeklyController {
 
         Map<String, Object> responseBody = response.getBody();
 
-        // Implement your mapping logic to map the response to your StockTimeSeriesWeeklyDTO.
+        // Implement your mapping logic to map the response to your
+        // StockTimeSeriesWeeklyDTO.
         // Note: Normally, you would want to create a service layer to handle the
         // business logic
         // and keep your controller clean.
         StockTimeSeriesWeeklyDTO StockTimeSeriesWeeklyDTO = mapResponseToDTO(responseBody);
-
+        stockDataCache.put(symbol, StockTimeSeriesWeeklyDTO);
         // Pass StockTimeSeriesWeeklyDTO to your internal system here
 
         return StockTimeSeriesWeeklyDTO;
@@ -60,8 +66,8 @@ public class WeeklyController {
         metaData.setInformation(apiMetaData.get("1. Information"));
         metaData.setSymbol(apiMetaData.get("2. Symbol"));
         metaData.setLastRefreshed(apiMetaData.get("3. Last Refreshed"));
-        metaData.setOutputSize(apiMetaData.get("4. Output Size"));
-        metaData.setTimeZone(apiMetaData.get("5. Time Zone"));
+        // metaData.setOutputSize(apiMetaData.get("4. Output Size"));
+        metaData.setTimeZone(apiMetaData.get("4. Time Zone"));
         StockTimeSeriesWeeklyDTO.setMetaData(metaData);
 
         // Parsing Time Series (Weekly)

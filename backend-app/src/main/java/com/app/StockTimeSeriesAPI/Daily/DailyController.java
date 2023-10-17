@@ -7,6 +7,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO.DailyStockData;
 import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO.MetaData;
+import com.app.StockTimeSeriesAPI.Weekly.StockTimeSeriesWeeklyDTO;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,8 +25,13 @@ public class DailyController {
 
     private String apiKey;
 
+    private Map<String, StockTimeSeriesDailyDTO> stockDataCache = new HashMap<>();
+
     @GetMapping("/{symbol}")
     public StockTimeSeriesDailyDTO getDailyTimeSeries(@PathVariable String symbol) {
+        if (stockDataCache.containsKey(symbol)) {
+            return stockDataCache.get(symbol);
+        }
 
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
@@ -43,7 +49,7 @@ public class DailyController {
         // business logic
         // and keep your controller clean.
         StockTimeSeriesDailyDTO StockTimeSeriesDailyDTO = mapResponseToDTO(responseBody);
-
+        stockDataCache.put(symbol, StockTimeSeriesDailyDTO);
         // Pass StockTimeSeriesDailyDTO to your internal system here
 
         return StockTimeSeriesDailyDTO;
