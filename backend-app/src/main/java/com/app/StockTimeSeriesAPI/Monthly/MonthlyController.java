@@ -2,6 +2,7 @@ package com.app.StockTimeSeriesAPI.Monthly;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,6 +16,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 // Postman: http://localhost:8080/api/stock/monthlyTimeSeries/{TickerSymbol}
 @RestController
+@Service
 @RequestMapping("/api/stock/monthlyTimeSeries")
 public class MonthlyController {
 

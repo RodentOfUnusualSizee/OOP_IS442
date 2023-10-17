@@ -1,12 +1,16 @@
 package com.app.Portfolio;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.app.Position.Position;
+import com.app.StockTimeSeriesAPI.Monthly.MonthlyController;
 
 public class PortfolioDTO {
     private int portfolioID;
@@ -14,15 +18,18 @@ public class PortfolioDTO {
     private String strategyDesc;
     private Float capitalUSD;
     private ArrayList<Position> positions;
-    private List<Map<String, Object>> cumPositions; 
+    private List<Map<String, Object>> cumPositions;
+    private Double currentTotalPrice;
     private Date createdTimestamp;
     private Date lastModifiedTimestamp;
+    private Map<String, Double> portfolioHistoricalValue;
 
     // Constructors, getters, setters, etc.
     public PortfolioDTO() {
     }
 
     public PortfolioDTO(Portfolio portfolio, List<Map<String, Object>> cumPositions) {
+
         this.portfolioID = portfolio.getPortfolioID();
         this.portfolioName = portfolio.getPortfolioName();
         this.strategyDesc = portfolio.getStrategyDesc();
@@ -31,6 +38,14 @@ public class PortfolioDTO {
         this.cumPositions = cumPositions;
         this.createdTimestamp = portfolio.getCreatedTimestamp();
         this.lastModifiedTimestamp = portfolio.getLastModifiedTimestamp();
+    }
+
+    public Double getCurrentTotalPrice() {
+        return currentTotalPrice;
+    }
+
+    public void setCurrentTotalPrice(double currentTotalPrice) {
+        this.currentTotalPrice = currentTotalPrice;
     }
 
     public int getPortfolioID() {
@@ -95,5 +110,13 @@ public class PortfolioDTO {
 
     public void setLastModifiedTimestamp(Date lastModifiedTimestamp) {
         this.lastModifiedTimestamp = lastModifiedTimestamp;
+    }
+
+    public Map<String, Double> getPortfolioHistoricalValue() {
+        return portfolioHistoricalValue;
+    }
+
+    public void setPortfolioHistoricalValue(Map<String, Double> portfolioHistoricalValue) {
+        this.portfolioHistoricalValue = portfolioHistoricalValue;
     }
 }

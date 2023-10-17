@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +16,10 @@ import com.app.User.UserService;
 import com.app.Position.Position;
 import com.app.Position.PositionService;
 import com.app.WildcardResponse;
+import com.app.StockTimeSeriesAPI.Monthly.MonthlyController;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
@@ -30,6 +35,9 @@ public class PortfolioController {
 
     @Autowired
     private PortfolioService portfolioService;
+
+    @Autowired
+    private MonthlyController monthlyController;
 
     // Endpoint to create a new portfolio
     @PostMapping("/create")
@@ -66,7 +74,6 @@ public class PortfolioController {
     @GetMapping("/getAllByUser/{userID}")
     @ResponseBody
     public ResponseEntity<WildcardResponse> getAllPortfoliosByUser(@PathVariable Long userID) {
-        // Refactored : 15/10/2023
         try {
             // 1. Fetch the user by the provided userID
             Optional<User> userOptional = userService.findById(userID);
@@ -84,15 +91,27 @@ public class PortfolioController {
             // 4. Loop through each portfolio to transform its data into the required format
             for (Portfolio portfolio : portfolios) {
                 List<Map<String, Object>> cumPositions = null; // Initialize cumPositions as null
+                double currentTotalPrice = 0.0 + portfolio.getCapitalUSD();
 
                 // Check if the positions list is not null and not empty
                 if (portfolio.getPositions() != null && !portfolio.getPositions().isEmpty()) {
                     // 4.1 Compute the cumulative positions for this portfolio
                     cumPositions = computeCumPositions(portfolio.getPositions());
+
+                    for (Map<String, Object> cumPosition : cumPositions) {
+                        currentTotalPrice += (Double) cumPosition.get("currentValue");
+                    }
                 }
 
-                // 4.2 Create a DTO (Data Transfer Object) and add it to the response list
-                responseTemplates.add(new PortfolioDTO(portfolio, cumPositions));
+                // 4.2 Compute the portfolio historical value
+                Map<String, Double> portfolioHistoricalValue = computePortfolioHistoricalValue(portfolio,
+                        monthlyController);
+
+                // 4.3 Create a DTO (Data Transfer Object) and add it to the response list
+                PortfolioDTO dto = new PortfolioDTO(portfolio, cumPositions);
+                dto.setPortfolioHistoricalValue(portfolioHistoricalValue); // Set the computed historical value
+                dto.setCurrentTotalPrice(currentTotalPrice); // Set the computed total price
+                responseTemplates.add(dto);
             }
 
             // 5. Return the formatted portfolios in the response
@@ -127,17 +146,75 @@ public class PortfolioController {
                     .mapToInt(Position::getQuantity)
                     .sum();
 
-            // 2.3 Create a cumulative position map
+            // 2.3 Fetch the most recent stock data
+            Map<String, Object> stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
+            Map<String, Map<String, String>> monthlyTimeSeries = (Map<String, Map<String, String>>) stockData
+                    .get("Monthly Time Series");
+
+            // Retrieve the most recent data entry
+            Map.Entry<String, Map<String, String>> mostRecentData = monthlyTimeSeries.entrySet().iterator().next();
+            Map<String, String> recentStockData = mostRecentData.getValue();
+            Double recentStockPrice = Double.parseDouble(recentStockData.get("4. close"));
+
+            // 2.4 Calculate the current total value of the stock
+            Double currentValue = recentStockPrice * totalQuantity;
+
+            // 2.5 Create a cumulative position map
             Map<String, Object> cumPosition = new HashMap<>();
             cumPosition.put("stockSymbol", stockSymbol);
             cumPosition.put("averagePrice", averagePrice);
             cumPosition.put("totalQuantity", totalQuantity);
+            cumPosition.put("currentValue", currentValue);
 
-            // 2.4 Add this cumulative position map to the list
+            // 2.6 Add this cumulative position map to the list
             cumPositions.add(cumPosition);
         }
 
         return cumPositions;
+    }
+
+    private Map<String, Double> computePortfolioHistoricalValue(Portfolio portfolio,
+            MonthlyController monthlyController) {
+        Map<String, Double> historicalValue = new HashMap<>();
+
+        // 1. Determine the date range for computation
+        Date oldestPositionDate = portfolio.getPositions().stream()
+                .min(Comparator.comparing(Position::getPositionAddDate))
+                .get()
+                .getPositionAddDate();
+
+        Map<String, Object> stockData = monthlyController
+                .getMonthlyTimeSeries(portfolio.getPositions().get(0).getStockSymbol()); // Assuming all positions have
+                                                                                         // the same stock symbol
+        Set<String> allDates = ((Map<String, Map<String, String>>) stockData.get("Monthly Time Series")).keySet();
+
+        // 2. Compute Monthly Value
+        for (String date : allDates) {
+            if (date.compareTo(new SimpleDateFormat("yyyy-MM-dd").format(oldestPositionDate)) >= 0) {
+                double monthlyValue = portfolio.getCapitalUSD()
+                        + computeCumValueForMonth(date, portfolio, monthlyController);
+                historicalValue.put(date, monthlyValue);
+            }
+        }
+
+        return historicalValue;
+    }
+
+    private double computeCumValueForMonth(String date, Portfolio portfolio, MonthlyController monthlyController) {
+        double monthlyValue = 0.0;
+
+        for (Position position : portfolio.getPositions()) {
+            Map<String, Object> stockData = monthlyController.getMonthlyTimeSeries(position.getStockSymbol());
+            Map<String, Map<String, String>> monthlyTimeSeries = (Map<String, Map<String, String>>) stockData
+                    .get("Monthly Time Series");
+
+            Map<String, String> monthData = (Map<String, String>) monthlyTimeSeries.get(date);
+            double priceForMonth = Double.parseDouble(monthData.get("4. close"));
+
+            monthlyValue += priceForMonth * position.getQuantity();
+        }
+
+        return monthlyValue;
     }
 
     /// POSIITION FUNCTIONS
@@ -167,7 +244,7 @@ public class PortfolioController {
                     .body(new WildcardResponse(false, "Portfolio not found", null));
         }
         Portfolio portfolio = optionalPortfolio.get();
-        
+
         // 2. Validate if there's enough capital for the new position
         if (PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, position)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
