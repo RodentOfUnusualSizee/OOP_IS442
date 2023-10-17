@@ -1,45 +1,41 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Table from '../components/Table';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
 // import axios from 'axios';
 import { getPortfolioByUserId } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+
 
 function UserHome() {
-    interface DataItem {
-        id: number;
-        name: string;
-        value: string;
-    }
-
-    const [tableData, setTableData] = React.useState([]);
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
 
-    const tableHeaders = [
-        { header: 'PORTFOLIO ID', key: 'portfolioID' },
-        { header: 'PORTFOLIO NAME', key: 'portfolioName' },
-        { header: 'STRATEGY DESCRIPTION', key: 'strategyDesc' },
-    ];
+    const { authUser } = useAuth(); 
+    const userEmail = authUser.email;
+
+    console.log("User email: " + userEmail)
 
     let samplePortfolioData = [
         { id: 1, name: "Portfolio 1", strategy: "Strategy A", capital: 10000 },
-        {  id: 2, name: "Portfolio 2", strategy: "Strategy B", capital: 15000 },
-        {  id: 3, name: "Portfolio 3", strategy: "Strategy C", capital: 20000 },
+        { id: 2, name: "Portfolio 2", strategy: "Strategy B", capital: 15000 },
+        { id: 3, name: "Portfolio 3", strategy: "Strategy C", capital: 20000 },
     ];
 
     const userId = localStorage.getItem("userId");
 
     React.useEffect(() => {
+
+
+
         if (!hasFetchedData) {
             const login = getPortfolioByUserId(userId);
             login.then((response) => {
-                setTableData(response.data);
                 setHasFetchedData(true);
             }).catch((error) => {
                 console.log(error);
             });
-            }
+        }
     }, [userId]);
 
     // React.useEffect(() => {
@@ -60,6 +56,7 @@ function UserHome() {
         <div>
             <div className="UserHome">
                 <Header management={true} userType={"user"} login={true} ></Header>
+                <h1>{userEmail}</h1>
                 <div className="bg-white py-12 sm:py-12 my-2">
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl lg:text-center">

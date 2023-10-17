@@ -3,10 +3,17 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CSSTransition } from 'react-transition-group';
 import '../styles/home.css';
-// import axios from 'axios';
 import { loginUser } from '../utils/api';
 
+
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+
 function Home() {
+
+    const {setAuthUser, setIsLoggedIn} = useAuth();
+    const navigate = useNavigate();
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
     let homePage = false; // cause setHomePage is async, doesn't update immediately, so prints false and doesn't redirect to homepage
@@ -29,21 +36,27 @@ function Home() {
                 "email": email,
                 "password": password
             }
+            console.log("User Login start");
+            // New Code for login 
+            setAuthUser({email});
+            setIsLoggedIn(true);
 
-            const login = loginUser(data);
-                login.then((response) => {
-                    homePage = response["success"];
-                    localStorage.setItem("userId", response["data"]["id"])
+            navigate("/userhome");
+            
 
-                    if(homePage){
-                        window.location.href = "/UserHome";
-                    }
-                    else{
-                        alert("Invalid username or password");
-                    }
-                }).catch((error) => {
-                    console.log(error);
-                });
+            // const loginAPI = loginUser(data);
+            // loginAPI.then((response) => {
+            //     homePage = response["success"];
+            //     localStorage.setItem("userId", response["data"]["id"])
+            //     if (homePage) {
+            //         window.location.href = "/UserHome";
+            //     }
+            //     else {
+            //         alert("Invalid username or password");
+            //     }
+            // }).catch((error) => {
+            //     console.log(error);
+            // });
 
             // axios.post("http://localhost:8080/api/user/login", {
             //     "email": email,
@@ -74,11 +87,11 @@ function Home() {
             <div className="container mx-auto max-w-screen-xl h-screen rounded-l p-8 grid place-items-center">
                 {loginClicked ? (
                     <CSSTransition
-                            in={loginClicked}
-                            timeout={300}
-                            classNames="fade"
-                            unmountOnExit
-                            onExit={()=>setLoginClicked(false)}
+                        in={loginClicked}
+                        timeout={300}
+                        classNames="fade"
+                        unmountOnExit
+                        onExit={() => setLoginClicked(false)}
                     >
                         <div>
                             <img src="/images/gs-blue.png" className="w-20 mb-6 mx-auto"></img>
@@ -91,10 +104,10 @@ function Home() {
                                 </button> */}
                                 <div className="mb-4">
                                     <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
-                                        id="email" 
-                                        type="text" 
+                                        id="email"
+                                        type="text"
                                         placeholder="Email"
-                                        value = {email}
+                                        value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         required
                                     >
@@ -102,12 +115,12 @@ function Home() {
                                 </div>
                                 <div className="mb-4">
                                     <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
-                                    id="password" 
-                                    type="password" 
-                                    placeholder="Password"
-                                    value = {password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required>
+                                        id="password"
+                                        type="password"
+                                        placeholder="Password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required>
                                     </input>
                                 </div>
                                 <div id="loginButtons">
@@ -125,16 +138,16 @@ function Home() {
                                     </a>
                                 </div>
                                 <div>
-                                    <span className="text-xs mx-1">Not a user yet?</span>                            
+                                    <span className="text-xs mx-1">Not a user yet?</span>
                                     <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50 my-2" href="registration">
-                                    Register here
+                                        Register here
                                     </a>
                                 </div>
 
                             </form>
                         </div>
                     </CSSTransition>
-                    ) :
+                ) :
                     <div>
                         <img src="/images/gs-blue.png" className="w-20 mb-6 mx-auto"></img>
                         <p className="text-4xl text-gray-700 font-bold mb-5">
@@ -145,7 +158,7 @@ function Home() {
                             <button className=" bg-gsblue60 hover:bg-gsblue70 focus:outline-none focus:ring-2 focus:ring-black w-20 mx-2 px-2 py-2 text-white rounded-sm font-light"><a href="registration">Register</a></button>
                         </p>
                     </div>
-                    }
+                }
             </div>
             <Footer></Footer>
         </div>
