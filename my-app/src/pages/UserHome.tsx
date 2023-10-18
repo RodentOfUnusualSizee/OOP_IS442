@@ -1,17 +1,37 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import Table from '../components/Table';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
 import { getPortfolioByUserId } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
+
+function ProtectedPage() {
+    const { isLoggedIn } = useAuth(); 
+    const navigate = useNavigate(); 
+
+    console.log(isLoggedIn);
+
+    useEffect(() => {
+        if (!isLoggedIn) {
+            navigate('/');
+        } else {
+            // Do nothing
+            // Data fetching logic
+        }
+
+    }, [isLoggedIn, navigate]); 
+
+    return <UserHome />;
+}
 
 function UserHome() {
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
 
     const { authUser, isLoggedIn } = useAuth();
-    const userId = authUser.id; 
+    const userId = authUser.id;
     const userRole = authUser.role;
     const userIsLoggedIn = isLoggedIn;
     const management = userRole === "management" || userRole === "user";
@@ -25,9 +45,6 @@ function UserHome() {
     ];
 
     React.useEffect(() => {
-
-
-
         if (!hasFetchedData) {
             const login = getPortfolioByUserId(userId);
             login.then((response) => {
@@ -66,4 +83,4 @@ function UserHome() {
     );
 }
 
-export default UserHome;
+export default ProtectedPage;
