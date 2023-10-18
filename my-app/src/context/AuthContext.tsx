@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 
 // Interface
 export interface AuthContextInterface {
@@ -6,6 +6,7 @@ export interface AuthContextInterface {
     setAuthUser: React.Dispatch<React.SetStateAction<any>>;
     isLoggedIn: boolean;
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+    logout: () => void;
 }
 
 const AuthContext = React.createContext<AuthContextInterface | undefined>(undefined);
@@ -26,11 +27,17 @@ export function AuthProvider(props: { children: React.ReactNode }) {
         // You can add authentication logic here if needed
     }, []);
 
+    const logout = useCallback(() => {
+        setAuthUser(null);
+        setIsLoggedIn(false);
+    }, []);
+
     const value: AuthContextInterface = {
         authUser,
         setAuthUser,
         isLoggedIn,
         setIsLoggedIn,
+        logout,
     };
 
     return (

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
-
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
     management: boolean;
@@ -9,6 +10,10 @@ interface HeaderProps {
 }
 
 const Header = ({ management, userType, login }: HeaderProps) => {
+
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
     const userLinks = [
         {
             name: "Portfolio",
@@ -40,14 +45,28 @@ const Header = ({ management, userType, login }: HeaderProps) => {
     const [user, getUser] = useState<String>(userType);
     const [isLogin, getLogin] = useState<boolean>(login);
 
+    const handleLogout = () => {
+        logout();
+        alert("Logged out");
+        navigate("/");
+    }
+
 
     return (
         <header className="bg-gsgray90">
             <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+                {isManagement ? (
+                    // Switch between admin and userhome
+                    <Link to={"/userhome"} className="block text-white-600">
+                        <span className="sr-only">Home</span>
+                        <img src='/images/gs-white.png' className='h-8 w-auto' />
+                    </Link>
+                ) : (
                 <Link to={"/"} className="block text-white-600">
                     <span className="sr-only">Home</span>
                     <img src='/images/gs-white.png' className='h-8 w-auto' />
                 </Link>
+                )}
 
                 <div className="flex flex-1 items-center justify-end md:justify-between">
                     <nav aria-label="Global" className="hidden md:block">
@@ -56,7 +75,7 @@ const Header = ({ management, userType, login }: HeaderProps) => {
                                 <ul className="flex items-center gap-6 text-sm">
                                     {userLinks.map(({ name, link }) => (
                                         <li key={link}>
-                                            <Link to={link} className="text-white hover:text-gray-500/75">
+                                            <Link to={"/" + link} className="text-white hover:text-gray-500/75">
                                                 {name}
                                             </Link>
                                         </li>
@@ -66,7 +85,7 @@ const Header = ({ management, userType, login }: HeaderProps) => {
                                 <ul className="flex items-center gap-6 text-sm">
                                     {adminLinks.map(({ name, link }) => (
                                         <li key={link}>
-                                            <Link to={link} className="text-white hover:text-gray-500/75">
+                                            <Link to={"/" + link} className="text-white hover:text-gray-500/75">
                                                 {name}
                                             </Link>
                                         </li>
@@ -83,7 +102,7 @@ const Header = ({ management, userType, login }: HeaderProps) => {
                             </div>
                         ) : (
                             <div className="sm:flex sm:gap-4">
-                                <Link to={"/"} className="hidden rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200 sm:block" >Log Out</Link>
+                                <button onClick={handleLogout} className="hidden rounded-md bg-gswhite px-5 py-2.5 text-sm font-medium text-gsgray90 transition hover:bg-gray-200 sm:block" >Log Out</button>
                             </div>
                         )}
 
