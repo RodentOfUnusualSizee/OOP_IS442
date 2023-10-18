@@ -25,12 +25,9 @@ function UserHome() {
     ];
 
     React.useEffect(() => {
-
-
-
         if (!hasFetchedData) {
-            const login = getPortfolioByUserId(userId);
-            login.then((response) => {
+            const portfolio = getPortfolioByUserId(userId);
+            portfolio.then((response) => {
                 setHasFetchedData(true);
             }).catch((error) => {
                 console.log(error);

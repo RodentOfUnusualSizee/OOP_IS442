@@ -50,40 +50,6 @@ function Home() {
             }).catch((error) => {
                 console.log(error);
             });
-            
-
-            // const loginAPI = loginUser(data);
-            // loginAPI.then((response) => {
-            //     homePage = response["success"];
-            //     localStorage.setItem("userId", response["data"]["id"])
-            //     if (homePage) {
-            //         window.location.href = "/UserHome";
-            //     }
-            //     else {
-            //         alert("Invalid username or password");
-            //     }
-            // }).catch((error) => {
-            //     console.log(error);
-            // });
-
-            // axios.post("http://localhost:8080/api/user/login", {
-            //     "email": email,
-            //     "password": password
-            // }).then(function (response) {
-
-            //     homePage = response["data"]["success"];
-            //     localStorage.setItem("userId", response["data"]["data"]["id"]);
-
-            //     if(homePage){
-            //         window.location.href = "/UserHome";
-            //     }
-            //     else{
-            //         alert("Invalid username or password");
-            //     }
-            //     })
-            //     .catch(function (error) {
-            //         console.log(error);
-            //     });
         }
     }
 
@@ -107,9 +73,6 @@ function Home() {
                                 Portfolio Performance Analyser App
                             </p>
                             <form className="bg-white shadow-md rounded p-8 m-10">
-                                {/* <button onClick={()=>setLoginClicked(false)} className="font-bold py-2 px-4 rounded inline-flex place-items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
-                                </button> */}
                                 <div className="mb-4">
                                     <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
                                         id="email"

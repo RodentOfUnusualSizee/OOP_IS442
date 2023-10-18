@@ -23,6 +23,9 @@ export async function postData(data: any) {
   }
 }
 
+
+
+
 const BASE_USER_URL = 'http://localhost:8080/api/user';
 const BASE_PORTFOLIO_URL = 'http://localhost:8080/api/portfolio';
 
@@ -35,6 +38,7 @@ export async function registerUser(data: any) {
   }
 }
 
+
 export async function loginUser(data: any) {
   try {
       const response = await axios.post(`${BASE_USER_URL}/login`, data);
@@ -44,6 +48,27 @@ export async function loginUser(data: any) {
   }
 }
 
+
+export async function createPortfolio(data: any) {
+  try {
+      const response = await axios.post(`${BASE_PORTFOLIO_URL}/create`, data);
+      return response.data;
+  } catch (error) {
+      throw error;
+  }
+}
+
+
+export async function createPortfolioPosition(portfolioId: any, data: any) {
+  try {
+      const response = await axios.post(`${BASE_PORTFOLIO_URL}/${portfolioId}/position/create`, data);
+      return response.data;
+  } catch (error) {
+      throw error;
+  }
+}
+
+
 export async function getPortfolioByUserId(userId: any) {
   try {
       const response = await axios.get(`${BASE_PORTFOLIO_URL}/getAllByUser/${userId}`);
@@ -52,3 +77,4 @@ export async function getPortfolioByUserId(userId: any) {
       throw error;
   }
 }
+
