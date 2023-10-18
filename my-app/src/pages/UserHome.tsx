@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useContext } from 'react';
 import Table from '../components/Table';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -11,7 +11,7 @@ function UserHome() {
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
 
     const { authUser, isLoggedIn } = useAuth();
-    const userId = authUser.id; 
+    const userId = authUser.id;
     const userRole = authUser.role;
     const userIsLoggedIn = isLoggedIn;
     const management = userRole === "management" || userRole === "user";
