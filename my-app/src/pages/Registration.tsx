@@ -13,19 +13,15 @@ function Registration() {
 
     const submitRegistration = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // can use the below to check consts
-        // alert("Email: " + email + ", User ID: " + userID + ", Password: " + password);
         alert("Email: " + email + ", First Name: " + firstName +  + ", Last Name: " + lastName + ", Password: " + password);
         alert(password == confirmPassword);
 
         if(password != confirmPassword){
             alert("Passwords do not match");
-            return; // skip below code
+            return;
         }
 
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        // password regex to check if it clears all the requirements
-        // comment out the checkers if you dont need them
         if(passwordRegex.test(password)){
             alert("Password is good");
             window.location.href = '/';
@@ -34,7 +30,6 @@ function Registration() {
             alert("Password is bad");
         }
         
-        // api call to register user 
         let data = {
             "email": email,
             "password": password,
@@ -50,19 +45,6 @@ function Registration() {
             console.log(error);
         });
 
-        // axios.post("http://localhost:8080/api/user/create", {
-        //     "email": email,
-        //     "password": password,
-        //     "firstName": firstName,
-        //     "lastName": lastName,
-        //     "role": "user"
-        // })
-        // .then(function (response) {
-        //     console.log(response);
-        // })
-        // .catch(function (error) {
-        //     console.log(error);
-        // });
     }
 
     const passwordReqs = () => {
@@ -133,7 +115,6 @@ function Registration() {
                 </div>
 
                 <div className="flex flex-wrap -mx-3 mb-6">
-                    {/* <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0"> */}
                     <div className="w-full px-3">
                     <label className="block uppercase tracking-wide text-gsblue60 text-xs font-bold mb-2">
                         Email Address

@@ -16,30 +16,24 @@ function Home() {
     const navigate = useNavigate();
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
-    let homePage = false; // cause setHomePage is async, doesn't update immediately, so prints false and doesn't redirect to homepage
+    let homePage = false;
 
-    // const [username, setUsername] = React.useState<string>("");
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
 
     const submitLogin = (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        // Name of button clicked - which kind of login to use
         const buttonName = e.currentTarget.name;
-        //Can use the below to check consts
         alert("Email: " + email + ", Password: " + password + ", Button: " + buttonName);
 
 
         if (buttonName == "userLogin") {
-            //User Login - Add API call below to verify username and password for USER
             let data = {
                 "email": email,
                 "password": password
             }
             const loginAPI = loginUser(data);
             loginAPI.then((response) => {
-                console.log(response);
-
                 if (response["success"]) {
                     setAuthUser(response["data"]);
                     setIsLoggedIn(true);

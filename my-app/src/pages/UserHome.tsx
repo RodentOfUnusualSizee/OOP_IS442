@@ -8,7 +8,15 @@ import { useAuth } from '../context/AuthContext';
 
 
 function UserHome() {
+    interface Portfolio {
+        portfolioID: number;
+        portfolioName: string;
+        strategyDesc: string;
+        capitalUSD: number;
+    }
+
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
+    const [data, setData] = React.useState<Portfolio[]>([]);
 
     const { authUser, isLoggedIn } = useAuth();
     const userId = authUser.id;
@@ -18,16 +26,11 @@ function UserHome() {
     console.log("User role: " + userRole)
     console.log("User logged in: " + userIsLoggedIn)
 
-    let samplePortfolioData = [
-        { id: 1, name: "Portfolio 1", strategy: "Strategy A", capital: 10000 },
-        { id: 2, name: "Portfolio 2", strategy: "Strategy B", capital: 15000 },
-        { id: 3, name: "Portfolio 3", strategy: "Strategy C", capital: 20000 },
-    ];
-
     React.useEffect(() => {
         if (!hasFetchedData) {
             const portfolio = getPortfolioByUserId(userId);
             portfolio.then((response) => {
+                setData(response.data)
                 setHasFetchedData(true);
             }).catch((error) => {
                 console.log(error);
@@ -35,6 +38,11 @@ function UserHome() {
         }
     }, [userId]);
 
+    let portfolioData: any[] = [];
+    data.forEach((item)=> {
+        let tmp = {id: item.portfolioID, name: item.portfolioName, strategy: item.strategyDesc, capital: item.capitalUSD}
+        portfolioData.push(tmp)
+    })
 
     return (
         <div>
@@ -55,7 +63,7 @@ function UserHome() {
                     </div>
                 </div>
                 <div className="mx-auto mt-16 max-w-2xl my-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
-                    <PortfolioCard portfolioList={samplePortfolioData}></PortfolioCard>
+                    <PortfolioCard portfolioList={portfolioData}></PortfolioCard>
                 </div>
             </div>
             <Footer></Footer>
