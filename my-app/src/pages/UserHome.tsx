@@ -3,7 +3,6 @@ import Table from '../components/Table';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
-// import axios from 'axios';
 import { getPortfolioByUserId } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -11,18 +10,19 @@ import { useAuth } from '../context/AuthContext';
 function UserHome() {
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
 
-    const { authUser } = useAuth(); 
-    const userEmail = authUser.email;
-
-    console.log("User email: " + userEmail)
+    const { authUser, isLoggedIn } = useAuth();
+    const userId = authUser.id; 
+    const userRole = authUser.role;
+    const userIsLoggedIn = isLoggedIn;
+    const management = userRole === "management" || userRole === "user";
+    console.log("User role: " + userRole)
+    console.log("User logged in: " + userIsLoggedIn)
 
     let samplePortfolioData = [
         { id: 1, name: "Portfolio 1", strategy: "Strategy A", capital: 10000 },
         { id: 2, name: "Portfolio 2", strategy: "Strategy B", capital: 15000 },
         { id: 3, name: "Portfolio 3", strategy: "Strategy C", capital: 20000 },
     ];
-
-    const userId = localStorage.getItem("userId");
 
     React.useEffect(() => {
 
@@ -38,25 +38,11 @@ function UserHome() {
         }
     }, [userId]);
 
-    // React.useEffect(() => {
-    //     if (!hasFetchedData) {
-    //         axios.get(`http://localhost:8080/api/portfolio/getAllByUser/${userId}`)
-    //             .then(response => {
-    //             setTableData(response.data.data);
-    //             setHasFetchedData(true);
-    //             })
-    //             .catch(error => {
-    //             console.log(error);
-    //             });
-    //         }
-    // }, [userId]);
-
 
     return (
         <div>
             <div className="UserHome">
-                <Header management={true} userType={"user"} login={true} ></Header>
-                <h1>{userEmail}</h1>
+                <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
                 <div className="bg-white py-12 sm:py-12 my-2">
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl lg:text-center">

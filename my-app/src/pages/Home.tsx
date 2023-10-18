@@ -36,12 +36,20 @@ function Home() {
                 "email": email,
                 "password": password
             }
-            console.log("User Login start");
-            // New Code for login 
-            setAuthUser({email});
-            setIsLoggedIn(true);
+            const loginAPI = loginUser(data);
+            loginAPI.then((response) => {
+                console.log(response);
 
-            navigate("/userhome");
+                if (response["success"]) {
+                    setAuthUser(response["data"]);
+                    setIsLoggedIn(true);
+                    navigate("/UserHome");
+                } else {
+                    alert("Invalid username or password");
+                }
+            }).catch((error) => {
+                console.log(error);
+            });
             
 
             // const loginAPI = loginUser(data);
