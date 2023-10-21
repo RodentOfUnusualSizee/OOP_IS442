@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.app.Stock.Stock;
 import java.util.Date;
-import com.app.CompanyOverviewAPI.CompanyOverviewController;
 
 @Entity
 @Table(name = "user_position")
@@ -48,9 +47,6 @@ public class Position implements Serializable {
         this.createdTimestamp = new Date();
         this.positionAddDate = positionAddDate;
     }
-
-    @Autowired
-    private CompanyOverviewController companyOverviewController;
 
     public String getStockSector(String stockSymbol) {
         String res = "ds";
