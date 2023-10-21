@@ -3,8 +3,13 @@ package com.app.Position;
 import java.io.Serializable;
 
 import javax.persistence.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
+
 import com.app.Stock.Stock;
 import java.util.Date;
+import com.app.CompanyOverviewAPI.CompanyOverviewController;
 
 @Entity
 @Table(name = "user_position")
@@ -19,6 +24,7 @@ public class Position implements Serializable {
     private float price;
     private String position;
     private int quantity;
+    private String stockSector;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTimestamp;
@@ -43,6 +49,14 @@ public class Position implements Serializable {
         this.positionAddDate = positionAddDate;
     }
 
+    @Autowired
+    private CompanyOverviewController companyOverviewController;
+
+    public String getStockSector(String stockSymbol) {
+        String res = "ds";
+        return res;
+    }
+
     // ------------------ Getters and Setters (Start) ------------------
     public int getPositionID() {
         return positionID;
@@ -50,6 +64,14 @@ public class Position implements Serializable {
 
     public void setPositionID(int positionID) {
         this.positionID = positionID;
+    }
+
+    public String getStockSector() {
+        return stockSector;
+    }
+
+    public void setStockSector(String stockSector) {
+        this.stockSector = stockSector;
     }
 
     public String getStockSymbol() {
