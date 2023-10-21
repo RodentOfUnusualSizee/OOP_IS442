@@ -1,6 +1,7 @@
 package com.app.CompanyOverviewAPI;
 
 import com.app.CompanyOverviewAPI.CompanyOverviewDTO;
+import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -23,8 +24,13 @@ public class CompanyOverviewController {
 
     private String apiKey;
 
+    private Map<String, CompanyOverviewDTO> dataCache = new HashMap<>();
+
     @GetMapping("/{symbol}")
     public CompanyOverviewDTO getCompanyOverview(@PathVariable String symbol) {
+        if (dataCache.containsKey(symbol)) {
+            return dataCache.get(symbol);
+        }
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
 
@@ -83,6 +89,7 @@ public class CompanyOverviewController {
                 safelyParseDate((String) responseData.get("DividendDate")),
                 safelyParseDate((String) responseData.get("ExDividendDate")));
 
+        dataCache.put(symbol, companyOverviewDTO);
         return companyOverviewDTO;
     }
 
