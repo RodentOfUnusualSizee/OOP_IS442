@@ -31,9 +31,9 @@ public class MainApp {
             stockService.saveStock(apple);
 
             // You can add more mock stocks
-            // Stock microsoft = new Stock("MSFT", "Microsoft Corp.", "NASDAQ", "USD",
-            // "Technology");
-            // stockService.saveStock(microsoft);
+            Stock microsoft = new Stock("MSFT", "Microsoft Corp.", "NASDAQ", "USD",
+            "Technology");
+            stockService.saveStock(microsoft);
         };
     }
 

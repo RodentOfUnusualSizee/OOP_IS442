@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 // Postman: http://localhost:8080/api/stock/companyOverview/{TickerSymbol}
@@ -47,7 +48,7 @@ public class CompanyOverviewController {
                 (String) responseData.get("Industry"),
                 (String) responseData.get("Address"),
                 (String) responseData.get("FiscalYearEnd"),
-                LocalDate.parse((String) responseData.get("LatestQuarter")),
+                safelyParseDate((String) responseData.get("LatestQuarter")),
                 Long.parseLong((String) responseData.get("MarketCapitalization")),
                 Long.parseLong((String) responseData.get("EBITDA")),
                 Double.parseDouble((String) responseData.get("PERatio")),
@@ -79,9 +80,21 @@ public class CompanyOverviewController {
                 Double.parseDouble((String) responseData.get("50DayMovingAverage")),
                 Double.parseDouble((String) responseData.get("200DayMovingAverage")),
                 Long.parseLong((String) responseData.get("SharesOutstanding")),
-                LocalDate.parse((String) responseData.get("DividendDate")),
-                LocalDate.parse((String) responseData.get("ExDividendDate")));
+                safelyParseDate((String) responseData.get("DividendDate")),
+                safelyParseDate((String) responseData.get("ExDividendDate")));
 
         return companyOverviewDTO;
     }
+
+    private LocalDate safelyParseDate(String dateStr) {
+        if (dateStr != null && !dateStr.equals("None")) {
+            try {
+                return LocalDate.parse(dateStr);
+            } catch (DateTimeParseException e) {
+                // Handle the exception (e.g., log it, set a default date, etc.)
+            }
+        }
+        return null; // Return null or a default date
+    }
+
 }

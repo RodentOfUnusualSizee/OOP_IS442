@@ -7,11 +7,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Date;
 
+import com.app.CompanyOverviewAPI.*;;
+
 @Service
 public class PositionService {
 
     @Autowired
-    private PositionRepository positionRepository; // Assuming you have a PositionRepository
+    private PositionRepository positionRepository;
+
+    @Autowired
+    private CompanyOverviewController companyOverviewController;
 
     // Save (Create or Update) a Position
     public Position save(Position position) {
@@ -19,7 +24,19 @@ public class PositionService {
             position.setCreatedTimestamp(new Date());
         }
         position.setLastModifiedTimestamp(new Date());
+
+        // Adding position sector
+        position.setStockSector(getStockSectorAPI(position));
+
         return positionRepository.save(position);
+    }
+
+    public String getStockSectorAPI(Position position) {
+
+        String stockSymbol = position.getStockSymbol();
+        CompanyOverviewDTO companyOverview = companyOverviewController.getCompanyOverview(stockSymbol);
+        String stockSector = companyOverview.getSector();
+        return stockSector;
     }
 
     // Retrieve a Position by ID

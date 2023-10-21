@@ -48,11 +48,6 @@ public class Position implements Serializable {
         this.positionAddDate = positionAddDate;
     }
 
-    public String getStockSector(String stockSymbol) {
-        String res = "ds";
-        return res;
-    }
-
     // ------------------ Getters and Setters (Start) ------------------
     public int getPositionID() {
         return positionID;

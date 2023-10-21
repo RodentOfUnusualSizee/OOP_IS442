@@ -134,6 +134,9 @@ public class PortfolioController {
             String stockSymbol = entry.getKey();
             List<Position> symbolPositions = entry.getValue();
 
+            // Fetch the stockSector from the first position of this stock symbol
+            String stockSector = symbolPositions.get(0).getStockSector();
+
             // Compute average price excluding SELLTOCLOSE actions
             Double averagePrice = symbolPositions.stream()
                     .filter(p -> !"SELLTOCLOSE".equals(p.getPosition()))
@@ -159,6 +162,7 @@ public class PortfolioController {
 
             Map<String, Object> cumPosition = new HashMap<>();
             cumPosition.put("stockSymbol", stockSymbol);
+            cumPosition.put("stockSector", stockSector);
             cumPosition.put("averagePrice", averagePrice);
             cumPosition.put("totalQuantity", totalQuantity);
             cumPosition.put("currentValue", currentValue);
