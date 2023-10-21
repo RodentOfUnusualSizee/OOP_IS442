@@ -103,14 +103,29 @@ public class PortfolioController {
                     }
                 }
 
+                Map<String, Double> allocationBySector = new HashMap<>();
+                for (Map<String, Object> cumPosition : cumPositions) {
+                    String sector = (String) cumPosition.get("stockSector");
+                    double value = (Double) cumPosition.get("currentValue");
+                    allocationBySector.put(sector, allocationBySector.getOrDefault(sector, 0.0) + value);
+                }
+
+                for (Map.Entry<String, Double> entry : allocationBySector.entrySet()) {
+                    allocationBySector.put(entry.getKey(), (entry.getValue() / currentTotalPortfolioValue) * 100);
+                }
+
+                double cashPercentage = (portfolio.getCapitalUSD() / currentTotalPortfolioValue) * 100;
+                allocationBySector.put("CASH", cashPercentage);
+
                 // 4.2 Compute the portfolio historical value
                 Map<String, Double> portfolioHistoricalValue = computePortfolioHistoricalValue(portfolio,
                         monthlyController);
 
                 // 4.3 Create a DTO (Data Transfer Object) and add it to the response list
                 PortfolioDTO dto = new PortfolioDTO(portfolio, cumPositions);
-                dto.setPortfolioHistoricalValue(portfolioHistoricalValue); // Set the computed historical value
-                dto.setCurrentTotalPortfolioValue(currentTotalPortfolioValue); // Set the computed total price
+                dto.setPortfolioHistoricalValue(portfolioHistoricalValue);
+                dto.setCurrentTotalPortfolioValue(currentTotalPortfolioValue);
+                dto.setPortfolioAllocationBySector(allocationBySector); // Set the computed allocation by sector
                 responseTemplates.add(dto);
             }
 

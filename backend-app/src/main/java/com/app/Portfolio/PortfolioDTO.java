@@ -23,6 +23,7 @@ public class PortfolioDTO {
     private Date createdTimestamp;
     private Date lastModifiedTimestamp;
     private Map<String, Double> portfolioHistoricalValue;
+    private Map<String, Double> portfolioAllocationBySector;
 
     // Constructors, getters, setters, etc.
     public PortfolioDTO() {
@@ -38,6 +39,18 @@ public class PortfolioDTO {
         this.cumPositions = cumPositions;
         this.createdTimestamp = portfolio.getCreatedTimestamp();
         this.lastModifiedTimestamp = portfolio.getLastModifiedTimestamp();
+    }
+
+    public void setCurrentTotalPortfolioValue(Double currentTotalPortfolioValue) {
+        this.currentTotalPortfolioValue = currentTotalPortfolioValue;
+    }
+
+    public Map<String, Double> getPortfolioAllocationBySector() {
+        return portfolioAllocationBySector;
+    }
+
+    public void setPortfolioAllocationBySector(Map<String, Double> portfolioAllocationBySector) {
+        this.portfolioAllocationBySector = portfolioAllocationBySector;
     }
 
     public Double getCurrentTotalPortfolioValue() {
