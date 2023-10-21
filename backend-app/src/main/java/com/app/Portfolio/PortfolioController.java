@@ -91,15 +91,15 @@ public class PortfolioController {
             // 4. Loop through each portfolio to transform its data into the required format
             for (Portfolio portfolio : portfolios) {
                 List<Map<String, Object>> cumPositions = null; // Initialize cumPositions as null
-                double currentTotalPrice = 0.0 + portfolio.getCapitalUSD();
+                double currentTotalPortfolioValue = 0.0 + portfolio.getCapitalUSD();
 
                 // Check if the positions list is not null and not empty
                 if (portfolio.getPositions() != null && !portfolio.getPositions().isEmpty()) {
-                    // 4.1 Compute the cumulative positions for this portfolio
+                    // Compute the cumulative positions for this portfolio
                     cumPositions = computeCumPositions(portfolio.getPositions());
 
                     for (Map<String, Object> cumPosition : cumPositions) {
-                        currentTotalPrice += (Double) cumPosition.get("currentValue");
+                        currentTotalPortfolioValue += (Double) cumPosition.get("currentValue");
                     }
                 }
 
@@ -110,7 +110,7 @@ public class PortfolioController {
                 // 4.3 Create a DTO (Data Transfer Object) and add it to the response list
                 PortfolioDTO dto = new PortfolioDTO(portfolio, cumPositions);
                 dto.setPortfolioHistoricalValue(portfolioHistoricalValue); // Set the computed historical value
-                dto.setCurrentTotalPrice(currentTotalPrice); // Set the computed total price
+                dto.setCurrentTotalPortfolioValue(currentTotalPortfolioValue); // Set the computed total price
                 responseTemplates.add(dto);
             }
 
@@ -125,48 +125,44 @@ public class PortfolioController {
     }
 
     private List<Map<String, Object>> computeCumPositions(List<Position> positions) {
-        // 1. Group positions by their stock symbol
         Map<String, List<Position>> groupedPositions = positions.stream()
                 .collect(Collectors.groupingBy(Position::getStockSymbol));
 
         List<Map<String, Object>> cumPositions = new ArrayList<>();
 
-        // 2. Loop through each group of positions (grouped by stock symbol)
         for (Map.Entry<String, List<Position>> entry : groupedPositions.entrySet()) {
             String stockSymbol = entry.getKey();
             List<Position> symbolPositions = entry.getValue();
 
-            // 2.1 Compute the average price for this stock symbol
+            // Compute average price excluding SELLTOCLOSE actions
             Double averagePrice = symbolPositions.stream()
+                    .filter(p -> !"SELLTOCLOSE".equals(p.getPosition()))
                     .mapToDouble(p -> p.getPrice() * p.getQuantity())
-                    .sum() / symbolPositions.stream().mapToDouble(Position::getQuantity).sum();
+                    .sum()
+                    / symbolPositions.stream().filter(p -> !"SELLTOCLOSE".equals(p.getPosition()))
+                            .mapToDouble(Position::getQuantity).sum();
 
-            // 2.2 Compute the total quantity for this stock symbol
+            // Compute total quantity considering SELLTOCLOSE actions
             Integer totalQuantity = symbolPositions.stream()
-                    .mapToInt(Position::getQuantity)
+                    .mapToInt(p -> "SELLTOCLOSE".equals(p.getPosition()) ? -1 * p.getQuantity() : p.getQuantity())
                     .sum();
 
-            // 2.3 Fetch the most recent stock data
             Map<String, Object> stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
             Map<String, Map<String, String>> monthlyTimeSeries = (Map<String, Map<String, String>>) stockData
                     .get("Monthly Time Series");
 
-            // Retrieve the most recent data entry
             Map.Entry<String, Map<String, String>> mostRecentData = monthlyTimeSeries.entrySet().iterator().next();
             Map<String, String> recentStockData = mostRecentData.getValue();
             Double recentStockPrice = Double.parseDouble(recentStockData.get("4. close"));
 
-            // 2.4 Calculate the current total value of the stock
             Double currentValue = recentStockPrice * totalQuantity;
 
-            // 2.5 Create a cumulative position map
             Map<String, Object> cumPosition = new HashMap<>();
             cumPosition.put("stockSymbol", stockSymbol);
             cumPosition.put("averagePrice", averagePrice);
             cumPosition.put("totalQuantity", totalQuantity);
             cumPosition.put("currentValue", currentValue);
 
-            // 2.6 Add this cumulative position map to the list
             cumPositions.add(cumPosition);
         }
 
@@ -237,6 +233,7 @@ public class PortfolioController {
     public ResponseEntity<WildcardResponse> createPositionForPortfolio(@PathVariable int portfolioID,
             @RequestBody Position position) {
         // Refactored : 15/10/2023
+
         // 1. Fetch the portfolio
         Optional<Portfolio> optionalPortfolio = portfolioService.getPortfolio(portfolioID);
         if (!optionalPortfolio.isPresent()) {
@@ -245,10 +242,20 @@ public class PortfolioController {
         }
         Portfolio portfolio = optionalPortfolio.get();
 
-        // 2. Validate if there's enough capital for the new position
-        if (PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, position)) {
+        // 2. Validate if there's enough capital for the new position, unless it's a
+        // SELLTOCLOSE
+        if (!"SELLTOCLOSE".equals(position.getPosition()) &&
+                PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, position)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new WildcardResponse(false, "Portfolio not enough capital", position));
+        }
+
+        // After validating and before saving the position, adjust capitalUSD for
+        // SELLTOCLOSE
+        if ("SELLTOCLOSE".equals(position.getPosition())) {
+            float closePositionValue = position.getPrice() * position.getQuantity();
+            portfolio.setCapitalUSD(portfolio.getCapitalUSD() + closePositionValue);
+            portfolioService.updatePortfolio(portfolio);
         }
 
         // 3. Save the position
@@ -265,11 +272,9 @@ public class PortfolioController {
         return ResponseEntity.ok(new WildcardResponse(true, "Success", updatedPortfolio));
     }
 
-    // Update a position in a portfolio
     @PutMapping("/{portfolioID}/position/update")
     public ResponseEntity<WildcardResponse> updatePositionInPortfolio(@PathVariable int portfolioID,
             @RequestBody Position updatedPosition) {
-        // Refactored : 15/10/2023
         // 1. Fetch the portfolio
         Optional<Portfolio> optionalPortfolio = portfolioService.getPortfolio(portfolioID);
         if (!optionalPortfolio.isPresent()) {
@@ -278,25 +283,63 @@ public class PortfolioController {
         }
         Portfolio portfolio = optionalPortfolio.get();
 
-        // 2. Validate if there's enough capital to update the position
-        if (PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, updatedPosition)) {
+        // Fetch the old position for comparison
+        Optional<Position> oldPositionOpt = positionService.findById(updatedPosition.getPositionID());
+        if (!oldPositionOpt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new WildcardResponse(false, "Position not found", null));
+        }
+        Position oldPosition = oldPositionOpt.get();
+
+        // 2. Check if the position type changed and adjust capitalUSD accordingly
+        if ("SELLTOCLOSE".equals(oldPosition.getPosition()) && !"SELLTOCLOSE".equals(updatedPosition.getPosition())) {
+            float closePositionValue = oldPosition.getPrice() * oldPosition.getQuantity();
+            portfolio.setCapitalUSD(portfolio.getCapitalUSD() - closePositionValue);
+        } else if (!"SELLTOCLOSE".equals(oldPosition.getPosition())
+                && "SELLTOCLOSE".equals(updatedPosition.getPosition())) {
+            float closePositionValue = updatedPosition.getPrice() * updatedPosition.getQuantity();
+            portfolio.setCapitalUSD(portfolio.getCapitalUSD() + closePositionValue);
+        } else if ("SELLTOCLOSE".equals(oldPosition.getPosition())
+                && "SELLTOCLOSE".equals(updatedPosition.getPosition())) {
+            float oldClosePositionValue = oldPosition.getPrice() * oldPosition.getQuantity();
+            float newClosePositionValue = updatedPosition.getPrice() * updatedPosition.getQuantity();
+            float difference = newClosePositionValue - oldClosePositionValue;
+            portfolio.setCapitalUSD(portfolio.getCapitalUSD() + difference);
+        }
+
+        // 3. Validate if there's enough capital to update the position for
+        // non-SELLTOCLOSE positions
+        if (!"SELLTOCLOSE".equals(updatedPosition.getPosition()) &&
+                PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, updatedPosition)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new WildcardResponse(false, "Portfolio not enough capital", null));
         }
 
-        // 3. Update and save the position
+        // 4. Update and save the position
+        Position originalPosition = positionService.findById(updatedPosition.getPositionID()).orElse(null);
+        if (originalPosition == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new WildcardResponse(false, "Position not found", null));
+        }
+
+        // Retain the original createdTimestamp
+        updatedPosition.setCreatedTimestamp(originalPosition.getCreatedTimestamp());
+
+        // saving the updated position
         Position savedPosition = positionService.save(updatedPosition);
 
-        // 4. Update the portfolio with the saved position (removing the old position if
+        // 5. Update the portfolio with the saved position (removing the old position if
         // it exists)
         if (portfolio.getPositions() != null) {
             portfolio.getPositions().removeIf(pos -> pos.getPositionID() == savedPosition.getPositionID());
             portfolio.getPositions().add(savedPosition);
         }
 
-        // 5. Return the updated portfolio within a ResponseEntity
-        Portfolio updatedPortfolio = portfolioService.updatePortfolio(portfolio);
-        return ResponseEntity.ok(new WildcardResponse(true, "Position updated successfully", updatedPortfolio));
+        // 6. Save the updated portfolio capitalUSD
+        portfolioService.updatePortfolio(portfolio);
+
+        // 7. Return the updated portfolio within a ResponseEntity
+        return ResponseEntity.ok(new WildcardResponse(true, "Position updated successfully", portfolio));
     }
 
     // Delete a position from a portfolio

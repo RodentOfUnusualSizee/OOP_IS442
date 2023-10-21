@@ -19,7 +19,7 @@ public class PortfolioDTO {
     private Float capitalUSD;
     private ArrayList<Position> positions;
     private List<Map<String, Object>> cumPositions;
-    private Double currentTotalPrice;
+    private Double currentTotalPortfolioValue;
     private Date createdTimestamp;
     private Date lastModifiedTimestamp;
     private Map<String, Double> portfolioHistoricalValue;
@@ -40,12 +40,12 @@ public class PortfolioDTO {
         this.lastModifiedTimestamp = portfolio.getLastModifiedTimestamp();
     }
 
-    public Double getCurrentTotalPrice() {
-        return currentTotalPrice;
+    public Double getCurrentTotalPortfolioValue() {
+        return currentTotalPortfolioValue;
     }
 
-    public void setCurrentTotalPrice(double currentTotalPrice) {
-        this.currentTotalPrice = currentTotalPrice;
+    public void setCurrentTotalPortfolioValue(double currentTotalPortfolioValue) {
+        this.currentTotalPortfolioValue = currentTotalPortfolioValue;
     }
 
     public int getPortfolioID() {
