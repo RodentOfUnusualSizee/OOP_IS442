@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO;
+
 import java.util.*;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -20,8 +22,13 @@ public class TickerSearchController {
 
     private String apiKey;
 
+    private Map<String, TickerSearchDTO> dataCache = new HashMap<>();
+
     @GetMapping("/{keywords}")
     public TickerSearchDTO getTickerSearch(@PathVariable String keywords) {
+        if (dataCache.containsKey(keywords)) {
+            return dataCache.get(keywords);
+        }
 
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
@@ -35,6 +42,8 @@ public class TickerSearchController {
         Map<String, Object> responseBody = response.getBody();
 
         TickerSearchDTO tickerSearchDTO = mapResponseToDTO(responseBody);
+
+        dataCache.put(keywords, tickerSearchDTO);
 
         return tickerSearchDTO;
     }
