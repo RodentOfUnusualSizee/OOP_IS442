@@ -10,6 +10,7 @@ import com.app.TickerSearchAPI.TickerSearchDTO;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.util.*;
 
+// PostMan: http://localhost:8080/api/stock/topGainerLoser
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/stock/topGainerLoser")
