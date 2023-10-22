@@ -12,10 +12,16 @@ import {
 import LineChartComponent from '../components/LineChartComponent';
 import PieChartComponent from '../components/PieChartComponent';
 import Table from '../components/Table';
+import { getPortfolioByUserId } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { useSearchParams } from "react-router-dom";
 
 function Portfolio() {
 
     const [showModal, setShowModal] = React.useState<boolean>(false);
+    const { authUser, isLoggedIn } = useAuth();
+    const [hasFetchedData, setHasFetchedData] = React.useState(false);
+    const [searchParams] = useSearchParams();
 
     const handleAddClick = () => {
         setShowModal(true);
@@ -37,6 +43,7 @@ function Portfolio() {
     const [date, setDate] = React.useState<string>("");
     const [quantity, setQuantity] = React.useState<string>("");
     const [price, setPrice] = React.useState<string>("");
+    const [data, setData] = React.useState<[]>([]);
     
     // get today's date and parse as string containing yy/mm/dd
     const today = new Date();
@@ -66,65 +73,45 @@ function Portfolio() {
         { name: 'Days since Portfolio Active', stat: '30 days' },
     ]
 
-    const stockTableData = [
-        {
-            id: 1,
-            stockName: 'Company A',
-            totalQuantity: 1000,
-            averagePrice: 50.25,
-            totalAllocation: 50250,
-            allocationPercentage: 25,
-            rawGain: 2500,
-            gainPercentage: 5,
-        },
-        {
-            id: 2,
-            stockName: 'Company B',
-            totalQuantity: 500,
-            averagePrice: 75.75,
-            totalAllocation: 37875,
-            allocationPercentage: 18,
-            rawGain: -1250,
-            gainPercentage: -3,
-        },
-        {
-            id: 3,
-            stockName: 'Company C',
-            totalQuantity: 800,
-            averagePrice: 30.50,
-            totalAllocation: 24400,
-            allocationPercentage: 12,
-            rawGain: 800,
-            gainPercentage: 4,
-        },
-        {
-            id: 4,
-            stockName: 'Company D',
-            totalQuantity: 1200,
-            averagePrice: 45.60,
-            totalAllocation: 54720,
-            allocationPercentage: 27,
-            rawGain: 1920,
-            gainPercentage: 8,
-        },
-    ];
+    const userId = authUser.id;
+    let portfolioId = searchParams.get("id")
+
+    let portfolio = {};
+    let stockTableData: any[] = [];
+
+    React.useEffect(() => {
+        if (!hasFetchedData) {
+            const portfolio = getPortfolioByUserId(userId);
+            portfolio.then((response) => {
+                setData(response.data)
+                setHasFetchedData(true);
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
+    }, [portfolioId]);
+
+    console.log(data)
+
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].portfolioID == portfolioId){
+            portfolio = data[i];
+            stockTableData = portfolio.cumPositions;
+            console.log(stockTableData)
+        }
+    }
 
     const tableHeaders = [
-        { header: 'Stock Name', key: 'stockName' },
-        { header: 'Total Quantity', key: 'totalQuantity' },
-        { header: 'Average Price', key: 'averagePrice' },
-        { header: 'Total Allocation', key: 'totalAllocation' },
-        { header: 'Allocation %', key: 'allocationPercentage' },
-        { header: 'Raw Gain', key: 'rawGain' },
-        { header: 'Gain %', key: 'gainPercentage' },
-        { header: 'Action', key: 'action' },
+    { header: 'Stock Name', key: 'stockSymbol' },
+    { header: 'Stock Sector', key: 'stockSector' },
+    { header: 'Total Quantity', key: 'totalQuantity' },
+    { header: 'Average Price', key: 'averagePrice' },
+    { header: 'Current Price', key: 'currentValue' },
     ];
 
     const tableTitle = 'Stocks';
     const tableDescription = 'List of stocks in portfolio and related data';
     const tableAction = "View Stock";
-
-    //End of sample data
 
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
