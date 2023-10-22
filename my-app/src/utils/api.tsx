@@ -23,7 +23,10 @@ export async function postData(data: any) {
   }
 }
 
-
+export function roundTo(number: number, decimalPlaces: number) {
+  const multiplier = Math.pow(10, decimalPlaces);
+  return Math.round(number * multiplier) / multiplier;
+}
 
 
 const BASE_USER_URL = 'http://localhost:8080/api/user';

@@ -12,7 +12,7 @@ import {
 import LineChartComponent from '../components/LineChartComponent';
 import PieChartComponent from '../components/PieChartComponent';
 import Table from '../components/Table';
-import { getPortfolioByUserId } from '../utils/api';
+import { getPortfolioByUserId, roundTo } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from "react-router-dom";
 
@@ -62,25 +62,10 @@ function Portfolio() {
         summary.innerHTML = side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
     }
 
-
-    // Sample data 
-    let samplePortfolioData =
-        { id: 1, name: "Portfolio 1", strategy: "Strategy A", capital: 10000 };
-
-    const stats = [
-        { name: 'Capital Change ($) ', stat: '+$980' },
-        { name: 'Capital Change (%)', stat: '+58.16%' },
-        { name: 'Days since Portfolio Active', stat: '30 days' },
-    ]
-
     const userId = authUser.id;
     let portfolioId = searchParams.get("id")
 
-    let portfolio = {};
-    let stockTableData: any[] = [];
-    let piechartdata = [];
-    let linechartdata = [];
-
+    // get portfolios
     React.useEffect(() => {
         if (!hasFetchedData) {
             const portfolio = getPortfolioByUserId(userId);
@@ -93,26 +78,88 @@ function Portfolio() {
         }
     }, [portfolioId]);
 
+    let portfolio = {};
+    let stockTableData: any[] = [];
+    let piechartdata = [];
+    let linechartdata = [];
+    let capitalChangeAbs = "";
+    let capitalChangePercent = "";
+    let lastModified = "";
+    let samplePortfolioData = {};
+
 
     for (let i = 0; i < data.length; i++) {
+        // get specific portfolio
         if (data[i].portfolioID == portfolioId){
             portfolio = data[i];
+
+            // portfolio metrics
+            samplePortfolioData =  { id: portfolio.portfolioID, name: portfolio.portfolioName, strategy: portfolio.strategyDesc, capital: portfolio.capitalUSD};
+
+            // table
             stockTableData = portfolio.cumPositions;
 
+            // parse through portfolio data
             let allocation = portfolio.portfolioAllocationBySector;
-            let historicalVal = portfolio.portfolioHistoricalValue
+            let historicalVal = portfolio.portfolioHistoricalValue;
+            let positions = portfolio.positions;
 
             for (var k in allocation){
-                // let val = Math.round(allocation[k]* 100) / 100;
-                piechartdata.push({"name": k, "value":  allocation[k]});
-
+                let val = roundTo(allocation[k], 4);
+                piechartdata.push({"name": k, "value":  val});
             }
 
+            let firstVal = ""; // first historical price value
+            let lastVal = ""; // last historical price value
+
+            // line chart
             for (var h in historicalVal){
                 linechartdata.push({"date": h, "price": historicalVal[h]})
+                if (!lastVal){
+                    lastVal = historicalVal[h];
+                }
+                firstVal = historicalVal[h];
             }
+
+            // capital change metrics
+            let diffAbs = parseFloat(lastVal) - parseFloat(firstVal);
+            let diffPercent = ((parseFloat(lastVal) - parseFloat(firstVal)) / parseFloat(lastVal)) * 100
+
+            diffAbs = roundTo(diffAbs, 2)
+            diffPercent = roundTo(diffPercent, 2)
+
+            if (diffAbs > 0){
+                capitalChangeAbs = "+$" + diffAbs;
+                capitalChangePercent = diffPercent + "%";
+            } else {
+                capitalChangeAbs = "-$" + diffAbs;
+                capitalChangePercent = diffPercent + "%";
+            }
+
+            // last modified date metric
+
+            let modified = new Date("1998-01-01T00:00:00.000+00:00"); // initialise to 1st Jan 1998
+
+            for (let p = 0; p < positions.length; p++) {
+                let position = positions[p];
+                let timestamp = new Date(position.lastModifiedTimestamp);
+                if (timestamp > modified){
+                    modified = timestamp;
+                }
+            }
+            
+            let currDate = new Date();
+            let timeDiff = currDate.getTime() - modified.getTime();
+            lastModified = roundTo(timeDiff / (1000 * 60 * 60 * 24), 0) + " days";
+
         }
     }
+
+    const stats = [
+        { name: 'Capital Change ($) ', stat: capitalChangeAbs },
+        { name: 'Capital Change (%)', stat: capitalChangePercent },
+        { name: 'Days since Portfolio Active', stat: lastModified},
+    ]
 
     const tableHeaders = [
     { header: 'Stock Name', key: 'stockSymbol' },
