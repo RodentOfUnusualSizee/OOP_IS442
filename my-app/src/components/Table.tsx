@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 interface TableProps {
     tableData: any[];
@@ -6,9 +7,10 @@ interface TableProps {
     tableTitle: string;
     tableDescription: string;
     tableAction: string;
+    tableLink: string;
 }
 
-const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAction }: TableProps) => {
+const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAction, tableLink }: TableProps) => {
     return (
         <div>
             <div className="sm:flex sm:items-center">
@@ -47,12 +49,11 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
                                             {tableHeaders.map((header) => (
                                                 header.key === 'action' ? (
                                                     <td key={header.key}>
-                                                        <button
-                                                            type="button"
+                                                        <Link to={tableLink + row.id}
                                                             className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                                         >
                                                             {tableAction}
-                                                        </button>
+                                                        </Link>
                                                     </td>
                                                 ) : (
                                                     <td

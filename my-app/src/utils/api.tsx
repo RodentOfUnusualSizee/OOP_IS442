@@ -31,6 +31,7 @@ export function roundTo(number: number, decimalPlaces: number) {
 
 const BASE_USER_URL = 'http://localhost:8080/api/user';
 const BASE_PORTFOLIO_URL = 'http://localhost:8080/api/portfolio';
+const BASE_STOCK_URL = 'http://localhost:8080/api/stock';
 
 export async function registerUser(data: any) {
   try {
@@ -78,6 +79,15 @@ export async function getPortfolioByUserId(userId: any) {
       return response.data;
   } catch (error) {
       throw error;
+  }
+}
+
+export async function getStockStats() {
+  try {
+    const response = await axios.get(`${BASE_STOCK_URL}/topGainerLoser`);
+    return response.data;
+  } catch (error) { 
+    throw error;
   }
 }
 

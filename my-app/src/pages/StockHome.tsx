@@ -1,104 +1,131 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Table from '../components/Table';
-import MultiSelectDropdown from '../components/MultiSelectDropdown';
+import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid'
+import { getStockStats } from '../utils/api';
 
 function StockHome() {
-
-    // Start of sample data
-    const stockTableData = [
-        {
-            id: 1,
-            stock: 'Company A',
-            category: 'Technology',
-            market: 'US',
-            region: 'North America',
-            currentPrice: 50.25,
-            lastUpdated: '2023-10-16',
-            previousPrice: 48.50,
-            priceChangePercentage: 3.57,
-            sevenDaysPrice: 52.00,
-            sevenDaysPriceChangePercentage: -3.85,
-            action: 'View Stock',
-        },
-        {
-            id: 2,
-            stock: 'Company B',
-            category: 'Finance',
-            market: 'Europe',
-            region: 'Europe',
-            currentPrice: 75.75,
-            lastUpdated: '2023-10-16',
-            previousPrice: 76.20,
-            priceChangePercentage: -0.59,
-            sevenDaysPrice: 74.50,
-            sevenDaysPriceChangePercentage: 1.68,
-            action: 'View Stock',
-        }
-    ];
-
-    const tableHeaders = [
-        { header: 'Stock', key: 'stock' },
-        { header: 'Category', key: 'category' },
-        { header: 'Market', key: 'market' },
-        { header: 'Region', key: 'region' },
-        { header: 'Current Price', key: 'currentPrice' },
-        { header: 'Last Updated', key: 'lastUpdated' },
-        { header: 'Previous Price', key: 'previousPrice' },
-        { header: 'Price Change (%)', key: 'priceChangePercentage' },
-        { header: '7 Days Price', key: 'sevenDaysPrice' },
-        { header: '7 Days Price Change (%)', key: 'sevenDaysPriceChangePercentage' },
-        { header: 'Action', key: 'action' },
-    ];
-
-    const tableTitle = 'Explore Stocks';
-    const tableDescription = 'List of all stocks and related data';
-    const tableAction = 'View Stock';
-
-    const stats = [
-        { name: 'Stocks', value: '120' },
-        { name: 'Markets', value: '4' },
-        { name: 'Regions', value: '5' },
-        { name: 'Equity Categories', value: '4' }
-    ]
 
     function classNames(...classes: String[]) {
         return classes.filter(Boolean).join(' ')
     }
 
-    const filterOptions = {
-        "Stocks": [
-            { label: "AAA", value: "AAA" },
-            { label: "BBB", value: "BBB" },
-            { label: "CCC", value: "CCC" },
-        ],
-        "Markets": [
-            { label: "HK", value: "HK" },
-            { label: "US", value: "US" },
-            { label: "CN", value: "CN" },
-        ],
-        "Regions": [
-            { label: "Asia", value: "Asia" },
-            { label: "Europe", value: "Europe" },
-            { label: "North America", value: "North America" },
-        ],
-        "Categories": [
-            { label: "Stocks", value: "Stocks" },
-            { label: "ETFs", value: "ETFs" },
-            { label: "Bonds", value: "Bonds" },
-        ]
+    interface StockStat {
+        name: string;
+        ticker: string;
+        state: number;
+        changeAmount: number;
+        changePercentage: string;
+        volume: number;
+        changeType: string;
     }
 
-    // End of sample data
-
-    interface SelectedOptions {
-        [key: string]: { label: string; value: string }[];
+    interface StockData {
+        id: number;
+        ticker: string;
+        price: number;
+        changeAmount: number;
+        changePercentage: string;
+        volume: number;
     }
 
-    const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>({});
+    interface StockDataGroup {
+        mostActivelyTraded: StockData[];
+        topGainers: StockData[];
+        topLosers: StockData[];
+    }
 
+    const [tableData, setTableData] = useState<StockDataGroup>({
+        mostActivelyTraded: [],
+        topGainers: [],
+        topLosers: [],
+    });
+
+    const [statsDetails, setStatsDetails] = useState<StockStat[]>([]);
+
+    const tableHeaders = [
+        { "header": "Stock", "key": "ticker" },
+        { "header": "Current Price", "key": "price" },
+        { "header": "Change Amount", "key": "changeAmount" },
+        { "header": "Change Percentage", "key": "changePercentage" },
+        { "header": "Volume", "key": "volume" },
+        { "header": "Action", "key": "action" }]
+
+    const tableTitle = {
+        'mostActivelyTraded': 'Most Actively Traded Stocks for the Day',
+        'topGainers': 'Top Gainer Stocks for the Day',
+        'topLosers': 'Top Loser Stocks for the Day'
+    }
+    const tableDescription = '';
+    const tableLink = '/Stock?ticker=';
+
+    const tableAction = 'View Stock';
+
+    const [selectedTable, setSelectedTable] = useState('mostActivelyTraded');
+
+
+    useEffect(() => {
+        const getStocks = async () => {
+            const stocksFromServer = await getStockStats();
+            const mostActiveStock = stocksFromServer['mostActivelyTraded'][0];
+            const topGainerStock = stocksFromServer['topGainers'][0];
+            const topLoserStock = stocksFromServer['topLosers'][0];
+
+            const mostActivelyTradedWithId = stocksFromServer['mostActivelyTraded'].map((stock, index) => ({
+                ...stock,
+                id: stock['ticker'],
+            }));
+
+            const topGainersWithId = stocksFromServer['topGainers'].map((stock, index) => ({
+                ...stock,
+                id: stock['ticker'],
+            }));
+
+            const topLosersWithId = stocksFromServer['topLosers'].map((stock, index) => ({
+                ...stock,
+                id: stock['ticker'],
+            }));
+
+            setStatsDetails([
+                {
+                    name: 'Most Actively Traded for the Day',
+                    ticker: mostActiveStock['ticker'],
+                    state: mostActiveStock['price'],
+                    changeAmount: mostActiveStock['changeAmount'],
+                    changePercentage: mostActiveStock['changePercentage'],
+                    volume: mostActiveStock['volume'],
+                    changeType: mostActiveStock['changePercentage'].includes('-') ? 'decrease' : 'increase',
+                },
+                {
+                    name: 'Top Gainer Stock for the Day',
+                    ticker: topGainerStock['ticker'],
+                    state: topGainerStock['price'],
+                    changeAmount: topGainerStock['changeAmount'],
+                    changePercentage: topGainerStock['changePercentage'],
+                    volume: topGainerStock['volume'],
+                    changeType: topGainerStock['changePercentage'].includes('-') ? 'decrease' : 'increase',
+                },
+                {
+                    name: 'Top Loser Stock for the Day',
+                    ticker: topLoserStock['ticker'],
+                    state: topLoserStock['price'],
+                    changeAmount: topLoserStock['changeAmount'],
+                    changePercentage: topLoserStock['changePercentage'],
+                    volume: topLoserStock['volume'],
+                    changeType: topLoserStock['changePercentage'].includes('-') ? 'decrease' : 'increase',
+                }
+            ])
+            setTableData({
+                mostActivelyTraded: mostActivelyTradedWithId,
+                topGainers: topGainersWithId,
+                topLosers: topLosersWithId,
+            });
+
+            console.log(tableData)
+        };
+        getStocks()
+    }, [tableData])
 
     return (
         <div>
@@ -110,57 +137,82 @@ function StockHome() {
                     </h3>
                 </div>
                 <div className="my-2 px-6">
-                    <dl className="mx-auto grid grid-cols-1 gap-px bg-gray-900/5 sm:grid-cols-2 lg:grid-cols-4">
-                        {stats.map((stat) => (
-                            <div
-                                key={stat.name}
-                                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 bg-white px-4 py-10 sm:px-6 xl:px-8"
-                            >
-                                <dt className="text-sm font-medium leading-6 text-gray-500">{stat.name}</dt>
-                                <dd className="w-full flex-none text-3xl font-medium leading-10 tracking-tight text-gray-900">
-                                    {stat.value}
+                    <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-3 md:divide-x md:divide-y-0">
+                        {statsDetails.map((item) => (
+                            <div key={item.name} className="px-4 py-5 sm:p-6">
+                                <dt className="text-base font-normal text-gray-900">{item.name}</dt>
+                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                    <div className="flex items-baseline text-2xl font-semibold text-gray-900">
+                                        {item.ticker}
+                                    </div>
+                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                        {item.state}
+                                    </div>
+                                    <div
+                                        className={classNames(
+                                            item.changeType === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800',
+                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                        )}
+                                    >
+                                        {item.changeType === 'increase' ? (
+                                            <ArrowUpIcon
+                                                className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                aria-hidden="true"
+                                            />
+                                        ) : (
+                                            <ArrowDownIcon
+                                                className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                aria-hidden="true"
+                                            />
+                                        )}
+
+                                        <span className="sr-only"> {item.changeType === 'increase' ? 'Increased' : 'Decreased'} by </span>
+                                        {item.changePercentage}
+                                    </div>
                                 </dd>
                             </div>
                         ))}
                     </dl>
                 </div>
-                <h3 className="text-base font-semibold leading-6 text-gray-900">Stock Filters</h3>
-                <div className="mt-5 flex lg:mt-0 lg:ml-4 justify-center">
-                    {Object.entries(filterOptions).map(([key, options]) => (
-                        <div key={key} className="mr-4">
-                            <h6 className='text-sm font-medium leading-6 text-gray-500'>{key}</h6>
-                            <MultiSelectDropdown
-                                options={options}
-                                selectedOptions={selectedOptions[key] || []}
-                                onSelectedOptionsChange={(newSelectedOptions) =>
-                                    setSelectedOptions((prevSelectedOptions) => ({
-                                        ...prevSelectedOptions,
-                                        [key]: newSelectedOptions,
-                                    }))
-                                }
-                                key={key}
-                            />
-                            {/* For testing values and tracking purposes */}
-                            {selectedOptions[key] && selectedOptions[key].length > 0 && (
-                                <div className="text-sm text-gray-500 mt-1">
-                                    Selected: {selectedOptions[key].map((option) => option.label).join(", ")}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div className='my-6 px-6'>
+            </div >
+            <span className="isolate inline-flex rounded-md shadow-sm my-4 py-4">
+                <button
+                    type="button"
+                    onClick={() => setSelectedTable('mostActivelyTraded')}
+                    className={`relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${selectedTable === 'mostActivelyTraded' ? 'bg-indigo-500 text-indigo' : ''
+                        }`}
+                >
+                    Most Actively Traded Stocks
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setSelectedTable('topGainers')}
+                    className={`relative -ml-px inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${selectedTable === 'topGainers' ? 'bg-indigo-500 text-indigo' : ''
+                        }`}
+                >
+                    Top Gainer Stocks
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setSelectedTable('topLosers')}
+                    className={`relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${selectedTable === 'topLosers' ? 'bg-indigo-500 text-indigo' : ''
+                        }`}
+                >
+                    Top Loser Stocks
+                </button>
+            </span>
+            <div className='px-6 my-4'>
                 <Table
-                    tableData={stockTableData}
+                    tableTitle={tableTitle[selectedTable]}
+                    tableData={tableData[selectedTable]}
                     tableHeaders={tableHeaders}
-                    tableTitle={tableTitle}
                     tableDescription={tableDescription}
                     tableAction={tableAction}
+                    tableLink={tableLink}
                 ></Table>
             </div>
             <Footer></Footer>
-        </div >
+        </div>
     );
 }
 

@@ -27,7 +27,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="adminhome" element={<ProtectedWrapper element={<AdminHome/>}/>} />
+          {/* <Route path="adminhome" element={<ProtectedWrapper element={<AdminHome/>}/>} />
           <Route path="audit" element={<ProtectedWrapper element={<Audit/>}/>} />
           <Route path="datamanagement"element={<ProtectedWrapper element={<DataManagement/>}/>} />
           <Route path="order" element={<ProtectedWrapper element={<Order/>}/>} />
@@ -35,7 +35,16 @@ function App() {
           <Route path="stockhome" element={<ProtectedWrapper element={<StockHome/>}/>} />
           <Route path="userhome" element={<ProtectedWrapper element={<UserHome/>}/>}/>
           <Route path="registration" element={<Registration />} />
-          <Route path="stock" element={<ProtectedWrapper element={<Stock/>}/>} />
+          <Route path="stock" element={<ProtectedWrapper element={<Stock/>}/>} /> */}
+          <Route path="adminhome" element={<AdminHome/>} />
+          <Route path="audit"element={<Audit/>} />
+          <Route path="datamanagement" element={<DataManagement/>} />
+          <Route path="order" element={<Order/>} />
+          <Route path="portfolio" element={<Portfolio/>}/>
+          <Route path="stockhome" element={<StockHome/>} />
+          <Route path="userhome" element={<UserHome/>}/>
+          <Route path="registration" element={<Registration />} />
+          <Route path="stock" element={<Stock/>}/>
           <Route path="sandbox" element={<Sandbox />} />
         </Routes>
       </div>
