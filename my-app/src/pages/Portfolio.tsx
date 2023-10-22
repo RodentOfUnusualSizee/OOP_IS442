@@ -131,6 +131,7 @@ function Portfolio() {
     let capitalChangePercent = "";
     let lastModified = "";
     let samplePortfolioData = {id: 0, name: '', strategy: '', capital: 0};
+    let currDate = new Date();
 
     for (let i = 0; i < data.length; i++) {
         // get specific portfolio
@@ -176,7 +177,7 @@ function Portfolio() {
                 capitalChangeAbs = "+$" + diffAbs;
                 capitalChangePercent = diffPercent + "%";
             } else {
-                capitalChangeAbs = "-$" + diffAbs;
+                capitalChangeAbs = "-$" + Math.abs(diffAbs);
                 capitalChangePercent = diffPercent + "%";
             }
 
@@ -191,7 +192,6 @@ function Portfolio() {
                 }
             }
             
-            let currDate = new Date();
             let timeDiff = currDate.getTime() - modified.getTime();
             lastModified = roundTo(timeDiff / (1000 * 60 * 60 * 24), 0) + " days";
         }
@@ -240,7 +240,7 @@ function Portfolio() {
                             </div>
                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                 <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                Sample Date
+                                {currDate.toISOString().split('T')[0]}
                             </div>
                         </div>
                     </div>
@@ -371,7 +371,7 @@ function Portfolio() {
                                         </form>
 
                                         <div className="mb-3">
-                                            <span id="summary">-</span>
+                                            <span id="summary"></span>
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
