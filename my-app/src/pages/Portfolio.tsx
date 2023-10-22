@@ -22,6 +22,7 @@ function Portfolio() {
     const { authUser, isLoggedIn } = useAuth();
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
     const [searchParams] = useSearchParams();
+    const [data, setData] = React.useState<Portfolio[]>([]);
 
     const handleAddClick = () => {
         setShowModal(true);
@@ -43,7 +44,6 @@ function Portfolio() {
     const [date, setDate] = React.useState<string>("");
     const [quantity, setQuantity] = React.useState<string>("");
     const [price, setPrice] = React.useState<string>("");
-    const [data, setData] = React.useState<[]>([]);
     
     // get today's date and parse as string containing yy/mm/dd
     const today = new Date();
@@ -78,19 +78,63 @@ function Portfolio() {
         }
     }, [portfolioId]);
 
-    let portfolio = {};
+    // create portfolio interface
+    interface Portfolio {
+        portfolioID: number;
+        portfolioName: string;
+        strategyDesc: string;
+        capitalUSD: number;
+        positions: {
+            positionID: number;
+            stockSymbol: string;
+            price: number;
+            position: string;
+            quantity: number;
+            stockSector: string;
+            createdTimestamp: string;
+            lastModifiedTimestamp: string;
+            positionAddDate: string;
+        }[];
+        cumPositions: {
+            stockSymbol: string;
+            stockSector: string;
+            totalQuantity: number;
+            averagePrice: number;
+            currentValue: number;
+        }[];
+        currentTotalPortfolioValue: number;
+        createdTimestamp: string;
+        lastModifiedTimestamp: string;
+        portfolioHistoricalValue: Record<string, number>;
+        portfolioAllocationBySector: Record<string, number>;
+        }
+
+    // create portfolio using Portfolio interface
+    let portfolio: Portfolio = {
+        portfolioID: 0,
+        portfolioName: '',
+        strategyDesc: '',
+        capitalUSD: 0,
+        positions: [],
+        cumPositions: [],
+        currentTotalPortfolioValue: 0,
+        createdTimestamp: '',
+        lastModifiedTimestamp: '',
+        portfolioHistoricalValue: {},
+        portfolioAllocationBySector: {},
+        };
+
     let stockTableData: any[] = [];
     let piechartdata = [];
     let linechartdata = [];
     let capitalChangeAbs = "";
     let capitalChangePercent = "";
     let lastModified = "";
-    let samplePortfolioData = {};
-
+    let samplePortfolioData = {id: 0, name: '', strategy: '', capital: 0};
 
     for (let i = 0; i < data.length; i++) {
         // get specific portfolio
-        if (data[i].portfolioID == portfolioId){
+        if (data[i].portfolioID.toString() == portfolioId){
             portfolio = data[i];
 
             // portfolio metrics
@@ -109,8 +153,8 @@ function Portfolio() {
                 piechartdata.push({"name": k, "value":  val});
             }
 
-            let firstVal = ""; // first historical price value
-            let lastVal = ""; // last historical price value
+            let firstVal = 0; // first historical price value
+            let lastVal = 0; // last historical price value
 
             // line chart
             for (var h in historicalVal){
@@ -122,8 +166,8 @@ function Portfolio() {
             }
 
             // capital change metrics
-            let diffAbs = parseFloat(lastVal) - parseFloat(firstVal);
-            let diffPercent = ((parseFloat(lastVal) - parseFloat(firstVal)) / parseFloat(lastVal)) * 100
+            let diffAbs = lastVal - firstVal;
+            let diffPercent = ((lastVal - firstVal) / lastVal) * 100
 
             diffAbs = roundTo(diffAbs, 2)
             diffPercent = roundTo(diffPercent, 2)
@@ -137,7 +181,6 @@ function Portfolio() {
             }
 
             // last modified date metric
-
             let modified = new Date("1998-01-01T00:00:00.000+00:00"); // initialise to 1st Jan 1998
 
             for (let p = 0; p < positions.length; p++) {
@@ -151,7 +194,6 @@ function Portfolio() {
             let currDate = new Date();
             let timeDiff = currDate.getTime() - modified.getTime();
             lastModified = roundTo(timeDiff / (1000 * 60 * 60 * 24), 0) + " days";
-
         }
     }
 
