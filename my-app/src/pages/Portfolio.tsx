@@ -12,7 +12,7 @@ import {
 import LineChartComponent from '../components/LineChartComponent';
 import PieChartComponent from '../components/PieChartComponent';
 import Table from '../components/Table';
-import { getPortfolioByUserId, roundTo } from '../utils/api';
+import { createPortfolioPosition, getPortfolioByUserId, roundTo } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from "react-router-dom";
 
@@ -22,6 +22,7 @@ function Portfolio() {
     const { authUser, isLoggedIn } = useAuth();
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
     const [searchParams] = useSearchParams();
+    const [data, setData] = React.useState<Portfolio[]>([]);
 
     const handleAddClick = () => {
         setShowModal(true);
@@ -44,26 +45,39 @@ function Portfolio() {
     const [quantity, setQuantity] = React.useState<string>("");
     const [price, setPrice] = React.useState<string>("");
     const [data, setData] = React.useState<[]>([]);
-
+    
     // get today's date and parse as string containing yy/mm/dd
     const today = new Date();
     const todayString = today.getFullYear() + '-' + String(today.getMonth() + 1) + '-' + String(today.getDate()).padStart(2, '0');
+
+    const userId = authUser.id;
+    let portfolioId = searchParams.get("id")
 
     const handleButtons = () => {
         const form = document.getElementById("modalForm") as HTMLFormElement;
         form.submit();
         alert("Side: " + side + ", Stock Code: " + stockCode + ", Date: " + date + ", Quantity: " + quantity + ", Price: " + price);
-        // insert API call below to handle adding the position into DB
-        // Think the page refreshes upon refresh, not sure if need to handle async portion
+
+        // add position
+        let position = {"stockSymbol": stockCode, "price": price, "position": side, "quantity": quantity, "positionAddDate": date}
+        const positionAPI = createPortfolioPosition(portfolioId, position);
+
+        positionAPI.then((response) => {
+            if (response["success"]) {
+                alert("Position created")
+                
+            } else {
+                alert("Error creating position")
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
     const summary = () => {
         const summary = document.getElementById("summary") as HTMLSpanElement;
         summary.innerHTML = side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
     }
-
-    const userId = authUser.id;
-    let portfolioId = searchParams.get("id")
 
     // get portfolios
     React.useEffect(() => {
@@ -78,20 +92,64 @@ function Portfolio() {
         }
     }, [portfolioId]);
 
-    let portfolio = {};
+    // create portfolio interface
+    interface Portfolio {
+        portfolioID: number;
+        portfolioName: string;
+        strategyDesc: string;
+        capitalUSD: number;
+        positions: {
+            positionID: number;
+            stockSymbol: string;
+            price: number;
+            position: string;
+            quantity: number;
+            stockSector: string;
+            createdTimestamp: string;
+            lastModifiedTimestamp: string;
+            positionAddDate: string;
+        }[];
+        cumPositions: {
+            stockSymbol: string;
+            stockSector: string;
+            totalQuantity: number;
+            averagePrice: number;
+            currentValue: number;
+        }[];
+        currentTotalPortfolioValue: number;
+        createdTimestamp: string;
+        lastModifiedTimestamp: string;
+        portfolioHistoricalValue: Record<string, number>;
+        portfolioAllocationBySector: Record<string, number>;
+        }
+
+    // create portfolio using Portfolio interface
+    let portfolio: Portfolio = {
+        portfolioID: 0,
+        portfolioName: '',
+        strategyDesc: '',
+        capitalUSD: 0,
+        positions: [],
+        cumPositions: [],
+        currentTotalPortfolioValue: 0,
+        createdTimestamp: '',
+        lastModifiedTimestamp: '',
+        portfolioHistoricalValue: {},
+        portfolioAllocationBySector: {},
+        };
+
     let stockTableData: any[] = [];
     let piechartdata = [];
     let linechartdata = [];
     let capitalChangeAbs = "";
     let capitalChangePercent = "";
     let lastModified = "";
-    let samplePortfolioData = {};
+    let samplePortfolioData = {id: 0, name: '', strategy: '', capital: 0};
 
-
-    // for (let i = 0; i < data.length; i++) {
-    //     // get specific portfolio
-    //     if (data[i].portfolioID == portfolioId) {
-    //         portfolio = data[i];
+    for (let i = 0; i < data.length; i++) {
+        // get specific portfolio
+        if (data[i].portfolioID == portfolioId){
+            portfolio = data[i];
 
     //         // portfolio metrics
     //         samplePortfolioData = { id: portfolio.portfolioID, name: portfolio.portfolioName, strategy: portfolio.strategyDesc, capital: portfolio.capitalUSD };
@@ -109,8 +167,8 @@ function Portfolio() {
     //             piechartdata.push({ "name": k, "value": val });
     //         }
 
-    //         let firstVal = ""; // first historical price value
-    //         let lastVal = ""; // last historical price value
+            let firstVal = ""; // first historical price value
+            let lastVal = ""; // last historical price value
 
     //         // line chart
     //         for (var h in historicalVal) {
@@ -121,39 +179,39 @@ function Portfolio() {
     //             firstVal = historicalVal[h];
     //         }
 
-    //         // capital change metrics
-    //         let diffAbs = parseFloat(lastVal) - parseFloat(firstVal);
-    //         let diffPercent = ((parseFloat(lastVal) - parseFloat(firstVal)) / parseFloat(lastVal)) * 100
+            // capital change metrics
+            let diffAbs = parseFloat(lastVal) - parseFloat(firstVal);
+            let diffPercent = ((parseFloat(lastVal) - parseFloat(firstVal)) / parseFloat(lastVal)) * 100
 
     //         diffAbs = roundTo(diffAbs, 2)
     //         diffPercent = roundTo(diffPercent, 2)
 
-    //         if (diffAbs > 0) {
-    //             capitalChangeAbs = "+$" + diffAbs;
-    //             capitalChangePercent = diffPercent + "%";
-    //         } else {
-    //             capitalChangeAbs = "-$" + diffAbs;
-    //             capitalChangePercent = diffPercent + "%";
-    //         }
+            if (diffAbs > 0){
+                capitalChangeAbs = "+$" + diffAbs;
+                capitalChangePercent = diffPercent + "%";
+            } else {
+                capitalChangeAbs = "-$" + diffAbs;
+                capitalChangePercent = diffPercent + "%";
+            }
 
-    //         // last modified date metric
+            // last modified date metric
 
-    //         let modified = new Date("1998-01-01T00:00:00.000+00:00"); // initialise to 1st Jan 1998
+            let modified = new Date("1998-01-01T00:00:00.000+00:00"); // initialise to 1st Jan 1998
 
-    //         for (let p = 0; p < positions.length; p++) {
-    //             let position = positions[p];
-    //             let timestamp = new Date(position.lastModifiedTimestamp);
-    //             if (timestamp > modified) {
-    //                 modified = timestamp;
-    //             }
-    //         }
+            for (let p = 0; p < positions.length; p++) {
+                let position = positions[p];
+                let timestamp = new Date(position.lastModifiedTimestamp);
+                if (timestamp > modified){
+                    modified = timestamp;
+                }
+            }
+            
+            let currDate = new Date();
+            let timeDiff = currDate.getTime() - modified.getTime();
+            lastModified = roundTo(timeDiff / (1000 * 60 * 60 * 24), 0) + " days";
 
-    //         let currDate = new Date();
-    //         let timeDiff = currDate.getTime() - modified.getTime();
-    //         lastModified = roundTo(timeDiff / (1000 * 60 * 60 * 24), 0) + " days";
-
-    //     }
-    // }
+        }
+    }
 
     const stats = [
         { name: 'Capital Change ($) ', stat: capitalChangeAbs },
@@ -198,7 +256,8 @@ function Portfolio() {
                             </div>
                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                 <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                Sample Date
+                                {todayString}
+
                             </div>
                         </div>
                     </div>
@@ -329,7 +388,7 @@ function Portfolio() {
                                         </form>
 
                                         <div className="mb-3">
-                                            <span id="summary">-</span>
+                                            <span id="summary"></span>
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

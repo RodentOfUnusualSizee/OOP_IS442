@@ -22,7 +22,7 @@ function PieChartComponent(props: { data: any; }) {
                         fill="#8884d8"
                         label
                     >
-                        {piechartdata.map((entry : any, index : number) => (
+                        {piechartdata.map((entry: any, index: number) => (
                             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                         ))}
                     </Pie>
