@@ -25,11 +25,10 @@ public class MonthlyController {
 
     private String apiKey;
 
-
-    private Map<String, Map<String,Object>> stockDataCache = new HashMap<>();
+    private Map<String, StockTimeSeriesMonthlyDTO> stockDataCache = new HashMap<>();
 
     @GetMapping("/{symbol}")
-    public Map<String,Object> getMonthlyTimeSeries(@PathVariable String symbol) {
+    public StockTimeSeriesMonthlyDTO getMonthlyTimeSeries(@PathVariable String symbol) {
         // check if data for the given symbol exists in cache
         if (stockDataCache.containsKey(symbol)) {
             return stockDataCache.get(symbol);
@@ -54,11 +53,11 @@ public class MonthlyController {
         // business logic
         // and keep your controller clean.
         StockTimeSeriesMonthlyDTO StockTimeSeriesMonthlyDTO = mapResponseToDTO(responseBody);
-        stockDataCache.put(symbol, responseBody);
+        stockDataCache.put(symbol, StockTimeSeriesMonthlyDTO);
         // Pass StockTimeSeriesMonthlyDTO to your internal system here
 
-        // return StockTimeSeriesMonthlyDTO;
-        return responseBody;
+        return StockTimeSeriesMonthlyDTO;
+        // return responseBody;
     }
 
     private StockTimeSeriesMonthlyDTO mapResponseToDTO(Map<String, Object> responseBody) {

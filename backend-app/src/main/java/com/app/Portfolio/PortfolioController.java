@@ -17,6 +17,8 @@ import com.app.Position.Position;
 import com.app.Position.PositionService;
 import com.app.WildcardResponse;
 import com.app.StockTimeSeriesAPI.Monthly.MonthlyController;
+import com.app.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
+
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Set;
@@ -139,20 +141,32 @@ public class PortfolioController {
         }
     }
 
+    /**
+     * This method calculates cumulative positions for a list of stock positions.
+     * 
+     * @param positions The list of stock positions to calculate cumulative
+     *                  positions for.
+     * @return A list of maps, each representing the cumulative position of a stock.
+     */
     private List<Map<String, Object>> computeCumPositions(List<Position> positions) {
+        // Group the positions by stock symbol
         Map<String, List<Position>> groupedPositions = positions.stream()
                 .collect(Collectors.groupingBy(Position::getStockSymbol));
 
+        // Initialize the list to store cumulative positions
         List<Map<String, Object>> cumPositions = new ArrayList<>();
 
+        // Iterate through each group of positions (grouped by stock symbol)
         for (Map.Entry<String, List<Position>> entry : groupedPositions.entrySet()) {
+            // The stock symbol for the current group
             String stockSymbol = entry.getKey();
+            // The list of positions for the current stock symbol
             List<Position> symbolPositions = entry.getValue();
 
-            // Fetch the stockSector from the first position of this stock symbol
+            // Fetch the stock sector from the first position of this stock symbol
             String stockSector = symbolPositions.get(0).getStockSector();
 
-            // Compute average price excluding SELLTOCLOSE actions
+            // Compute the average price, excluding positions with "SELLTOCLOSE" action
             Double averagePrice = symbolPositions.stream()
                     .filter(p -> !"SELLTOCLOSE".equals(p.getPosition()))
                     .mapToDouble(p -> p.getPrice() * p.getQuantity())
@@ -160,21 +174,28 @@ public class PortfolioController {
                     / symbolPositions.stream().filter(p -> !"SELLTOCLOSE".equals(p.getPosition()))
                             .mapToDouble(Position::getQuantity).sum();
 
-            // Compute total quantity considering SELLTOCLOSE actions
+            // Compute the total quantity, considering "SELLTOCLOSE" actions as negative
+            // quantities
             Integer totalQuantity = symbolPositions.stream()
                     .mapToInt(p -> "SELLTOCLOSE".equals(p.getPosition()) ? -1 * p.getQuantity() : p.getQuantity())
                     .sum();
 
-            Map<String, Object> stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
-            Map<String, Map<String, String>> monthlyTimeSeries = (Map<String, Map<String, String>>) stockData
-                    .get("Monthly Time Series");
+            // Fetch the monthly stock data for the current stock symbol
+            StockTimeSeriesMonthlyDTO stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
+            // Extract the monthly time series data from the DTO
+            Map<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
 
-            Map.Entry<String, Map<String, String>> mostRecentData = monthlyTimeSeries.entrySet().iterator().next();
-            Map<String, String> recentStockData = mostRecentData.getValue();
-            Double recentStockPrice = Double.parseDouble(recentStockData.get("4. close"));
+            // Get the most recent stock data
+            Map.Entry<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> mostRecentData = monthlyTimeSeries.entrySet()
+                    .iterator().next();
+            StockTimeSeriesMonthlyDTO.MonthlyStockData recentStockData = mostRecentData.getValue();
+            // Get the closing price from the most recent stock data
+            Double recentStockPrice = recentStockData.getClose();
 
+            // Calculate the current value of the stock position
             Double currentValue = recentStockPrice * totalQuantity;
 
+            // Create a map to store the cumulative position data
             Map<String, Object> cumPosition = new HashMap<>();
             cumPosition.put("stockSymbol", stockSymbol);
             cumPosition.put("stockSector", stockSector);
@@ -182,9 +203,11 @@ public class PortfolioController {
             cumPosition.put("totalQuantity", totalQuantity);
             cumPosition.put("currentValue", currentValue);
 
+            // Add the cumulative position map to the list
             cumPositions.add(cumPosition);
         }
 
+        // Return the list of cumulative positions
         return cumPositions;
     }
 
@@ -198,33 +221,63 @@ public class PortfolioController {
                 .get()
                 .getPositionAddDate();
 
-        Map<String, Object> stockData = monthlyController
-                .getMonthlyTimeSeries(portfolio.getPositions().get(0).getStockSymbol()); // Assuming all positions have
-                                                                                         // the same stock symbol
-        Set<String> allDates = ((Map<String, Map<String, String>>) stockData.get("Monthly Time Series")).keySet();
+        // 2. Initialize a map to store historical values for each stock symbol
+        Map<String, Map<String, Double>> historicalValuesByStock = new HashMap<>();
 
-        // 2. Compute Monthly Value
-        for (String date : allDates) {
-            if (date.compareTo(new SimpleDateFormat("yyyy-MM-dd").format(oldestPositionDate)) >= 0) {
-                double monthlyValue = portfolio.getCapitalUSD()
-                        + computeCumValueForMonth(date, portfolio, monthlyController);
-                historicalValue.put(date, monthlyValue);
+        // 3. Compute Monthly Value for each position
+        for (Position position : portfolio.getPositions()) {
+            String stockSymbol = position.getStockSymbol();
+
+            // Fetch the monthly time series data for the current position's stock symbol
+            StockTimeSeriesMonthlyDTO stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
+            Map<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
+
+            // Initialize the historical values map for this stock symbol if it doesn't
+            // exist
+            if (!historicalValuesByStock.containsKey(stockSymbol)) {
+                historicalValuesByStock.put(stockSymbol, new HashMap<>());
             }
+            Map<String, Double> historicalValues = historicalValuesByStock.get(stockSymbol);
+
+            // Compute the historical values for this stock symbol
+            for (Map.Entry<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> entry : monthlyTimeSeries.entrySet()) {
+                String date = entry.getKey();
+                double priceForMonth = entry.getValue().getClose();
+                double valueForMonth = priceForMonth * position.getQuantity();
+
+                if (date.compareTo(new SimpleDateFormat("yyyy-MM-dd").format(oldestPositionDate)) >= 0) {
+                    historicalValues.put(date, historicalValues.getOrDefault(date, 0.0) + valueForMonth);
+                }
+            }
+        }
+
+        // 4. Sum up the historical values of all positions for each month
+        for (Map<String, Double> values : historicalValuesByStock.values()) {
+            for (Map.Entry<String, Double> entry : values.entrySet()) {
+                String date = entry.getKey();
+                double value = entry.getValue();
+                historicalValue.put(date, historicalValue.getOrDefault(date, 0.0) + value);
+            }
+        }
+
+        // 5. Add capital USD to each month's total value
+        for (Map.Entry<String, Double> entry : historicalValue.entrySet()) {
+            entry.setValue(entry.getValue() + portfolio.getCapitalUSD());
         }
 
         return historicalValue;
     }
 
+    // Depricated for now
     private double computeCumValueForMonth(String date, Portfolio portfolio, MonthlyController monthlyController) {
         double monthlyValue = 0.0;
 
         for (Position position : portfolio.getPositions()) {
-            Map<String, Object> stockData = monthlyController.getMonthlyTimeSeries(position.getStockSymbol());
-            Map<String, Map<String, String>> monthlyTimeSeries = (Map<String, Map<String, String>>) stockData
-                    .get("Monthly Time Series");
+            StockTimeSeriesMonthlyDTO stockData = monthlyController.getMonthlyTimeSeries(position.getStockSymbol());
+            Map<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
 
-            Map<String, String> monthData = (Map<String, String>) monthlyTimeSeries.get(date);
-            double priceForMonth = Double.parseDouble(monthData.get("4. close"));
+            StockTimeSeriesMonthlyDTO.MonthlyStockData monthData = monthlyTimeSeries.get(date);
+            double priceForMonth = monthData.getClose();
 
             monthlyValue += priceForMonth * position.getQuantity();
         }
