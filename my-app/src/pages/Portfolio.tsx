@@ -12,7 +12,7 @@ import {
 import LineChartComponent from '../components/LineChartComponent';
 import PieChartComponent from '../components/PieChartComponent';
 import Table from '../components/Table';
-import { getPortfolioByUserId, roundTo } from '../utils/api';
+import { createPortfolioPosition, getPortfolioByUserId, roundTo } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from "react-router-dom";
 
@@ -49,21 +49,34 @@ function Portfolio() {
     const today = new Date();
     const todayString = today.getFullYear() + '-' + String(today.getMonth() + 1) + '-' + String(today.getDate()).padStart(2, '0');
 
+    const userId = authUser.id;
+    let portfolioId = searchParams.get("id")
+
     const handleButtons = () => {
         const form = document.getElementById("modalForm") as HTMLFormElement;
         form.submit();
         alert("Side: " + side + ", Stock Code: " + stockCode + ", Date: " + date + ", Quantity: " + quantity + ", Price: " + price);
-        // insert API call below to handle adding the position into DB
-        // Think the page refreshes upon refresh, not sure if need to handle async portion
+
+        // add position
+        let position = {"stockSymbol": stockCode, "price": price, "position": side, "quantity": quantity, "positionAddDate": date}
+        const positionAPI = createPortfolioPosition(portfolioId, position);
+
+        positionAPI.then((response) => {
+            if (response["success"]) {
+                alert("Position created")
+                
+            } else {
+                alert("Error creating position")
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
     }
     
     const summary = () => {
         const summary = document.getElementById("summary") as HTMLSpanElement;
         summary.innerHTML = side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
     }
-
-    const userId = authUser.id;
-    let portfolioId = searchParams.get("id")
 
     // get portfolios
     React.useEffect(() => {
@@ -131,7 +144,6 @@ function Portfolio() {
     let capitalChangePercent = "";
     let lastModified = "";
     let samplePortfolioData = {id: 0, name: '', strategy: '', capital: 0};
-    let currDate = new Date();
 
     for (let i = 0; i < data.length; i++) {
         // get specific portfolio
@@ -192,7 +204,7 @@ function Portfolio() {
                 }
             }
             
-            let timeDiff = currDate.getTime() - modified.getTime();
+            let timeDiff = today.getTime() - modified.getTime();
             lastModified = roundTo(timeDiff / (1000 * 60 * 60 * 24), 0) + " days";
         }
     }
@@ -240,7 +252,8 @@ function Portfolio() {
                             </div>
                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                 <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                {currDate.toISOString().split('T')[0]}
+                                {todayString}
+
                             </div>
                         </div>
                     </div>
