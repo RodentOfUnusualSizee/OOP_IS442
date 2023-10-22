@@ -1,14 +1,9 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 
+function PieChartComponent(props: { data: any; }) {
 
-function PieChartComponent() {
-    const data = [
-        { name: 'Category A', value: Math.floor(Math.random() * 50) + 10 },
-        { name: 'Category B', value: Math.floor(Math.random() * 50) + 10 },
-        { name: 'Category C', value: Math.floor(Math.random() * 50) + 10 },
-        { name: 'Category D', value: Math.floor(Math.random() * 50) + 10 },
-    ];
+    let piechartdata = props.data
 
     const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -18,7 +13,7 @@ function PieChartComponent() {
                 <h5>Investment Division</h5>
                 <PieChart width={400} height={300}>
                     <Pie
-                        data={data}
+                        data={piechartdata}
                         dataKey="value"
                         nameKey="name"
                         cx="50%"
@@ -27,7 +22,7 @@ function PieChartComponent() {
                         fill="#8884d8"
                         label
                     >
-                        {data.map((entry, index) => (
+                        {piechartdata.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                         ))}
                     </Pie>

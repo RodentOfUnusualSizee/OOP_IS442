@@ -78,6 +78,7 @@ function Portfolio() {
 
     let portfolio = {};
     let stockTableData: any[] = [];
+    let piechartdata = [];
 
     React.useEffect(() => {
         if (!hasFetchedData) {
@@ -97,7 +98,14 @@ function Portfolio() {
         if (data[i].portfolioID == portfolioId){
             portfolio = data[i];
             stockTableData = portfolio.cumPositions;
-            console.log(stockTableData)
+
+            let allocation = portfolio.portfolioAllocationBySector;
+
+            for (var k in allocation){
+                // let val = Math.round(allocation[k]* 100) / 100;
+                piechartdata.push({"name": k, "value":  allocation[k]});
+
+            }
         }
     }
 
@@ -108,6 +116,7 @@ function Portfolio() {
     { header: 'Average Price', key: 'averagePrice' },
     { header: 'Current Price', key: 'currentValue' },
     ];
+
 
     const tableTitle = 'Stocks';
     const tableDescription = 'List of stocks in portfolio and related data';
@@ -173,7 +182,7 @@ function Portfolio() {
             <h4 className='font-semibold'>Portfolio Performance</h4>
             <div className="flex my-6">
                 <LineChartComponent></LineChartComponent>
-                <PieChartComponent></PieChartComponent>
+                <PieChartComponent data={piechartdata}></PieChartComponent>
             </div>
             <div className="my-6 px-6">
                 <Table
