@@ -79,6 +79,7 @@ function Portfolio() {
     let portfolio = {};
     let stockTableData: any[] = [];
     let piechartdata = [];
+    let linechartdata = [];
 
     React.useEffect(() => {
         if (!hasFetchedData) {
@@ -92,7 +93,6 @@ function Portfolio() {
         }
     }, [portfolioId]);
 
-    console.log(data)
 
     for (let i = 0; i < data.length; i++) {
         if (data[i].portfolioID == portfolioId){
@@ -100,11 +100,16 @@ function Portfolio() {
             stockTableData = portfolio.cumPositions;
 
             let allocation = portfolio.portfolioAllocationBySector;
+            let historicalVal = portfolio.portfolioHistoricalValue
 
             for (var k in allocation){
                 // let val = Math.round(allocation[k]* 100) / 100;
                 piechartdata.push({"name": k, "value":  allocation[k]});
 
+            }
+
+            for (var h in historicalVal){
+                linechartdata.push({"date": h, "price": historicalVal[h]})
             }
         }
     }
@@ -181,7 +186,7 @@ function Portfolio() {
             </div>
             <h4 className='font-semibold'>Portfolio Performance</h4>
             <div className="flex my-6">
-                <LineChartComponent></LineChartComponent>
+                <LineChartComponent data={linechartdata}></LineChartComponent>
                 <PieChartComponent data={piechartdata}></PieChartComponent>
             </div>
             <div className="my-6 px-6">
