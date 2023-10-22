@@ -1,66 +1,63 @@
 package com.app.NewsSentimentByStockAPI;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NewsSentimentByStockDTO {
 
-    private int items;
+    private String items;
     private String sentimentScoreDefinition;
     private String relevanceScoreDefinition;
-    private List<FeedItem> feed;
+    private List<Feed> feed;
 
-    // Constructors
-    public NewsSentimentByStockDTO(int items, String sentimentScoreDefinition, String relevanceScoreDefinition,
-            List<FeedItem> feed) {
+    public NewsSentimentByStockDTO() {
+        this.feed = new ArrayList<>(); // Initialize the topics list here
+    }
+
+    public NewsSentimentByStockDTO(String items, String sentimentScoreDefinition, String relevanceScoreDefinition,
+            List<Feed> feed) {
         this.items = items;
         this.sentimentScoreDefinition = sentimentScoreDefinition;
         this.relevanceScoreDefinition = relevanceScoreDefinition;
         this.feed = feed;
     }
-    public NewsSentimentByStockDTO(){
-        
+
+    public String getItems() {
+        return items;
     }
 
-    // Getters
-    public int getItems() {
-        return items;
+    public void setItems(String items) {
+        this.items = items;
     }
 
     public String getSentimentScoreDefinition() {
         return sentimentScoreDefinition;
     }
 
-    public String getRelevanceScoreDefinition() {
-        return relevanceScoreDefinition;
-    }
-
-    public List<FeedItem> getFeed() {
-        return feed;
-    }
-
-    // Setters
-
-    public void setItems(int items) {
-        this.items = items;
-    }
-
     public void setSentimentScoreDefinition(String sentimentScoreDefinition) {
         this.sentimentScoreDefinition = sentimentScoreDefinition;
+    }
+
+    public String getRelevanceScoreDefinition() {
+        return relevanceScoreDefinition;
     }
 
     public void setRelevanceScoreDefinition(String relevanceScoreDefinition) {
         this.relevanceScoreDefinition = relevanceScoreDefinition;
     }
 
-    public void setFeed(List<FeedItem> feed) {
+    public List<Feed> getFeed() {
+        return feed;
+    }
+
+    public void setFeed(List<Feed> feed) {
         this.feed = feed;
     }
 
-    public static class FeedItem {
+    public static class Feed {
         private String title;
         private String url;
-        private LocalDateTime timePublished;
+        private String timePublished;
         private List<String> authors;
         private String summary;
         private String bannerImage;
@@ -72,10 +69,15 @@ public class NewsSentimentByStockDTO {
         private String overallSentimentLabel;
         private List<TickerSentiment> tickerSentiment;
 
-        // Constructors
-        public FeedItem(String title, String url, LocalDateTime timePublished, List<String> authors, String summary,
-                String bannerImage, String source, String categoryWithinSource, String sourceDomain, List<Topic> topics,
-                double overallSentimentScore, String overallSentimentLabel, List<TickerSentiment> tickerSentiment) {
+        public Feed() {
+            this.topics = new ArrayList<>(); // Initialize the topics list here
+            this.tickerSentiment = new ArrayList<>(); // Initialize the tickerSentiment list here
+        }
+
+        public Feed(String title, String url, String timePublished, List<String> authors, String summary,
+                String bannerImage, String source, String categoryWithinSource, String sourceDomain,
+                List<Topic> topics, double overallSentimentScore, String overallSentimentLabel,
+                List<TickerSentiment> tickerSentiment) {
             this.title = title;
             this.url = url;
             this.timePublished = timePublished;
@@ -91,108 +93,104 @@ public class NewsSentimentByStockDTO {
             this.tickerSentiment = tickerSentiment;
         }
 
-        // Getters
-
         public String getTitle() {
             return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
         }
 
         public String getUrl() {
             return url;
         }
 
-        public LocalDateTime getTimePublished() {
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getTimePublished() {
             return timePublished;
+        }
+
+        public void setTimePublished(String timePublished) {
+            this.timePublished = timePublished;
         }
 
         public List<String> getAuthors() {
             return authors;
         }
 
-        public String getSummary() {
-            return summary;
-        }
-
-        public String getBannerImage() {
-            return bannerImage;
-        }
-
-        public String getSource() {
-            return source;
-        }
-
-        public String getCategoryWithinSource() {
-            return categoryWithinSource;
-        }
-
-        public String getSourceDomain() {
-            return sourceDomain;
-        }
-
-        public List<Topic> getTopics() {
-            return topics;
-        }
-
-        public double getOverallSentimentScore() {
-            return overallSentimentScore;
-        }
-
-        public String getOverallSentimentLabel() {
-            return overallSentimentLabel;
-        }
-
-        public List<TickerSentiment> getTickerSentiment() {
-            return tickerSentiment;
-        }
-
-        // Setters
-
-        public void setTitle(String title) {
-            this.title = title;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public void setTimePublished(LocalDateTime timePublished) {
-            this.timePublished = timePublished;
-        }
-
         public void setAuthors(List<String> authors) {
             this.authors = authors;
+        }
+
+        public String getSummary() {
+            return summary;
         }
 
         public void setSummary(String summary) {
             this.summary = summary;
         }
 
+        public String getBannerImage() {
+            return bannerImage;
+        }
+
         public void setBannerImage(String bannerImage) {
             this.bannerImage = bannerImage;
+        }
+
+        public String getSource() {
+            return source;
         }
 
         public void setSource(String source) {
             this.source = source;
         }
 
+        public String getCategoryWithinSource() {
+            return categoryWithinSource;
+        }
+
         public void setCategoryWithinSource(String categoryWithinSource) {
             this.categoryWithinSource = categoryWithinSource;
+        }
+
+        public String getSourceDomain() {
+            return sourceDomain;
         }
 
         public void setSourceDomain(String sourceDomain) {
             this.sourceDomain = sourceDomain;
         }
 
+        public List<Topic> getTopics() {
+            return topics;
+        }
+
         public void setTopics(List<Topic> topics) {
             this.topics = topics;
+        }
+
+        public double getOverallSentimentScore() {
+            return overallSentimentScore;
         }
 
         public void setOverallSentimentScore(double overallSentimentScore) {
             this.overallSentimentScore = overallSentimentScore;
         }
 
+        public String getOverallSentimentLabel() {
+            return overallSentimentLabel;
+        }
+
         public void setOverallSentimentLabel(String overallSentimentLabel) {
             this.overallSentimentLabel = overallSentimentLabel;
+        }
+
+        public List<TickerSentiment> getTickerSentiment() {
+            return tickerSentiment;
         }
 
         public void setTickerSentiment(List<TickerSentiment> tickerSentiment) {
@@ -203,32 +201,29 @@ public class NewsSentimentByStockDTO {
             private String topic;
             private double relevanceScore;
 
-            // Constructors
+            public Topic() {
+            }
+
             public Topic(String topic, double relevanceScore) {
                 this.topic = topic;
                 this.relevanceScore = relevanceScore;
             }
 
-            // Getters
-
             public String getTopic() {
                 return topic;
+            }
+
+            public void setTopic(String topic) {
+                this.topic = topic;
             }
 
             public double getRelevanceScore() {
                 return relevanceScore;
             }
 
-            // Setters
-
-            public void setTopic(String topic) {
-                this.topic = topic;
-            }
-
             public void setRelevanceScore(double relevanceScore) {
                 this.relevanceScore = relevanceScore;
             }
-
         }
 
         public static class TickerSentiment {
@@ -237,7 +232,9 @@ public class NewsSentimentByStockDTO {
             private double tickerSentimentScore;
             private String tickerSentimentLabel;
 
-            // Constructors
+            public TickerSentiment() {
+            }
+
             public TickerSentiment(String ticker, double relevanceScore, double tickerSentimentScore,
                     String tickerSentimentLabel) {
                 this.ticker = ticker;
@@ -246,34 +243,32 @@ public class NewsSentimentByStockDTO {
                 this.tickerSentimentLabel = tickerSentimentLabel;
             }
 
-            // Getters
             public String getTicker() {
                 return ticker;
+            }
+
+            public void setTicker(String ticker) {
+                this.ticker = ticker;
             }
 
             public double getRelevanceScore() {
                 return relevanceScore;
             }
 
-            public double getTickerSentimentScore() {
-                return tickerSentimentScore;
-            }
-
-            public String getTickerSentimentLabel() {
-                return tickerSentimentLabel;
-            }
-
-            // Setters
-            public void setTicker(String ticker) {
-                this.ticker = ticker;
-            }
-
             public void setRelevanceScore(double relevanceScore) {
                 this.relevanceScore = relevanceScore;
             }
 
+            public double getTickerSentimentScore() {
+                return tickerSentimentScore;
+            }
+
             public void setTickerSentimentScore(double tickerSentimentScore) {
                 this.tickerSentimentScore = tickerSentimentScore;
+            }
+
+            public String getTickerSentimentLabel() {
+                return tickerSentimentLabel;
             }
 
             public void setTickerSentimentLabel(String tickerSentimentLabel) {
