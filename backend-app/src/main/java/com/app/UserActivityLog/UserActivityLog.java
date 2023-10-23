@@ -14,7 +14,7 @@ public class UserActivityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userActivityId;
     private LocalDateTime lastLogin;
-    
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_activity_id") // This is the foreign key column in the UserEvent table
     private List<UserEvent> events = new ArrayList<>();
@@ -24,7 +24,7 @@ public class UserActivityLog {
         events.add(newEvent);
 
         // Update Last LogIn
-        if ("LogIn".equals(event)) {
+        if ("login".equals(event)) {
             lastLogin = timestamp;
         }
     }
