@@ -2,14 +2,10 @@
 package com.app.Portfolio;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Date;
-import java.util.HashMap;
 
 import com.app.User.User;
 import com.app.User.UserService;
@@ -81,6 +77,9 @@ public class PortfolioService {
     }
 
     public List<Map<String, Object>> computeCumPositions(List<Position> positions) {
+        if (positions == null || positions.isEmpty()) {
+            return new ArrayList<>(); // Return an empty list if positions is null or empty
+        }
         // Group the positions by stock symbol
         Map<String, List<Position>> groupedPositions = positions.stream()
                 .collect(Collectors.groupingBy(Position::getStockSymbol));
@@ -148,16 +147,20 @@ public class PortfolioService {
         Map<String, Double> historicalValue = new HashMap<>();
 
         // 1. Determine the date range for computation
-        Date oldestPositionDate = portfolio.getPositions().stream()
+        List<Position> positions = portfolio.getPositions();
+        if (positions == null || positions.isEmpty()) {
+            return new HashMap<>(); // Return an empty map if positions is null or empty
+        }
+        Date oldestPositionDate = positions.stream()
                 .min(Comparator.comparing(Position::getPositionAddDate))
-                .get()
+                .orElseThrow(() -> new NoSuchElementException("No value present")) // This line is updated
                 .getPositionAddDate();
 
         // 2. Initialize a map to store historical values for each stock symbol
         Map<String, Map<String, Double>> historicalValuesByStock = new HashMap<>();
 
         // 3. Compute Monthly Value for each position
-        for (Position position : portfolio.getPositions()) {
+        for (Position position : positions) { // This line is updated
             String stockSymbol = position.getStockSymbol();
 
             // Fetch the monthly time series data for the current position's stock symbol
@@ -166,19 +169,22 @@ public class PortfolioService {
 
             // Initialize the historical values map for this stock symbol if it doesn't
             // exist
-            if (!historicalValuesByStock.containsKey(stockSymbol)) {
-                historicalValuesByStock.put(stockSymbol, new HashMap<>());
-            }
+            historicalValuesByStock.computeIfAbsent(stockSymbol, k -> new HashMap<>());
             Map<String, Double> historicalValues = historicalValuesByStock.get(stockSymbol);
 
             // Compute the historical values for this stock symbol
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // This line is added
             for (Map.Entry<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> entry : monthlyTimeSeries.entrySet()) {
                 String date = entry.getKey();
                 double priceForMonth = entry.getValue().getClose();
                 double valueForMonth = priceForMonth * position.getQuantity();
 
-                if (date.compareTo(new SimpleDateFormat("yyyy-MM-dd").format(oldestPositionDate)) >= 0) {
-                    historicalValues.put(date, historicalValues.getOrDefault(date, 0.0) + valueForMonth);
+                try {
+                    if (sdf.parse(date).compareTo(oldestPositionDate) >= 0) { // This line is updated
+                        historicalValues.put(date, historicalValues.getOrDefault(date, 0.0) + valueForMonth);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace(); // This line is added
                 }
             }
         }

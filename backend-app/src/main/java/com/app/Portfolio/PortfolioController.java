@@ -92,13 +92,13 @@ public class PortfolioController {
 
             // 4. Loop through each portfolio to transform its data into the required format
             for (Portfolio portfolio : portfolios) {
-                List<Map<String, Object>> cumPositions = null; // Initialize cumPositions as null
+                List<Map<String, Object>> cumPositions = new ArrayList<>(); // Initialize cumPositions as an empty list
                 double currentTotalPortfolioValue = 0.0 + portfolio.getCapitalUSD();
 
-                // Check if the positions list is not null and not empty
-                if (portfolio.getPositions() != null && !portfolio.getPositions().isEmpty()) {
+                List<Position> positions = portfolio.getPositions();
+                if (positions != null && !positions.isEmpty()) {
                     // Compute the cumulative positions for this portfolio
-                    cumPositions = portfolioService.computeCumPositions(portfolio.getPositions());
+                    cumPositions = portfolioService.computeCumPositions(positions);
 
                     for (Map<String, Object> cumPosition : cumPositions) {
                         currentTotalPortfolioValue += (Double) cumPosition.get("currentValue");
@@ -106,22 +106,26 @@ public class PortfolioController {
                 }
 
                 Map<String, Double> allocationBySector = new HashMap<>();
-                for (Map<String, Object> cumPosition : cumPositions) {
-                    String sector = (String) cumPosition.get("stockSector");
-                    double value = (Double) cumPosition.get("currentValue");
-                    allocationBySector.put(sector, allocationBySector.getOrDefault(sector, 0.0) + value);
+                if (!cumPositions.isEmpty()) {
+                    for (Map<String, Object> cumPosition : cumPositions) {
+                        String sector = (String) cumPosition.get("stockSector");
+                        double value = (Double) cumPosition.get("currentValue");
+                        allocationBySector.put(sector, allocationBySector.getOrDefault(sector, 0.0) + value);
+                    }
                 }
 
-                for (Map.Entry<String, Double> entry : allocationBySector.entrySet()) {
-                    allocationBySector.put(entry.getKey(), (entry.getValue() / currentTotalPortfolioValue) * 100);
+                if (!allocationBySector.isEmpty()) {
+                    for (Map.Entry<String, Double> entry : allocationBySector.entrySet()) {
+                        allocationBySector.put(entry.getKey(), (entry.getValue() / currentTotalPortfolioValue) * 100);
+                    }
                 }
 
                 double cashPercentage = (portfolio.getCapitalUSD() / currentTotalPortfolioValue) * 100;
                 allocationBySector.put("CASH", cashPercentage);
 
                 // 4.2 Compute the portfolio historical value
-                Map<String, Double> portfolioHistoricalValue = portfolioService.computePortfolioHistoricalValue(portfolio,
-                        monthlyController);
+                Map<String, Double> portfolioHistoricalValue = portfolioService
+                        .computePortfolioHistoricalValue(portfolio, monthlyController);
 
                 // 4.3 Create a DTO (Data Transfer Object) and add it to the response list
                 PortfolioDTO dto = new PortfolioDTO(portfolio, cumPositions);
@@ -140,8 +144,6 @@ public class PortfolioController {
                     .body(new WildcardResponse(false, e.getMessage(), null));
         }
     }
-
-
 
     /// POSIITION FUNCTIONS
     @Autowired
