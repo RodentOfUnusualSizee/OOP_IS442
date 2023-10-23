@@ -22,14 +22,14 @@ function AdminHome() {
     const [showModal, setShowModal] = React.useState<boolean>(false);
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
     const [data, setData] = React.useState<User[]>([]);
-    // const userId = authUser.id;
-    // const userRole = authUser.role;
-    // const userIsLoggedIn = isLoggedIn;
-    // const management = userRole === "admin" || userRole === "user";
-    const userId = 1;
-    const userRole = "admin";
-    const userIsLoggedIn = true;
+    const userId = authUser.id;
+    const userRole = authUser.role;
+    const userIsLoggedIn = isLoggedIn;
     const management = userRole === "admin" || userRole === "user";
+    // const userId = 1;
+    // const userRole = "admin";
+    // const userIsLoggedIn = true;
+    // const management = userRole === "admin" || userRole === "user";
     // get users
     React.useEffect(() => {
         if (!hasFetchedData) {
@@ -105,7 +105,7 @@ function AdminHome() {
             lastActivity = user["lastActivity"]["event"]+" at " + format(timestampDateObj, 'yyyy-MM-dd HH:mm:ss')
         }
         else{
-            viewFullLog = <>No Activities</>
+            viewFullLog = <div className="p-2 font-medium text-gsgray90 text-sm">No Activities</div>
         }
         if(user["lastLogin"] != null){
             lastLogin = format(new Date(user["lastLogin"]), 'yyyy-MM-dd HH:mm:ss')
