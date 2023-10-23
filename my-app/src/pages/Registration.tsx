@@ -13,8 +13,6 @@ function Registration() {
 
     const submitRegistration = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        alert("Email: " + email + ", First Name: " + firstName +  + ", Last Name: " + lastName + ", Password: " + password);
-        alert(password == confirmPassword);
 
         if(password != confirmPassword){
             alert("Passwords do not match");
@@ -23,28 +21,32 @@ function Registration() {
 
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         if(passwordRegex.test(password)){
-            alert("Password is good");
-            window.location.href = '/';
+            alert("Your password is valid. Please wait a moment while we redirect you to the main page.");
+
+            let data = {
+                "email": email,
+                "password": password,
+                "firstName": firstName,
+                "lastName": lastName,
+                "role": "user"
+            }
+            
+            const register = registerUser(data);
+            register.then((response) => {
+                console.log(response);
+                if (response.success){
+                    window.location.href = '/';
+                }
+
+            }).catch((error) => {
+                console.log(error);
+
+            });
+
         }
         else{
-            alert("Password is bad");
+            alert("Your password is invalid. Please try again.");
         }
-        
-        let data = {
-            "email": email,
-            "password": password,
-            "firstName": firstName,
-            "lastName": lastName,
-            "role": "user"
-        }
-
-        const register = registerUser(data);
-        register.then((response) => {
-            console.log(response);
-        }).catch((error) => {
-            console.log(error);
-        });
-
     }
 
     const passwordReqs = () => {
