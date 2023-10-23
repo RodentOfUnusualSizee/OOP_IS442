@@ -22,14 +22,14 @@ function AdminHome() {
     const [showModal, setShowModal] = React.useState<boolean>(false);
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
     const [data, setData] = React.useState<User[]>([]);
-    // const userId = authUser.id;
-    // const userRole = authUser.role;
-    // const userIsLoggedIn = isLoggedIn;
-    // const management = userRole === "admin" || userRole === "user";
-    const userId = 1;
-    const userRole = "admin";
-    const userIsLoggedIn = true;
+    const userId = authUser.id;
+    const userRole = authUser.role;
+    const userIsLoggedIn = isLoggedIn;
     const management = userRole === "admin" || userRole === "user";
+    // const userId = 1;
+    // const userRole = "admin";
+    // const userIsLoggedIn = true;
+    // const management = userRole === "admin" || userRole === "user";
     //get users
     React.useEffect(() => {
         if (!hasFetchedData) {
