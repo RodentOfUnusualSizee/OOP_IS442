@@ -58,6 +58,11 @@ public class UserService {
         return new WildcardResponse(true, "Success", userConverted);
     }
 
+    //Get past 1000 events
+    public WildcardResponse findAllEvents() {
+        
+    }
+
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }

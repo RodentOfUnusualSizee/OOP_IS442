@@ -77,6 +77,11 @@ public class UserController {
             return ResponseEntity.status(404).body(activityLog);
         }
     }
+    
+    @GetMapping("/all/activity-log")
+    public WildcardResponse getAllActivityLogs() {
+        
+    }
 
     @PostMapping("/{userId}/add-event")
     public ResponseEntity<WildcardResponse> addEventForUser(

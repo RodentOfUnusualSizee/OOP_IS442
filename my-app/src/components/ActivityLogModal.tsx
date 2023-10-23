@@ -85,7 +85,7 @@ const ActivityLogModal: React.FC<ActivityLogModalProps> = ({ selectedId, showMod
                                 <h3 className="text-3xl font-semibold leading-6 text-gsgray90 bg-white py-4" id="modal-title">User Activity log</h3>
 
                                 {/* Scrollable table container */}
-                                <div className="overflow-y-auto" style={{ maxHeight: '500px' }}>
+                                <div className="overflow-y-scroll overflow-x-hidden" style={{ maxHeight: '550px' }}>
                                     <Table
                                         tableData={eventTableData}
                                         tableHeaders={tableHeaders}

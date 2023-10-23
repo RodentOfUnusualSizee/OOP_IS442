@@ -22,15 +22,15 @@ function AdminHome() {
     const [showModal, setShowModal] = React.useState<boolean>(false);
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
     const [data, setData] = React.useState<User[]>([]);
-    const userId = authUser.id;
-    const userRole = authUser.role;
-    const userIsLoggedIn = isLoggedIn;
-    const management = userRole === "admin" || userRole === "user";
-    // const userId = 1;
-    // const userRole = "admin";
-    // const userIsLoggedIn = true;
+    // const userId = authUser.id;
+    // const userRole = authUser.role;
+    // const userIsLoggedIn = isLoggedIn;
     // const management = userRole === "admin" || userRole === "user";
-    // get users
+    const userId = 1;
+    const userRole = "admin";
+    const userIsLoggedIn = true;
+    const management = userRole === "admin" || userRole === "user";
+    //get users
     React.useEffect(() => {
         if (!hasFetchedData) {
             const users = getAllUsers();
@@ -96,7 +96,7 @@ function AdminHome() {
         let emailVerified:string = "No"
         let lastActivity:string = "None"
         let lastLogin:string = "None"
-        let viewFullLog:ReactElement =<button data-id={user["id"]} onClick={handleClick} className="rounded-md text-sm font-medium text-gsgray90 transition hover:bg-gray-200 bg-slate-400 p-2 border border-2" >View More</button>
+        let viewFullLog:ReactElement =<button data-id={user["id"]} onClick={handleClick} className="rounded-md text-sm font-medium text-gsgray90 transition hover:bg-slate-400 bg-slate-200 p-2 " >View More</button>
         if(user["emailVerified"]){
             emailVerified = "Yes"
         }
@@ -144,7 +144,7 @@ function AdminHome() {
     return (
         <div className="AdminHome">
         <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
-        <div className="p-8">
+        <div className="py-8 px-8">
             <Table
                     tableData={userTableData}
                     tableHeaders={tableHeaders}

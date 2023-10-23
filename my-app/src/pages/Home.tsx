@@ -20,6 +20,7 @@ function Home() {
 
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
+    const [error, setError] = React.useState<string>("");
 
     const submitLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -43,10 +44,9 @@ function Home() {
                 } 
                 else {
                     let message = response["message"]
-                    alert(message);
                 }
             }).catch((error) => {
-                console.log(error);
+                setError(error.response.data.message);
             });
         
     }
@@ -89,6 +89,9 @@ function Home() {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required>
                                     </input>
+                                </div>
+                                <div id="errorMessage" className="text-gsred60 text-sm font-light w-30 pb-2 px-2">
+                                   {error}
                                 </div>
                                 <div id="loginButtons">
                                     <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="Login">
