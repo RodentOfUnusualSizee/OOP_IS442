@@ -37,7 +37,7 @@ export function AuthProvider(props: { children: React.ReactNode }) {
         }
     }, []);
 
-    const login = async (email: string, password: string) => {
+    const login = async (email: string, password: string): Promise<String> => {
         try {
             const response = await axios.post('http://localhost:8080/api/user/login', {
                 "email": email,
@@ -45,10 +45,10 @@ export function AuthProvider(props: { children: React.ReactNode }) {
             });
             console.log("This");
             console.log(response.data.data);
-            setAuthUser(response.data.data); // assuming the user information is located here
+            setAuthUser(response.data.data)
             setIsLoggedIn(true);
             localStorage.setItem('authToken', JSON.stringify(response.data.data));
-            return response.data;
+            return response.data.data.role;
         } catch (error) {
             console.error(error);
             throw error; // this will allow you to use .catch when calling login

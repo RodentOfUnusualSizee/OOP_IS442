@@ -3,14 +3,18 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CSSTransition } from 'react-transition-group';
 import '../styles/home.css';
-import { loginUser } from '../utils/api';
-
 
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 
 function Home() {
+
+    interface authToken {
+        id: number;
+        email: string;
+        role: string;
+    }
 
     const { login, setAuthUser, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
@@ -25,30 +29,25 @@ function Home() {
     const submitLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         // alert("Email: " + email + ", Password: " + password );
-            let data = {
-                "email": email,
-                "password": password
+        try {
+            const userRole = (await login(email, password)) as unknown as string;
+            console.log("User Role:", userRole);
+            let role = userRole;
+            if (role === "user") {
+                navigate("/UserHome");
             }
-            const loginAPI = loginUser(data);
-            loginAPI.then((response) => {
-                if (response["success"]) {
-                    let role = response["data"]["role"]
-                    setAuthUser(response["data"]);
-                    setIsLoggedIn(true);
-                    if(role == 'user'){
-                        navigate("/UserHome");
-                    }
-                    else{
-                        navigate("/AdminHome");
-                    }
-                } 
-                else {
-                    let message = response["message"]
-                }
-            }).catch((error) => {
-                setError(error.response.data.message);
-            });
-        
+            else {
+                navigate("/AdminHome");
+            }
+        } catch (error : unknown) {
+            if (error instanceof Error) {
+                console.error("An error occurred during login", error);
+                setError(error.message);
+            } else {
+                console.error("An error occurred during login", error);
+                setError("An error occurred during login");
+            }
+        }
     }
 
     return (
@@ -91,7 +90,7 @@ function Home() {
                                     </input>
                                 </div>
                                 <div id="errorMessage" className="text-gsred60 text-sm font-light w-30 pb-2 px-2">
-                                   {error}
+                                    {error}
                                 </div>
                                 <div id="loginButtons">
                                     <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="Login">
