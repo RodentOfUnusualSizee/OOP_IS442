@@ -1,28 +1,5 @@
 import axios from 'axios';
 
-// // Define the base URL for your API
-const BASE_URL = 'https://jsonplaceholder.typicode.com'; // Replace with your API URL
-
-// Function to make a GET request
-export async function fetchData() {
-  try {
-    const response = await axios.get(`${BASE_URL}/posts/1`);
-    return response.data; // Return the data
-  } catch (error) {
-    throw error; // Throw an error if there's an issue
-  }
-}
-
-// Function to make a POST request
-export async function postData(data: any) {
-  try {
-    const response = await axios.post(`${BASE_URL}/posts`, data);
-    return response.data; // Return the data
-  } catch (error) {
-    throw error; // Throw an error if there's an issue
-  }
-}
-
 export function roundTo(number: number, decimalPlaces: number) {
   const multiplier = Math.pow(10, decimalPlaces);
   return Math.round(number * multiplier) / multiplier;
@@ -100,6 +77,15 @@ export async function getAllUsers() {
   }
 }
 
+export async function getStockOverview(symbol: string) {
+  try {
+    const response = await axios.get(`${BASE_STOCK_URL}/companyOverview/${symbol}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function getActivityLogById(userId: any) {
   try {
       const response = await axios.get(`${BASE_USER_URL}/${userId}/activity-log`);
@@ -110,3 +96,20 @@ export async function getActivityLogById(userId: any) {
 }
 
 
+export async function getStockNews(symbol: string) {
+  try {
+    const response = await axios.get(`${BASE_STOCK_URL}/NewsSentimentByStock/${symbol}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function getStockHistoricalValues(symbol: string, days: number) {
+  try {
+    const response = await axios.get(`${BASE_STOCK_URL}/dailyTimeSeries/${days}/${symbol}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}

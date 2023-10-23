@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Home() {
 
-    const {setAuthUser, setIsLoggedIn} = useAuth();
+    const { login, setAuthUser, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
@@ -21,7 +21,7 @@ function Home() {
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
 
-    const submitLogin = (e: React.FormEvent<HTMLButtonElement>) => {
+    const submitLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         // alert("Email: " + email + ", Password: " + password );
             let data = {

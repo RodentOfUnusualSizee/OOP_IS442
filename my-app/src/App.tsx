@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { fetchData, postData } from './utils/api';
 import { Routes, Route } from "react-router-dom";
 
 import Home from './pages/Home';
