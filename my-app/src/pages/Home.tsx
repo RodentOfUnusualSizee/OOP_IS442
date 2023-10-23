@@ -24,8 +24,6 @@ function Home() {
     const submitLogin = (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         const buttonName = e.currentTarget.name;
-        alert("Email: " + email + ", Password: " + password + ", Button: " + buttonName);
-
 
         if (buttonName == "userLogin") {
             let data = {
