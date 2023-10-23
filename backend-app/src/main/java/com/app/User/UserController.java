@@ -78,9 +78,9 @@ public class UserController {
         }
     }
     
-    @GetMapping("/all/activity-log")
-    public WildcardResponse getAllActivityLogs() {
-        
+    @GetMapping("/all/events")
+    public WildcardResponse getAllEvents() {
+        return userService.findAllEvents();
     }
 
     @PostMapping("/{userId}/add-event")

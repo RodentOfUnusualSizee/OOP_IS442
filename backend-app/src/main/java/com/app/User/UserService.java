@@ -19,7 +19,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private EventRepository eventRepository;
     @Autowired
     private UserActivityLogRepository userActivityLogRepository;
 
@@ -60,7 +61,8 @@ public class UserService {
 
     //Get past 1000 events
     public WildcardResponse findAllEvents() {
-        
+       List<UserEvent> userEvents = eventRepository.findAll();
+       return new WildcardResponse(true, "Success", userEvents);
     }
 
     public void deleteById(Long id) {
