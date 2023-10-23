@@ -15,7 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 // Postman: http://localhost:8080/api/stock/companyOverview/{TickerSymbol}
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/stock/companyOverview")
 public class CompanyOverviewController {
@@ -26,7 +26,7 @@ public class CompanyOverviewController {
 
     private Map<String, CompanyOverviewDTO> dataCache = new HashMap<>();
 
-    @GetMapping("/{symbol}")
+    @PostMapping("/{symbol}")
     public CompanyOverviewDTO getCompanyOverview(@PathVariable String symbol) {
         if (dataCache.containsKey(symbol)) {
             return dataCache.get(symbol);
