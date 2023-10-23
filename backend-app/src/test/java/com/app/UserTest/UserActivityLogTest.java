@@ -22,12 +22,12 @@ public class UserActivityLogTest {
     @Test
     public void testAddNewEvent() {
         LocalDateTime timestamp = LocalDateTime.now();
-        UserActivityLog.addNewEvent("LogIn", timestamp);
-        UserActivityLog.addNewEvent("Logout", timestamp.plusMinutes(5));
+        UserActivityLog.addNewEvent("login", timestamp,1);
+        UserActivityLog.addNewEvent("logout", timestamp.plusMinutes(5),1);
 
         assertEquals(2, UserActivityLog.getAllEvents().size());
-        assertEquals("LogIn", UserActivityLog.getAllEvents().get(0).getEvent());
-        assertEquals("Logout", UserActivityLog.getAllEvents().get(1).getEvent());
+        assertEquals("login", UserActivityLog.getAllEvents().get(0).getEvent());
+        assertEquals("logout", UserActivityLog.getAllEvents().get(1).getEvent());
         assertEquals(timestamp, UserActivityLog.getLastLogin());
     }
 
@@ -36,7 +36,7 @@ public class UserActivityLogTest {
         assertNull(UserActivityLog.getLastActivity());
 
         LocalDateTime timestamp = LocalDateTime.now();
-        UserActivityLog.addNewEvent("LogIn", timestamp);
+        UserActivityLog.addNewEvent("LogIn", timestamp,1);
         UserEvent lastEvent = UserActivityLog.getLastActivity();
 
         assertNotNull(lastEvent);

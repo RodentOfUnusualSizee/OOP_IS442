@@ -105,8 +105,8 @@ public class User {
         this.userActivityLog = userActivityLog;
     }
 
-    public void addNewActivityEvent(String event, LocalDateTime timestamp) {
-        this.userActivityLog.addNewEvent(event, timestamp);
+    public void addNewActivityEvent(String event, LocalDateTime timestamp, long id) {
+        this.userActivityLog.addNewEvent(event, timestamp, id);
     }
 
     public List<Portfolio> getPortfolios() {

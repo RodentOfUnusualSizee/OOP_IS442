@@ -106,11 +106,11 @@ public class UserService {
                 userActivityLog = new UserActivityLog();
             }
 
-            userActivityLog.addNewEvent(userEvent.getEvent(), userEvent.getTimestamp());
+            UserEvent event = userActivityLog.addNewEvent(userEvent.getEvent(), userEvent.getTimestamp(), user.getId());
             userActivityLogRepository.save(userActivityLog);
             user.setUserActivityLog(userActivityLog);
             userRepository.save(user);
-            return new WildcardResponse(true, "Event added successfully.", userEvent);
+            return new WildcardResponse(true, "Event added successfully.", event);
         } catch (Exception e) {
             return new WildcardResponse(false, e.getMessage(), null);
         }

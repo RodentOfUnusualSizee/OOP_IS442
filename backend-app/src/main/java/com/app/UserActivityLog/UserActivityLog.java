@@ -14,19 +14,19 @@ public class UserActivityLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userActivityId;
     private LocalDateTime lastLogin;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_activity_id") // This is the foreign key column in the UserEvent table
     private List<UserEvent> events = new ArrayList<>();
 
-    public void addNewEvent(String event, LocalDateTime timestamp) {
-        UserEvent newEvent = new UserEvent(event, timestamp);
+    public UserEvent addNewEvent(String event, LocalDateTime timestamp, long userId) {
+        UserEvent newEvent = new UserEvent(event, timestamp, userId);
         events.add(newEvent);
 
         // Update Last LogIn
         if ("login".equals(event)) {
             lastLogin = timestamp;
         }
+        return newEvent;
     }
 
     public List<UserEvent> getAllEvents() {

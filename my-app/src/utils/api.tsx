@@ -113,3 +113,13 @@ export async function getStockHistoricalValues(symbol: string, days: number) {
     throw error;
   }
 }
+
+
+export async function getAllEvents() {
+  try {
+    const response = await axios.get(`${BASE_USER_URL}/all/events`);
+    return response.data;
+  } catch (error) { 
+    throw error;
+  }
+}
