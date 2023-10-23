@@ -83,10 +83,13 @@ public class DailyController {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(days);
 
-        Map<String, DailyStockData> filteredTimeSeries = fullData.getTimeSeries().entrySet().stream()
-                .filter(entry -> LocalDate.parse(entry.getKey(), formatter).isAfter(startDate)
-                        && LocalDate.parse(entry.getKey(), formatter).isBefore(endDate))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        List<DailyStockData> filteredTimeSeries = fullData.getTimeSeries().stream()
+                .filter(entry -> {
+                    LocalDate date = LocalDate.parse(entry.getDate(), formatter);
+                    return date.isAfter(startDate) && date.isBefore(endDate);
+                })
+                .sorted(Comparator.comparing(entry -> LocalDate.parse(entry.getDate(), formatter))) // Sort by date
+                .collect(Collectors.toList());
 
         filteredData.setTimeSeries(filteredTimeSeries);
         return filteredData;
@@ -95,7 +98,7 @@ public class DailyController {
     private StockTimeSeriesDailyDTO mapResponseToDTO(Map<String, Object> responseBody) {
         StockTimeSeriesDailyDTO StockTimeSeriesDailyDTO = new StockTimeSeriesDailyDTO();
         MetaData metaData = new MetaData();
-        Map<String, DailyStockData> timeSeriesDaily = new HashMap<>();
+        List<DailyStockData> timeSeriesDaily = new ArrayList<>();
 
         // Parsing MetaData
         Map<String, String> apiMetaData = (Map<String, String>) responseBody.get("Meta Data");
@@ -110,23 +113,16 @@ public class DailyController {
         Map<String, Map<String, String>> apiTimeSeriesDaily = (Map<String, Map<String, String>>) responseBody
                 .get("Time Series (Daily)");
 
-        // Date format in API response is: "yyyy-MM-dd"
-        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
         for (Map.Entry<String, Map<String, String>> entry : apiTimeSeriesDaily.entrySet()) {
             DailyStockData dailyStockData = new DailyStockData();
+            dailyStockData.setDate(entry.getKey());
             dailyStockData.setOpen(Double.parseDouble(entry.getValue().get("1. open")));
             dailyStockData.setHigh(Double.parseDouble(entry.getValue().get("2. high")));
             dailyStockData.setLow(Double.parseDouble(entry.getValue().get("3. low")));
             dailyStockData.setClose(Double.parseDouble(entry.getValue().get("4. close")));
             dailyStockData.setVolume(Long.parseLong(entry.getValue().get("5. volume")));
 
-            try {
-                String dateKey = entry.getKey();
-                timeSeriesDaily.put(dateKey, dailyStockData);
-            } catch (Exception e) {
-                e.printStackTrace(); // Consider better exception handling
-            }
+            timeSeriesDaily.add(dailyStockData);
         }
         StockTimeSeriesDailyDTO.setTimeSeries(timeSeriesDaily);
 

@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.*;
 
 import com.app.WildcardResponse;
 import com.app.Portfolio.Portfolio;
+import com.app.User.EmailValidationComponent.EmailService;
 import com.app.UserActivityLog.UserActivityLog;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/user")
@@ -21,10 +23,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private EmailService emailService;
+
     @PostMapping("/create")
     public ResponseEntity<WildcardResponse> createUser(@RequestBody User user) {
         WildcardResponse res = userService.save(user);
-        if(res.getData() != null){
+        if (res.getData() != null) {
+            emailService.sendValidationEmail(user);
             return ResponseEntity.status(200).body(res);
 
         }
@@ -45,14 +51,13 @@ public class UserController {
     @GetMapping("/get/{id}")
     public ResponseEntity<WildcardResponse> getUser(@PathVariable Long id) {
         WildcardResponse res = userService.getUser(id);
-        if(res.getData() != null){
+        if (res.getData() != null) {
             return ResponseEntity.ok(res);
         }
         return ResponseEntity.status(404).body(res);
 
     }
 
-    
     @GetMapping("/get/all")
     public List<User> getAllUsers() {
         return userService.findAll();
@@ -90,7 +95,7 @@ public class UserController {
     public ResponseEntity<WildcardResponse> loginUser(
             @RequestBody LoginRequest loginRequest) {
         WildcardResponse result = userService.authenticateUser(loginRequest);
-        
+
         if (result.getData() != null) {
             return ResponseEntity.ok(result);
         } else {

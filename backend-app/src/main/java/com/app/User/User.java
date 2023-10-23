@@ -36,7 +36,7 @@ public class User {
 
     // Constructor requirement by Hibernate (used by Spring Data JPA)
     public User() {
-        this.emailVerified = true;
+        this.emailVerified = false;
     }
 
     // Constructor
@@ -48,7 +48,7 @@ public class User {
         this.role = role;
         this.userActivityLog = new UserActivityLog();
         this.portfolios = new ArrayList<>();
-        this.emailVerified = true;
+        this.emailVerified = false;
     }
 
     // ------------------ Getters and Setters (Start) ------------------

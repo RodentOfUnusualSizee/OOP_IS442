@@ -6,15 +6,11 @@ import java.util.*;
 public class StockTimeSeriesDailyDTO {
 
     private MetaData metaData;
-    private Map<String, DailyStockData> dailyTimeSeries;
+    private List<DailyStockData> timeSeries;
 
     // Getters
     public MetaData getMetaData() {
         return metaData;
-    }
-
-    public Map<String, DailyStockData> getTimeSeries() {
-        return dailyTimeSeries;
     }
 
     // Setters
@@ -22,8 +18,12 @@ public class StockTimeSeriesDailyDTO {
         this.metaData = metaData;
     }
 
-    public void setTimeSeries(Map<String, DailyStockData> dailyTimeSeries) {
-        this.dailyTimeSeries = dailyTimeSeries;
+    public List<DailyStockData> getTimeSeries() {
+        return timeSeries;
+    }
+
+    public void setTimeSeries(List<DailyStockData> timeSeries) {
+        this.timeSeries = timeSeries;
     }
 
     // Inner class for Meta Data
@@ -79,6 +79,7 @@ public class StockTimeSeriesDailyDTO {
 
     // Inner class for Daily Stock Data
     public static class DailyStockData {
+        private String date;
         private double open;
         private double high;
         private double low;
@@ -126,5 +127,15 @@ public class StockTimeSeriesDailyDTO {
         public void setVolume(long volume) {
             this.volume = volume;
         }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
+        }
+
     }
+
 }
