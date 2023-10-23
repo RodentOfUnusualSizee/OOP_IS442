@@ -68,6 +68,15 @@ export async function getStockStats() {
   }
 }
 
+export async function getAllUsers() {
+  try {
+    const response = await axios.get(`${BASE_USER_URL}/get/all`);
+    return response.data;
+  } catch (error) { 
+    throw error;
+  }
+}
+
 export async function getStockOverview(symbol: string) {
   try {
     const response = await axios.post(`${BASE_STOCK_URL}/companyOverview/${symbol}`);
@@ -76,6 +85,16 @@ export async function getStockOverview(symbol: string) {
     throw error;
   }
 }
+
+export async function getActivityLogById(userId: any) {
+  try {
+      const response = await axios.get(`${BASE_USER_URL}/${userId}/activity-log`);
+      return response.data;
+  } catch (error) {
+      throw error;
+  }
+}
+
 
 export async function getStockNews(symbol: string) {
   try {

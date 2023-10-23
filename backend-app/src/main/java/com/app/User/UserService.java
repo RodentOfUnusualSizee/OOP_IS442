@@ -49,8 +49,13 @@ public class UserService {
         }
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public WildcardResponse findAll() {
+        List<User> users = userRepository.findAll();
+        List<UserDTO> userConverted = new ArrayList<>();
+        for(User user:users){
+            userConverted.add(convertUserObject(user));
+        }
+        return new WildcardResponse(true, "Success", userConverted);
     }
 
     public void deleteById(Long id) {
@@ -164,8 +169,11 @@ public class UserService {
         userDTO.setRole(user.getRole());
         // userDTO.setEmailVerified(true);
         userDTO.setEmailVerified(user.getEmailVerified());
-
         // Map portfolio IDs as integers
+        if(user.getUserActivityLog() != null){
+            userDTO.setLastLogin(user.getUserActivityLog().getLastLogin());
+            userDTO.setLastActivity(user.getUserActivityLog().getLastActivity());
+        }
         if (user.getPortfolios() != null) {
             userDTO.setPortfolioIds(
                     user.getPortfolios().stream()
