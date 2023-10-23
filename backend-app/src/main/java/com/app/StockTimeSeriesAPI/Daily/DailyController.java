@@ -10,7 +10,10 @@ import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO.MetaData;
 import com.app.StockTimeSeriesAPI.Weekly.StockTimeSeriesWeeklyDTO;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -44,7 +47,8 @@ public class DailyController {
 
         Map<String, Object> responseBody = response.getBody();
 
-        // Implement your mapping logic to map the response to your StockTimeSeriesDailyDTO.
+        // Implement your mapping logic to map the response to your
+        // StockTimeSeriesDailyDTO.
         // Note: Normally, you would want to create a service layer to handle the
         // business logic
         // and keep your controller clean.
@@ -54,6 +58,38 @@ public class DailyController {
 
         return StockTimeSeriesDailyDTO;
         // return responseBody;
+    }
+
+    @GetMapping("/30/{symbol}")
+    public StockTimeSeriesDailyDTO getDailyTimeSeriesFor30Days(@PathVariable String symbol) {
+        return filterDataByDays(getDailyTimeSeries(symbol), 30);
+    }
+
+    @GetMapping("/60/{symbol}")
+    public StockTimeSeriesDailyDTO getDailyTimeSeriesFor60Days(@PathVariable String symbol) {
+        return filterDataByDays(getDailyTimeSeries(symbol), 60);
+    }
+
+    @GetMapping("/90/{symbol}")
+    public StockTimeSeriesDailyDTO getDailyTimeSeriesFor90Days(@PathVariable String symbol) {
+        return filterDataByDays(getDailyTimeSeries(symbol), 90);
+    }
+
+    private StockTimeSeriesDailyDTO filterDataByDays(StockTimeSeriesDailyDTO fullData, int days) {
+        StockTimeSeriesDailyDTO filteredData = new StockTimeSeriesDailyDTO();
+        filteredData.setMetaData(fullData.getMetaData());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(days);
+
+        Map<String, DailyStockData> filteredTimeSeries = fullData.getTimeSeries().entrySet().stream()
+                .filter(entry -> LocalDate.parse(entry.getKey(), formatter).isAfter(startDate)
+                        && LocalDate.parse(entry.getKey(), formatter).isBefore(endDate))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        filteredData.setTimeSeries(filteredTimeSeries);
+        return filteredData;
     }
 
     private StockTimeSeriesDailyDTO mapResponseToDTO(Map<String, Object> responseBody) {
