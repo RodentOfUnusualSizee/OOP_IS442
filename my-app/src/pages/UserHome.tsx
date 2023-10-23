@@ -19,30 +19,48 @@ function UserHome() {
     const [data, setData] = React.useState<Portfolio[]>([]);
 
     const { authUser, isLoggedIn } = useAuth();
-    const userId = authUser.id;
-    const userRole = authUser.role;
-    const userIsLoggedIn = isLoggedIn;
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
+
+    const [userId, setUserId] = React.useState<number>(1);
+    const [userRole, setUserRole] = React.useState<string>("");
+    const [userIsLoggedIn, setUserIsLoggedIn] = React.useState<boolean>(false);
     const management = userRole === "management" || userRole === "user";
+    console.log(authUser);
     console.log("User role: " + userRole)
     console.log("User logged in: " + userIsLoggedIn)
 
     React.useEffect(() => {
-        if (!hasFetchedData) {
-            const portfolio = getPortfolioByUserId(userId);
-            portfolio.then((response) => {
-                setData(response.data)
-                setHasFetchedData(true);
-            }).catch((error) => {
-                console.log(error);
-            });
+        if (authUser) {
+            setIsLoading(false);
+            setUserId(authUser.id);
+            setUserRole(authUser.role);
+            setUserIsLoggedIn(true);
+            console.log("login part");
+            if (!hasFetchedData) {
+                const portfolio = getPortfolioByUserId(authUser.id);
+                portfolio.then((response) => {
+                    setData(response.data)
+                    setHasFetchedData(true);
+                }).catch((error) => {
+                    console.log(error);
+                });
+            }
+        } else {
+            console.log("auth never loaded");
         }
-    }, [userId]);
+    }, [authUser, isLoggedIn]);
 
     let portfolioData: any[] = [];
-    data.forEach((item)=> {
-        let tmp = {id: item.portfolioID, name: item.portfolioName, strategy: item.strategyDesc, capital: item.capitalUSD}
+    data.forEach((item) => {
+        let tmp = { id: item.portfolioID, name: item.portfolioName, strategy: item.strategyDesc, capital: item.capitalUSD }
         portfolioData.push(tmp)
     })
+
+    if (isLoading) {
+        return (
+            <div>Loading...</div>
+        )
+    }
 
     return (
         <div>

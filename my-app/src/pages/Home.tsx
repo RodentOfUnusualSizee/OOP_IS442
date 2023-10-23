@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Home() {
 
-    const {setAuthUser, setIsLoggedIn} = useAuth();
+    const { login, setAuthUser, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
@@ -21,29 +21,21 @@ function Home() {
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
 
-    const submitLogin = (e: React.FormEvent<HTMLButtonElement>) => {
+    const submitLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
         const buttonName = e.currentTarget.name;
         alert("Email: " + email + ", Password: " + password + ", Button: " + buttonName);
 
 
         if (buttonName == "userLogin") {
-            let data = {
-                "email": email,
-                "password": password
+            try {
+                const userData = await login(email, password); 
+                console.log('User data:', userData);
+                navigate("/UserHome");
+            } catch (error) {
+                console.error("An error occurred during login", error);
+                alert("Invalid username or password");
             }
-            const loginAPI = loginUser(data);
-            loginAPI.then((response) => {
-                if (response["success"]) {
-                    setAuthUser(response["data"]);
-                    setIsLoggedIn(true);
-                    navigate("/UserHome");
-                } else {
-                    alert("Invalid username or password");
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
         }
     }
 
