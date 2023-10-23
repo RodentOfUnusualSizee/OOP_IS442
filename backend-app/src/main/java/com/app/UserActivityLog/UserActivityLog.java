@@ -23,7 +23,7 @@ public class UserActivityLog {
         UserEvent newEvent = new UserEvent(event, timestamp);
         events.add(newEvent);
 
-        // Update Last LogIn
+        // Update Last login
         if ("login".equals(event)) {
             lastLogin = timestamp;
         }

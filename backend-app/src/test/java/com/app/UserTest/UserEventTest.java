@@ -16,12 +16,12 @@ public class UserEventTest {
     @BeforeEach
     public void setUp() {
         LocalDateTime timestamp = LocalDateTime.now();
-        userEvent = new UserEvent("LogIn", timestamp);
+        userEvent = new UserEvent("login", timestamp);
     }
 
     @Test
     public void testGetEvent() {
-        assertEquals("LogIn", userEvent.getEvent());
+        assertEquals("login", userEvent.getEvent());
     }
 
     @Test
