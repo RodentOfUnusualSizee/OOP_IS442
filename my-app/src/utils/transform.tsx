@@ -33,6 +33,21 @@ interface MappedFeedItem {
     tickerSentimentScore: string;
 }
 
+interface StockValue {
+    date: string;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    volume: number;
+}
+
+interface StockPriceChange {
+    change: string;
+    percentageChange: string;
+    changeType: string;
+}
+
 export function getTickerFeed(data: Data, ticker: string, limit = 20): MappedFeedItem[] {
     const filteredData = data.feed.filter((item: FeedItem) =>
         item.tickerSentiment.some((tickerItem: TickerSentiment) => tickerItem.ticker === ticker)
@@ -72,4 +87,45 @@ function formatTimestamp(timestamp: string): string {
     const date = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
 
     return date.toLocaleString();
+}
+
+export function getStockPriceStats(timeSeries: StockValue[]) {
+    const latest = timeSeries[timeSeries.length - 1].close;
+    const oneDay = timeSeries[timeSeries.length - 2].close;
+    const sevenDays = timeSeries[timeSeries.length - 7].close;
+    const thirtyDays = timeSeries[timeSeries.length - 30].close;
+
+    const calculateChange = (current: number, previous: number | undefined) => {
+        if (!previous) {
+            return { change: "0", percentageChange: "0", changeType: 'no data' };
+        }
+        const change = current - previous;
+        const percentageChange = ((change / previous) * 100);
+        return {
+            change: change.toFixed(2), 
+            percentageChange: percentageChange.toFixed(2), 
+            changeType: change > 0 ? 'increase' : change < 0 ? 'decrease' : 'no change'
+        };
+    }
+    
+
+    const oneDayChange = calculateChange(latest, oneDay);
+    const sevenDaysChange = calculateChange(latest, sevenDays);
+    const thirtyDaysChange = calculateChange(latest, thirtyDays);
+
+    const formatStats = (period : string, stats : StockPriceChange) => ({
+        name: `Change from ${period} ago`,
+        stat: latest.toFixed(2),
+        previousStat: period === '1 day' ? oneDay : period === '7 days' ? sevenDays : thirtyDays,
+        change: stats.change,
+        changeType: stats.changeType,
+        percentageChange: stats.percentageChange,
+    });
+
+    console.log(formatStats('1 day', oneDayChange));
+    return [
+        formatStats('1 day', oneDayChange),
+        formatStats('7 days', sevenDaysChange),
+        formatStats('30 days', thirtyDaysChange)
+    ];
 }

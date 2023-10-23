@@ -70,7 +70,7 @@ export async function getStockStats() {
 
 export async function getStockOverview(symbol: string) {
   try {
-    const response = await axios.get(`${BASE_STOCK_URL}/companyOverview/${symbol}`);
+    const response = await axios.post(`${BASE_STOCK_URL}/companyOverview/${symbol}`);
     return response.data;
   } catch (error) {
     throw error;

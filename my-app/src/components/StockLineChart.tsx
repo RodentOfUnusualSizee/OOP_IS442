@@ -18,9 +18,10 @@ function StockLineChart(props: { data: any; }) {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
+                <CartesianGrid stroke="#eee" strokeDasharray="5 5"/>
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="open" stroke="#8884d8" name="Opening Price" />
+                <Line type="monotone" dataKey="open" stroke="#8884d8" name='Opening Price'/>
                 <Line type="monotone" dataKey="close" stroke="#82ca9d" name="Closing Price" />
                 <Line type="monotone" dataKey="high" stroke="#ffc658" name="High Price" />
                 <Line type="monotone" dataKey="low" stroke="#d0ed57" name="Low Price" />
