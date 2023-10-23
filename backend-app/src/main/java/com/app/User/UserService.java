@@ -162,6 +162,7 @@ public class UserService {
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setRole(user.getRole());
+        // userDTO.setEmailVerified(true);
         userDTO.setEmailVerified(user.getEmailVerified());
 
         // Map portfolio IDs as integers
