@@ -1,4 +1,4 @@
-package com.app.TopGainerLoserAPI;
+package com.app.ExternalAPIs.TopGainerLoserAPI;
 
 import java.util.List;
 

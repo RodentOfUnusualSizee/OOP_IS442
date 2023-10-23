@@ -1,26 +1,26 @@
-package com.app.StockTimeSeriesAPI.Weekly;
+package com.app.ExternalAPIs.StockTimeSeriesAPI.Intraday;
 import java.util.*;
 
 // Stock Time Series Data Transfer Object
-public class StockTimeSeriesWeeklyDTO {
+public class StockTimeSeriesIntradayDTO {
 
     private MetaData metaData;
-    private Map<String, WeeklyStockData> weeklyTimeSeries;
+    private Map<String, IntradayStockData> intradayTimeSeries;
 
     // Getters
     public MetaData getMetaData() {
         return metaData;
     }
-    public Map<String, WeeklyStockData> getTimeSeries() {
-        return weeklyTimeSeries;
+    public Map<String, IntradayStockData> getTimeSeries() {
+        return intradayTimeSeries;
     }
 
     // Setters
     public void setMetaData(MetaData metaData) {
         this.metaData = metaData;
     }
-    public void setTimeSeries(Map<String, WeeklyStockData> weeklyTimeSeries) {
-        this.weeklyTimeSeries = weeklyTimeSeries;
+    public void setTimeSeries(Map<String, IntradayStockData> intradayTimeSeries) {
+        this.intradayTimeSeries = intradayTimeSeries;
     }
 
     // Inner class for Meta Data
@@ -28,7 +28,8 @@ public class StockTimeSeriesWeeklyDTO {
         private String information;
         private String symbol;
         private String lastRefreshed;
-        // private String outputSize;
+        private String interval; // 1,5,15,30,60
+        private String outputSize;
         private String timeZone;
 
         // Getters
@@ -41,9 +42,12 @@ public class StockTimeSeriesWeeklyDTO {
         public String getLastRefreshed() {
             return lastRefreshed;
         }
-        // public String getOutputSize() {
-        //     return outputSize;
-        // }
+        public String getInterval() {
+            return interval;
+        }
+        public String getOutputSize() {
+            return outputSize;
+        }
         public String getTimeZone() {
             return timeZone;
         }
@@ -58,16 +62,19 @@ public class StockTimeSeriesWeeklyDTO {
         public void setLastRefreshed(String lastRefreshed) {
             this.lastRefreshed = lastRefreshed;
         }
-        // public void setOutputSize(String outputSize) {
-        //     this.outputSize = outputSize;
-        // }
+        public void setInterval(String interval) {
+            this.interval = interval;
+        }
+        public void setOutputSize(String outputSize) {
+            this.outputSize = outputSize;
+        }
         public void setTimeZone(String timeZone) {
             this.timeZone = timeZone;
         }
     }
 
-    // Inner class for Weekly Stock Data
-    public static class WeeklyStockData {
+    // Inner class for Intraday Stock Data
+    public static class IntradayStockData {
         private double open;
         private double high;
         private double low;

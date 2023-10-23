@@ -16,8 +16,8 @@ import com.app.User.UserService;
 import com.app.Position.Position;
 import com.app.Position.PositionService;
 import com.app.WildcardResponse;
-import com.app.StockTimeSeriesAPI.Monthly.MonthlyController;
-import com.app.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyController;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
 
 import java.util.Comparator;
 import java.util.Date;

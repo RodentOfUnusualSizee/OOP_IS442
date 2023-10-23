@@ -1,11 +1,11 @@
-package com.app.TickerSearchAPI;
+package com.app.ExternalAPIs.TickerSearchAPI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO;
 
 import java.util.*;
 

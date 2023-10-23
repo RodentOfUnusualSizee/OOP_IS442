@@ -24,6 +24,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String role;
+    private boolean emailVerified;
 
     @OneToOne(cascade = CascadeType.ALL) // Define the relationship with UserActivity
     @JoinColumn(name = "activity_id")
@@ -46,6 +47,7 @@ public class User {
         this.role = role;
         this.userActivityLog = new UserActivityLog();
         this.portfolios = new ArrayList<>();
+        this.emailVerified = false;
     }
 
     // ------------------ Getters and Setters (Start) ------------------
@@ -147,6 +149,18 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public boolean getEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
     }
 
 }

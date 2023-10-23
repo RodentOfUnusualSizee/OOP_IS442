@@ -1,12 +1,12 @@
-package com.app.StockTimeSeriesAPI.Weekly;
+package com.app.ExternalAPIs.StockTimeSeriesAPI.Weekly;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import com.app.StockTimeSeriesAPI.Weekly.StockTimeSeriesWeeklyDTO.WeeklyStockData;
-import com.app.StockTimeSeriesAPI.Weekly.StockTimeSeriesWeeklyDTO.MetaData;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Weekly.StockTimeSeriesWeeklyDTO.WeeklyStockData;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Weekly.StockTimeSeriesWeeklyDTO.MetaData;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

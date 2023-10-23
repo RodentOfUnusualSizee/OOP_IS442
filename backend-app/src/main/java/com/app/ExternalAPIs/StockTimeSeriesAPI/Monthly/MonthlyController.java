@@ -1,4 +1,4 @@
-package com.app.StockTimeSeriesAPI.Monthly;
+package com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import com.app.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO.MonthlyStockData;
-import com.app.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO.MetaData;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO.MonthlyStockData;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO.MetaData;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

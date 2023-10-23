@@ -1,4 +1,4 @@
-package com.app.TickerSearchAPI;
+package com.app.ExternalAPIs.TickerSearchAPI;
 
 import java.util.List;
 

@@ -90,6 +90,7 @@ public class UserController {
     public ResponseEntity<WildcardResponse> loginUser(
             @RequestBody LoginRequest loginRequest) {
         WildcardResponse result = userService.authenticateUser(loginRequest);
+        
         if (result.getData() != null) {
             return ResponseEntity.ok(result);
         } else {

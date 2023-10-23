@@ -1,7 +1,7 @@
-package com.app.CompanyOverviewAPI;
+package com.app.ExternalAPIs.CompanyOverviewAPI;
 
-import com.app.CompanyOverviewAPI.CompanyOverviewDTO;
-import com.app.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO;
+import com.app.ExternalAPIs.CompanyOverviewAPI.CompanyOverviewDTO;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Daily.StockTimeSeriesDailyDTO;
 
 import io.github.cdimascio.dotenv.Dotenv;
 

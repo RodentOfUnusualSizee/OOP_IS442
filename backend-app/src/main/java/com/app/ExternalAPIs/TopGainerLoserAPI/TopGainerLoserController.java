@@ -1,11 +1,11 @@
-package com.app.TopGainerLoserAPI;
+package com.app.ExternalAPIs.TopGainerLoserAPI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import com.app.TickerSearchAPI.TickerSearchDTO;
+import com.app.ExternalAPIs.TickerSearchAPI.TickerSearchDTO;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import java.util.*;

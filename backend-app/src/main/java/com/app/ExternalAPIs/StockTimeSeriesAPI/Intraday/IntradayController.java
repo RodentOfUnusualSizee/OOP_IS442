@@ -1,12 +1,12 @@
-package com.app.StockTimeSeriesAPI.Intraday;
+package com.app.ExternalAPIs.StockTimeSeriesAPI.Intraday;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import com.app.StockTimeSeriesAPI.Intraday.StockTimeSeriesIntradayDTO.IntradayStockData;
-import com.app.StockTimeSeriesAPI.Intraday.StockTimeSeriesIntradayDTO.MetaData;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Intraday.StockTimeSeriesIntradayDTO.IntradayStockData;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Intraday.StockTimeSeriesIntradayDTO.MetaData;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -28,7 +28,8 @@ public class IntradayController {
     private Map<String, Map<String, Object>> stockDataCache = new HashMap<>();
 
     @GetMapping("/{symbol}/{interval}")
-    public StockTimeSeriesIntradayDTO getIntradayTimeSeries(@PathVariable String symbol, @PathVariable String interval) {
+    public StockTimeSeriesIntradayDTO getIntradayTimeSeries(@PathVariable String symbol,
+            @PathVariable String interval) {
 
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
@@ -41,11 +42,12 @@ public class IntradayController {
 
         Map<String, Object> responseBody = response.getBody();
 
-        // Implement your mapping logic to map the response to your StockTimeSeriesIntradayDTO.
+        // Implement your mapping logic to map the response to your
+        // StockTimeSeriesIntradayDTO.
         // Note: Normally, you would want to create a service layer to handle the
         // business logic
         // and keep your controller clean.
-        StockTimeSeriesIntradayDTO StockTimeSeriesIntradayDTO = mapResponseToDTO(responseBody,interval);
+        StockTimeSeriesIntradayDTO StockTimeSeriesIntradayDTO = mapResponseToDTO(responseBody, interval);
 
         // Pass StockTimeSeriesIntradayDTO to your internal system here
 
@@ -53,7 +55,7 @@ public class IntradayController {
         // return responseBody;
     }
 
-    private StockTimeSeriesIntradayDTO mapResponseToDTO(Map<String, Object> responseBody,String interval) {
+    private StockTimeSeriesIntradayDTO mapResponseToDTO(Map<String, Object> responseBody, String interval) {
         StockTimeSeriesIntradayDTO StockTimeSeriesIntradayDTO = new StockTimeSeriesIntradayDTO();
         MetaData metaData = new MetaData();
         Map<String, IntradayStockData> timeSeriesIntraday = new HashMap<>();

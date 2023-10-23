@@ -1,4 +1,4 @@
-package com.app.CompanyOverviewAPI;
+package com.app.ExternalAPIs.CompanyOverviewAPI;
 
 import java.time.LocalDate;
 

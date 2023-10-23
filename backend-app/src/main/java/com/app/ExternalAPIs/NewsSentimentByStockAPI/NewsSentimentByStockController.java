@@ -1,11 +1,11 @@
-package com.app.NewsSentimentByStockAPI;
+package com.app.ExternalAPIs.NewsSentimentByStockAPI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import com.app.NewsSentimentByStockAPI.NewsSentimentByStockDTO.Feed;
+import com.app.ExternalAPIs.NewsSentimentByStockAPI.NewsSentimentByStockDTO.Feed;
 
 import io.github.cdimascio.dotenv.Dotenv;
 

@@ -1,4 +1,4 @@
-package com.app.NewsSentimentByStockAPI;
+package com.app.ExternalAPIs.NewsSentimentByStockAPI;
 
 import java.util.ArrayList;
 import java.util.List;
