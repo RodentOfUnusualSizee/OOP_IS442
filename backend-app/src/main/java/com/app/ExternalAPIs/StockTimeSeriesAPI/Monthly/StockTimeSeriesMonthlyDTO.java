@@ -1,28 +1,28 @@
 package com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly;
+
 import java.util.*;
 
 // Stock Time Series Data Transfer Object
 public class StockTimeSeriesMonthlyDTO {
 
     private MetaData metaData;
-    private Map<String, MonthlyStockData> monthlyTimeSeries;
+    private List<MonthlyStockData> timeSeries;
 
     // Getters
     public MetaData getMetaData() {
         return metaData;
     }
 
-    public Map<String, MonthlyStockData> getTimeSeries() {
-        return monthlyTimeSeries;
-    }
-
-    // Setters
     public void setMetaData(MetaData metaData) {
         this.metaData = metaData;
     }
 
-    public void setTimeSeries(Map<String, MonthlyStockData> monthlyTimeSeries) {
-        this.monthlyTimeSeries = monthlyTimeSeries;
+    public List<MonthlyStockData> getTimeSeries() {
+        return timeSeries;
+    }
+
+    public void setTimeSeries(List<MonthlyStockData> timeSeries) {
+        this.timeSeries = timeSeries;
     }
 
     // Inner class for Meta Data
@@ -76,6 +76,7 @@ public class StockTimeSeriesMonthlyDTO {
 
     // Inner class for Monthly Stock Data
     public static class MonthlyStockData {
+        private String date;
         private double open;
         private double high;
         private double low;
@@ -122,6 +123,14 @@ public class StockTimeSeriesMonthlyDTO {
 
         public void setVolume(long volume) {
             this.volume = volume;
+        }
+
+        public String getDate() {
+            return date;
+        }
+
+        public void setDate(String date) {
+            this.date = date;
         }
     }
 }

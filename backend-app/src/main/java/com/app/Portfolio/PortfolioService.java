@@ -114,12 +114,14 @@ public class PortfolioService {
             // Fetch the monthly stock data for the current stock symbol
             StockTimeSeriesMonthlyDTO stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
             // Extract the monthly time series data from the DTO
-            Map<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
+            List<StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
+
+            // Sort the time series data by date in descending order to get the most recent
+            // data first
+            monthlyTimeSeries.sort((data1, data2) -> data2.getDate().compareTo(data1.getDate()));
 
             // Get the most recent stock data
-            Map.Entry<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> mostRecentData = monthlyTimeSeries.entrySet()
-                    .iterator().next();
-            StockTimeSeriesMonthlyDTO.MonthlyStockData recentStockData = mostRecentData.getValue();
+            StockTimeSeriesMonthlyDTO.MonthlyStockData recentStockData = monthlyTimeSeries.get(0);
             // Get the closing price from the most recent stock data
             Double recentStockPrice = recentStockData.getClose();
 
@@ -153,19 +155,20 @@ public class PortfolioService {
         }
         Date oldestPositionDate = positions.stream()
                 .min(Comparator.comparing(Position::getPositionAddDate))
-                .orElseThrow(() -> new NoSuchElementException("No value present")) // This line is updated
+                .orElseThrow(() -> new NoSuchElementException("No value present"))
                 .getPositionAddDate();
 
         // 2. Initialize a map to store historical values for each stock symbol
         Map<String, Map<String, Double>> historicalValuesByStock = new HashMap<>();
 
         // 3. Compute Monthly Value for each position
-        for (Position position : positions) { // This line is updated
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        for (Position position : positions) {
             String stockSymbol = position.getStockSymbol();
 
             // Fetch the monthly time series data for the current position's stock symbol
             StockTimeSeriesMonthlyDTO stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
-            Map<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
+            List<StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
 
             // Initialize the historical values map for this stock symbol if it doesn't
             // exist
@@ -173,18 +176,17 @@ public class PortfolioService {
             Map<String, Double> historicalValues = historicalValuesByStock.get(stockSymbol);
 
             // Compute the historical values for this stock symbol
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // This line is added
-            for (Map.Entry<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> entry : monthlyTimeSeries.entrySet()) {
-                String date = entry.getKey();
-                double priceForMonth = entry.getValue().getClose();
+            for (StockTimeSeriesMonthlyDTO.MonthlyStockData monthlyData : monthlyTimeSeries) {
+                String date = monthlyData.getDate();
+                double priceForMonth = monthlyData.getClose();
                 double valueForMonth = priceForMonth * position.getQuantity();
 
                 try {
-                    if (sdf.parse(date).compareTo(oldestPositionDate) >= 0) { // This line is updated
+                    if (sdf.parse(date).compareTo(oldestPositionDate) >= 0) {
                         historicalValues.put(date, historicalValues.getOrDefault(date, 0.0) + valueForMonth);
                     }
                 } catch (ParseException e) {
-                    e.printStackTrace(); // This line is added
+                    e.printStackTrace();
                 }
             }
         }
@@ -207,19 +209,23 @@ public class PortfolioService {
     }
 
     // Depricated for now
-    public double computeCumValueForMonth(String date, Portfolio portfolio, MonthlyController monthlyController) {
-        double monthlyValue = 0.0;
+    // public double computeCumValueForMonth(String date, Portfolio portfolio,
+    // MonthlyController monthlyController) {
+    // double monthlyValue = 0.0;
 
-        for (Position position : portfolio.getPositions()) {
-            StockTimeSeriesMonthlyDTO stockData = monthlyController.getMonthlyTimeSeries(position.getStockSymbol());
-            Map<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
+    // for (Position position : portfolio.getPositions()) {
+    // StockTimeSeriesMonthlyDTO stockData =
+    // monthlyController.getMonthlyTimeSeries(position.getStockSymbol());
+    // Map<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries =
+    // stockData.getTimeSeries();
 
-            StockTimeSeriesMonthlyDTO.MonthlyStockData monthData = monthlyTimeSeries.get(date);
-            double priceForMonth = monthData.getClose();
+    // StockTimeSeriesMonthlyDTO.MonthlyStockData monthData =
+    // monthlyTimeSeries.get(date);
+    // double priceForMonth = monthData.getClose();
 
-            monthlyValue += priceForMonth * position.getQuantity();
-        }
+    // monthlyValue += priceForMonth * position.getQuantity();
+    // }
 
-        return monthlyValue;
-    }
+    // return monthlyValue;
+    // }
 }

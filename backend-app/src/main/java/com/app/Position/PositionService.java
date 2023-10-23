@@ -25,8 +25,13 @@ public class PositionService {
         }
         position.setLastModifiedTimestamp(new Date());
 
-        // Adding position sector
-        position.setStockSector(getStockSectorAPI(position));
+        try {
+            // Attempting to get the stock sector
+            position.setStockSector(getStockSectorAPI(position));
+        } catch (Exception e) {
+            // Handling the error and setting stock sector to "Unidentified"
+            position.setStockSector("Unidentified");
+        }
 
         return positionRepository.save(position);
     }
