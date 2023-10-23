@@ -72,17 +72,17 @@ function StockHome() {
             const topGainerStock = stocksFromServer['topGainers'][0];
             const topLoserStock = stocksFromServer['topLosers'][0];
 
-            const mostActivelyTradedWithId = stocksFromServer['mostActivelyTraded'].map((stock, index) => ({
+            const mostActivelyTradedWithId = stocksFromServer['mostActivelyTraded'].map((stock : StockData, index : number) => ({
                 ...stock,
                 id: stock['ticker'],
             }));
 
-            const topGainersWithId = stocksFromServer['topGainers'].map((stock, index) => ({
+            const topGainersWithId = stocksFromServer['topGainers'].map((stock : StockData, index : number) => ({
                 ...stock,
                 id: stock['ticker'],
             }));
 
-            const topLosersWithId = stocksFromServer['topLosers'].map((stock, index) => ({
+            const topLosersWithId = stocksFromServer['topLosers'].map((stock : StockData, index : number) => ({
                 ...stock,
                 id: stock['ticker'],
             }));
@@ -203,8 +203,8 @@ function StockHome() {
             </span>
             <div className='px-6 my-4'>
                 <Table
-                    tableTitle={tableTitle[selectedTable]}
-                    tableData={tableData[selectedTable]}
+                    tableTitle={tableTitle[selectedTable as keyof typeof tableTitle]}
+                    tableData={tableData[selectedTable as keyof typeof tableData]}
                     tableHeaders={tableHeaders}
                     tableDescription={tableDescription}
                     tableAction={tableAction}

@@ -231,6 +231,7 @@ function Portfolio() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const id = queryParams.get('id');
+    const tableLink='';
 
     return (
         <div>
@@ -298,6 +299,7 @@ function Portfolio() {
                     tableTitle={tableTitle}
                     tableDescription={tableDescription}
                     tableAction={tableAction}
+                    tableLink={tableLink}
                 />
             </div>
 
