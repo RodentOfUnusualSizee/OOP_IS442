@@ -12,13 +12,13 @@ import UserHome from './pages/UserHome';
 import Registration from './pages/Registration';
 import Stock from './pages/Stock';
 import Sandbox from './pages/Sandbox';
+import StockRecord from './pages/StockRecord';
 
 import { AuthProvider } from './context/AuthContext';
 
 import ProtectedWrapper from './components/ProtectedWrapper';
 
 import './App.css';
-
 
 function App() {
   return (
@@ -45,6 +45,7 @@ function App() {
           <Route path="registration" element={<Registration />} />
           <Route path="stock" element={<Stock/>}/>
           <Route path="sandbox" element={<Sandbox />} />
+          <Route path="stockrecord" element={<StockRecord />} />
         </Routes>
       </div>
     </AuthProvider>
