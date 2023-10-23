@@ -9,6 +9,9 @@ export interface AuthContextInterface {
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
     login: (username: string, password: string) => void;
     logout: () => void;
+
+    // portfolioId: any;
+    // setPortfolioId: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const AuthContext = React.createContext<AuthContextInterface | undefined>(undefined);
@@ -29,10 +32,8 @@ export function AuthProvider(props: { children: React.ReactNode }) {
         const token = localStorage.getItem('authToken');
         if (token) {
             setIsLoggedIn(true);
-            console.log("Refreshed Token");
+            console.log("Refreshed token");
             console.log(token);
-            console.log(JSON.parse(token));
-            console.log("above");
             setAuthUser(JSON.parse(token));
         }
     }, []);
