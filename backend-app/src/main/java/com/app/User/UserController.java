@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @GetMapping("/get/all")
-    public List<User> getAllUsers() {
+    public WildcardResponse getAllUsers() {
         return userService.findAll();
     }
 

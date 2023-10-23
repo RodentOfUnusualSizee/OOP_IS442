@@ -22,7 +22,7 @@ function UserHome() {
     const userId = authUser.id;
     const userRole = authUser.role;
     const userIsLoggedIn = isLoggedIn;
-    const management = userRole === "management" || userRole === "user";
+    const management = userRole === "admin" || userRole === "user";
     console.log("User role: " + userRole)
     console.log("User logged in: " + userIsLoggedIn)
 

@@ -1,6 +1,7 @@
 package com.app.User;
 
 import java.util.*;
+import java.time.LocalDateTime;
 
 // User Data Transfer Object
 public class UserDTO {
@@ -11,6 +12,8 @@ public class UserDTO {
     private String role;
     private boolean emailVerified;
     private List<Integer> portfolioIds; // Store portfolio IDs as integers
+    private LocalDateTime lastLogin;
+    private UserEvent lastActivity;
 
     public UserDTO() {
     }
@@ -40,6 +43,13 @@ public class UserDTO {
         return portfolioIds;
     }
 
+    public LocalDateTime getLastLogin(){
+        return lastLogin;
+    }
+    public UserEvent getLastActivity() {
+        return lastActivity;
+    }
+    
     // Setters
     public void setId(long id) {
         this.id = id;
@@ -77,4 +87,12 @@ public class UserDTO {
         this.emailVerified = emailVerified;
     }
 
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
+    public void setLastActivity(UserEvent lastActivity) {
+        this.lastActivity = lastActivity;
+    }
+    
 }

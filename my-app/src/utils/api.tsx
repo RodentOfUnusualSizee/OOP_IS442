@@ -91,3 +91,22 @@ export async function getStockStats() {
   }
 }
 
+export async function getAllUsers() {
+  try {
+    const response = await axios.get(`${BASE_USER_URL}/get/all`);
+    return response.data;
+  } catch (error) { 
+    throw error;
+  }
+}
+
+export async function getActivityLogById(userId: any) {
+  try {
+      const response = await axios.get(`${BASE_USER_URL}/${userId}/activity-log`);
+      return response.data;
+  } catch (error) {
+      throw error;
+  }
+}
+
+

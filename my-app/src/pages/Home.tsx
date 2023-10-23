@@ -23,11 +23,7 @@ function Home() {
 
     const submitLogin = (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const buttonName = e.currentTarget.name;
-        alert("Email: " + email + ", Password: " + password + ", Button: " + buttonName);
-
-
-        if (buttonName == "userLogin") {
+        // alert("Email: " + email + ", Password: " + password );
             let data = {
                 "email": email,
                 "password": password
@@ -35,19 +31,25 @@ function Home() {
             const loginAPI = loginUser(data);
             loginAPI.then((response) => {
                 if (response["success"]) {
+                    let role = response["data"]["role"]
                     setAuthUser(response["data"]);
                     setIsLoggedIn(true);
-                    navigate("/UserHome");
-                } else {
-                    alert("Invalid username or password");
+                    if(role == 'user'){
+                        navigate("/UserHome");
+                    }
+                    else{
+                        navigate("/AdminHome");
+                    }
+                } 
+                else {
+                    let message = response["message"]
+                    alert(message);
                 }
             }).catch((error) => {
                 console.log(error);
             });
-        }
+        
     }
-
-
 
     return (
         <div>
@@ -89,13 +91,10 @@ function Home() {
                                     </input>
                                 </div>
                                 <div id="loginButtons">
-                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="userLogin">
-                                        User Login
+                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="Login">
+                                        Login
                                     </button>
 
-                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2 my-2" type="submit" onClick={submitLogin} name="adminLogin">
-                                        Admin Login
-                                    </button>
                                 </div>
                                 <div>
                                     <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50 my-2" href="#">
