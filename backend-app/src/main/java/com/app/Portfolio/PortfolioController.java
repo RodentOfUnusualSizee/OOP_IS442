@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +22,7 @@ import com.app.WildcardResponse;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyController;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyService;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO.MonthlyStockData;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -341,25 +343,131 @@ public class PortfolioController {
         allocationByGeographicalLocation.put("CASH", cashPercentage);
 
         // 6. Compute the portfolio's historical value
-        Map<String, Double> portfolioHistoricalValue = portfolioService
-                .computePortfolioHistoricalValue(portfolio, monthlyController);
+        Map<String, Double> portfolioHistoricalValue = portfolioService.computePortfolioHistoricalValue(portfolio,
+                monthlyController);
 
-        // 7. Create a Data Transfer Object (DTO) and set its properties
+        // 7. Calculate Monthly Returns for the Portfolio
+        Map<String, Double> portfolioMonthlyReturns = calculatePortfolioReturns(portfolioHistoricalValue);
+
+        // 8. Fetch SPY Monthly Returns
+        // You need to implement a method to get SPY data and transform it to monthly
+        // returns
+        Map<String, Double> spyMonthlyReturns = calculateSPYReturns();
+
+        // 9. Calculate Portfolio Beta
+        double portfolioBeta = calculatePortfolioBeta(portfolioMonthlyReturns, spyMonthlyReturns);
+
+        // 10. Calculate Information Ratio
+        double informationRatio = calculateInformationRatio(portfolioMonthlyReturns, spyMonthlyReturns);
+
+        // 11. Create a Data Transfer Object (DTO) and set its properties
         PortfolioDTO dto = new PortfolioDTO(portfolio, cumPositions);
         dto.setPortfolioHistoricalValue(portfolioHistoricalValue);
         dto.setCurrentTotalPortfolioValue(currentTotalPortfolioValue);
         dto.setPortfolioAllocationBySector(allocationBySector);
         dto.setPortfolioAllocationByGeographicalLocation(allocationByGeographicalLocation);
 
-        // 8. Compute returns and set them in the DTO
+        // 12. Compute returns and set them in the DTO
         Map<String, Object> returns = portfolioService.calculateReturns(dto);
         dto.setQuarterlyReturns((Map<String, String>) returns.get("quarterlyReturns"));
         dto.setQuarterlyReturnsPercentage((Map<String, String>) returns.get("quarterlyReturnsPercentage"));
         dto.setQuarterlyDateRanges((Map<String, String>) returns.get("quarterlyDateRanges"));
         dto.setAnnualizedReturnsPercentage((String) returns.get("annualizedReturnsPercentage"));
 
-        // 9. Return the populated DTO
+        // 13. Compute risk related rtaios and set them in the DTO
+        dto.setPortfolioBeta(portfolioBeta);
+        dto.setInformationRatio(informationRatio);
+
+        // 14. Return the populated DTO
         return dto;
+    }
+
+    public Map<String, Double> calculateSPYReturns() {
+        StockTimeSeriesMonthlyDTO spyData = monthlyService.getMonthlyTimeSeriesProcessed("SPY");
+
+        Map<String, Double> spyReturns = new HashMap<>();
+        List<MonthlyStockData> timeSeries = spyData.getTimeSeries();
+
+        for (int i = 1; i < timeSeries.size(); i++) {
+            String currentDate = timeSeries.get(i).getDate();
+            double currentClose = timeSeries.get(i).getClose();
+            double previousClose = timeSeries.get(i - 1).getClose();
+
+            double returnPercentage = ((currentClose - previousClose) / previousClose) * 100;
+            spyReturns.put(currentDate, returnPercentage);
+        }
+
+        return spyReturns;
+    }
+
+    public Map<String, Double> calculatePortfolioReturns(Map<String, Double> portfolioHistoricalValue) {
+        Map<String, Double> portfolioReturns = new LinkedHashMap<>();
+        String previousDate = null;
+        double previousValue = 0;
+
+        for (Map.Entry<String, Double> entry : portfolioHistoricalValue.entrySet()) {
+            if (previousDate != null) {
+                double returnValue = ((entry.getValue() - previousValue) / previousValue) * 100;
+                portfolioReturns.put(entry.getKey(), returnValue);
+            }
+            previousDate = entry.getKey();
+            previousValue = entry.getValue();
+        }
+
+        return portfolioReturns;
+    }
+
+    public double calculateCovariance(Map<String, Double> returns1, Map<String, Double> returns2) {
+        double mean1 = returns1.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        double mean2 = returns2.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
+
+        double covariance = 0;
+        int n = 0;
+
+        for (String date : returns1.keySet()) {
+            if (returns2.containsKey(date)) {
+                covariance += (returns1.get(date) - mean1) * (returns2.get(date) - mean2);
+                n++;
+            }
+        }
+
+        return n > 1 ? covariance / (n - 1) : 0;
+    }
+
+    public double calculateVariance(Map<String, Double> returns) {
+        double mean = returns.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        double variance = 0;
+        int n = 0;
+
+        for (double value : returns.values()) {
+            variance += Math.pow(value - mean, 2);
+            n++;
+        }
+
+        return n > 1 ? variance / (n - 1) : 0;
+    }
+
+    public double calculatePortfolioBeta(Map<String, Double> portfolioReturns, Map<String, Double> spyReturns) {
+        double covariance = calculateCovariance(portfolioReturns, spyReturns);
+        double variance = calculateVariance(spyReturns);
+
+        return variance != 0 ? covariance / variance : 0;
+    }
+
+    public double calculateInformationRatio(Map<String, Double> portfolioReturns, Map<String, Double> spyReturns) {
+        List<Double> excessReturns = new ArrayList<>();
+        for (String date : portfolioReturns.keySet()) {
+            if (spyReturns.containsKey(date)) {
+                double excessReturn = portfolioReturns.get(date) - spyReturns.get(date);
+                excessReturns.add(excessReturn);
+            }
+        }
+
+        double meanExcessReturn = excessReturns.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        double trackingError = Math.sqrt(
+                excessReturns.stream().mapToDouble(val -> Math.pow(val - meanExcessReturn, 2)).average().orElse(0));
+
+        return trackingError != 0 ? meanExcessReturn / trackingError : 0;
     }
 
 }
