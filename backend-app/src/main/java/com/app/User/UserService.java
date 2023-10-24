@@ -10,7 +10,9 @@ import com.app.UserActivityLog.UserActivityLog;
 import com.app.UserActivityLog.UserActivityLogRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,16 +55,16 @@ public class UserService {
     public WildcardResponse findAll() {
         List<User> users = userRepository.findAll();
         List<UserDTO> userConverted = new ArrayList<>();
-        for(User user:users){
+        for (User user : users) {
             userConverted.add(convertUserObject(user));
         }
         return new WildcardResponse(true, "Success", userConverted);
     }
 
-    //Get past 1000 events
+    // Get past 1000 events
     public WildcardResponse findAllEvents() {
-       List<UserEvent> userEvents = eventRepository.findAll();
-       return new WildcardResponse(true, "Success", userEvents);
+        List<UserEvent> userEvents = eventRepository.findAll();
+        return new WildcardResponse(true, "Success", userEvents);
     }
 
     public void deleteById(Long id) {
@@ -99,18 +101,29 @@ public class UserService {
     public WildcardResponse addEventForUser(Long userId, UserEvent userEvent) {
         try {
             Optional<User> optionalUser = userRepository.findById(userId);
+            if (!optionalUser.isPresent()) {
+                return new WildcardResponse(false, "User not found.", null);
+            }
+
             User user = optionalUser.get();
             UserActivityLog userActivityLog = user.getUserActivityLog();
 
             if (userActivityLog == null) {
                 userActivityLog = new UserActivityLog();
             }
-            
-            UserEvent event = userActivityLog.addNewEvent(userEvent.getEvent(), userEvent.getTimestamp(), user.getId());
+
+            UserEvent event = userActivityLog.addNewEvent( userEvent.getEvent(),
+                    userEvent.getTimestamp(), user.getId());
             userActivityLogRepository.save(userActivityLog);
             user.setUserActivityLog(userActivityLog);
             userRepository.save(user);
-            return new WildcardResponse(true, "Event added successfully.", event);
+
+            Map<String, Object> eventData = new HashMap<>();
+            eventData.put("userId", event.getUserId());
+            eventData.put("event", event.getEvent());
+            eventData.put("timestamp", event.getTimestamp());
+
+            return new WildcardResponse(true, "Event added successfully.", eventData);
         } catch (Exception e) {
             return new WildcardResponse(false, e.getMessage(), null);
         }
@@ -181,7 +194,7 @@ public class UserService {
         // userDTO.setEmailVerified(true);
         userDTO.setEmailVerified(user.getEmailVerified());
         // Map portfolio IDs as integers
-        if(user.getUserActivityLog() != null){
+        if (user.getUserActivityLog() != null) {
             userDTO.setLastLogin(user.getUserActivityLog().getLastLogin());
             userDTO.setLastActivity(user.getUserActivityLog().getLastActivity());
         }
