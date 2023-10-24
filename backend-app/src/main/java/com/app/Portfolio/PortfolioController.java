@@ -89,6 +89,23 @@ public class PortfolioController {
         }
     }
 
+    @GetMapping("/get/debug/{portfolioID}")
+    public ResponseEntity<WildcardResponse> getPortfolioDebug(@PathVariable int portfolioID) {
+        try {
+            Optional<Portfolio> portfolioOptional = portfolioService.getPortfolio(portfolioID);
+            if (!portfolioOptional.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new WildcardResponse(false, "Portfolio not found", null));
+            }
+
+            Portfolio portfolio = portfolioOptional.get();
+            return ResponseEntity.ok(new WildcardResponse(true, "Success", portfolio));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new WildcardResponse(false, e.getMessage(), null));
+        }
+    }
+
     // Endpoint to retrieve all portfolios of a user
     @GetMapping("/getAllByUser/{userID}")
     @ResponseBody
