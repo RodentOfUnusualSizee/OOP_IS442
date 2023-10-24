@@ -24,6 +24,7 @@ public class PortfolioDTO {
     private Date lastModifiedTimestamp;
     private Map<String, Double> portfolioHistoricalValue;
     private Map<String, Double> portfolioAllocationBySector;
+    private Map<String, Double> portfolioAllocationByGeographicalLocation;
 
     private Map<String, String> quarterlyReturns;
     private String annualizedReturnsPercentage;
@@ -78,8 +79,8 @@ public class PortfolioDTO {
         return portfolioAllocationBySector;
     }
 
-    public void setPortfolioAllocationBySector(Map<String, Double> portfolioAllocationBySector) {
-        this.portfolioAllocationBySector = portfolioAllocationBySector;
+    public void setPortfolioAllocationBySector(Map<String, Double> allocationBySector) {
+        this.portfolioAllocationBySector = allocationBySector;
     }
 
     public Double getCurrentTotalPortfolioValue() {
@@ -168,5 +169,14 @@ public class PortfolioDTO {
 
     public void setQuarterlyDateRanges(Map<String, String> quarterlyDateRanges) {
         this.quarterlyDateRanges = quarterlyDateRanges;
+    }
+
+    public Map<String, Double> getPortfolioAllocationByGeographicalLocation() {
+        return portfolioAllocationByGeographicalLocation;
+    }
+
+    public void setPortfolioAllocationByGeographicalLocation(
+            Map<String, Double> portfolioAllocationByGeographicalLocation) {
+        this.portfolioAllocationByGeographicalLocation = portfolioAllocationByGeographicalLocation;
     }
 }

@@ -100,6 +100,7 @@ public class PortfolioService {
 
             // Fetch the stock sector from the first position of this stock symbol
             String stockSector = symbolPositions.get(0).getStockSector();
+            String stockGeographicalLocation = symbolPositions.get(0).getStockGeographicalLocation();
 
             // Compute the average price, excluding positions with "SELLTOCLOSE" action
             Double averagePrice = symbolPositions.stream()
@@ -139,6 +140,7 @@ public class PortfolioService {
             cumPosition.put("averagePrice", averagePrice);
             cumPosition.put("totalQuantity", totalQuantity);
             cumPosition.put("currentValue", currentValue);
+            cumPosition.put("geographicalLocation", stockGeographicalLocation);
 
             // Add the cumulative position map to the list
             cumPositions.add(cumPosition);
@@ -323,7 +325,5 @@ public class PortfolioService {
         }
         return null;
     }
-
-    
 
 }

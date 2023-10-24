@@ -7,7 +7,9 @@ import com.app.ExternalAPIs.CompanyOverviewAPI.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Date;;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class PositionService {
@@ -26,22 +28,34 @@ public class PositionService {
         position.setLastModifiedTimestamp(new Date());
 
         try {
-            // Attempting to get the stock sector
-            position.setStockSector(getStockSectorAPI(position));
+            // Attempting to get the stock additional information
+            Map<String, String> stockAdditionalInfo = getStockAdditionalInformationAPI(position);
+
+            // Set stock sector and geographical location based on the retrieved values
+            position.setStockSector(stockAdditionalInfo.get("stockSector"));
+            position.setStockGeographicalLocation(stockAdditionalInfo.get("stockGeographicalLocation"));
         } catch (Exception e) {
-            // Handling the error and setting stock sector to "Unidentified"
+            // Handling the error and setting stock sector and location to "Unidentified"
             position.setStockSector("Unidentified");
+            position.setStockGeographicalLocation("Unidentified");
         }
 
         return positionRepository.save(position);
     }
 
-    public String getStockSectorAPI(Position position) {
+    public Map<String, String> getStockAdditionalInformationAPI(Position position) {
 
         String stockSymbol = position.getStockSymbol();
         CompanyOverviewDTO companyOverview = companyOverviewController.getCompanyOverview(stockSymbol);
+
         String stockSector = companyOverview.getSector();
-        return stockSector;
+        String stockGeographicalLocation = companyOverview.getCountry();
+
+        Map<String, String> informationMap = new HashMap<>();
+        informationMap.put("stockSector", stockSector);
+        informationMap.put("stockGeographicalLocation", stockGeographicalLocation);
+
+        return informationMap;
     }
 
     // Retrieve a Position by ID

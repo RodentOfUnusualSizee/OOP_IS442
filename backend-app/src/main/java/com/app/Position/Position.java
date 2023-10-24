@@ -24,6 +24,7 @@ public class Position implements Serializable {
     private String position;
     private int quantity;
     private String stockSector;
+    private String stockGeographicalLocation;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTimestamp;
@@ -51,6 +52,14 @@ public class Position implements Serializable {
     // ------------------ Getters and Setters (Start) ------------------
     public int getPositionID() {
         return positionID;
+    }
+
+    public String getStockGeographicalLocation() {
+        return stockGeographicalLocation;
+    }
+
+    public void setStockGeographicalLocation(String stockGeographicalLocation) {
+        this.stockGeographicalLocation = stockGeographicalLocation;
     }
 
     public void setPositionID(int positionID) {
