@@ -105,7 +105,7 @@ public class UserService {
             if (userActivityLog == null) {
                 userActivityLog = new UserActivityLog();
             }
-
+            
             UserEvent event = userActivityLog.addNewEvent(userEvent.getEvent(), userEvent.getTimestamp(), user.getId());
             userActivityLogRepository.save(userActivityLog);
             user.setUserActivityLog(userActivityLog);

@@ -123,3 +123,40 @@ export async function getAllEvents() {
     throw error;
   }
 }
+
+export async function getUserById(userId: any) {
+  try {
+      const response = await axios.get(`${BASE_USER_URL}/get/${userId}`);
+      return response.data;
+  } catch (error) {
+      throw error;
+  }
+}
+
+export async function createNewUserEvent(userId: any, data: any) {
+  try {
+      const response = await axios.post(`${BASE_USER_URL}/${userId}/add-event`, data)
+      return response.data;
+  } catch (error) {
+      throw error;
+  }
+  //Request:
+  // {
+  //   "event": "logout",
+  //   "timestamp": "2023-10-01T12:10:22"
+  // }
+  
+  //Response:
+  // {
+  //   "success": true,
+  //   "message": "Event added successfully.",
+  //   "data": {
+  //       "userEventId": 0,
+  //       "userId": 1,
+  //       "event": "logout",
+  //       "timestamp": "2023-10-01T12:10:00"
+  //   }
+  // }
+
+}
+

@@ -12,9 +12,7 @@ interface ActivityLogModalProps {
   }
 
 const ActivityLogModal: React.FC<ActivityLogModalProps> = ({ selectedId, showModal, setShowModal }) => {
-    console.log("Rendering Modal, Show Modal:", showModal);
     let userId = selectedId
-    console.log(userId)
     const handleModalClose = () => {
         setShowModal(false);
     }
@@ -36,7 +34,6 @@ const ActivityLogModal: React.FC<ActivityLogModalProps> = ({ selectedId, showMod
 }, [userId]);
 
 
-    console.log(eventData)
     // create User interface
     interface Event {
         event:string;

@@ -24,7 +24,7 @@ function UserHome() {
     const [userId, setUserId] = React.useState<number>(1);
     const [userRole, setUserRole] = React.useState<string>("");
     const [userIsLoggedIn, setUserIsLoggedIn] = React.useState<boolean>(false);
-    const management = userRole === "management" || userRole === "user";
+    const management = userRole === "admin" || userRole === "user";
     console.log(authUser);
     console.log("User role: " + userRole)
     console.log("User logged in: " + userIsLoggedIn)

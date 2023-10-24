@@ -38,6 +38,14 @@ const Header = ({ management, userType, login }: HeaderProps) => {
             name: "Data Management",
             link: "datamanagement"
 
+        },
+        {
+            name: "Manage Portfolios",
+            link: "userhome"
+        },
+        {
+            name: "Stocks",
+            link: "stockhome"
         }
     ];
 
