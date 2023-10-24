@@ -43,14 +43,9 @@ public class WeeklyController {
 
         Map<String, Object> responseBody = response.getBody();
 
-        // Implement your mapping logic to map the response to your
         // StockTimeSeriesWeeklyDTO.
-        // Note: Normally, you would want to create a service layer to handle the
-        // business logic
-        // and keep your controller clean.
         StockTimeSeriesWeeklyDTO StockTimeSeriesWeeklyDTO = mapResponseToDTO(responseBody);
         stockDataCache.put(symbol, StockTimeSeriesWeeklyDTO);
-        // Pass StockTimeSeriesWeeklyDTO to your internal system here
 
         return StockTimeSeriesWeeklyDTO;
         // return responseBody;

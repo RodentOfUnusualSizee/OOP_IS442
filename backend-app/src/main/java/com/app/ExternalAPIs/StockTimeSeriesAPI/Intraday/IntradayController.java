@@ -42,14 +42,8 @@ public class IntradayController {
 
         Map<String, Object> responseBody = response.getBody();
 
-        // Implement your mapping logic to map the response to your
         // StockTimeSeriesIntradayDTO.
-        // Note: Normally, you would want to create a service layer to handle the
-        // business logic
-        // and keep your controller clean.
         StockTimeSeriesIntradayDTO StockTimeSeriesIntradayDTO = mapResponseToDTO(responseBody, interval);
-
-        // Pass StockTimeSeriesIntradayDTO to your internal system here
 
         return StockTimeSeriesIntradayDTO;
         // return responseBody;
@@ -90,7 +84,7 @@ public class IntradayController {
                 String dateKey = entry.getKey();
                 timeSeriesIntraday.put(dateKey, intradayStockData);
             } catch (Exception e) {
-                e.printStackTrace(); // Consider better exception handling
+                e.printStackTrace(); 
             }
         }
         StockTimeSeriesIntradayDTO.setTimeSeries(timeSeriesIntraday);
