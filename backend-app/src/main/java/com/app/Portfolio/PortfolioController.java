@@ -17,6 +17,7 @@ import com.app.Position.Position;
 import com.app.Position.PositionService;
 import com.app.WildcardResponse;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyController;
+import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyService;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
 
 import java.util.Comparator;
@@ -121,6 +122,8 @@ public class PortfolioController {
     /// POSIITION FUNCTIONS
     @Autowired
     private PositionService positionService;
+    @Autowired
+    private MonthlyService monthlyService;
 
     // Retrieve a position from a portfolio
     @GetMapping("/{portfolioID}/position/get/{positionID}")
@@ -137,9 +140,16 @@ public class PortfolioController {
     @PostMapping("/{portfolioID}/position/create")
     public ResponseEntity<WildcardResponse> createPositionForPortfolio(@PathVariable int portfolioID,
             @RequestBody Position position) {
-        // Refactored : 15/10/2023
+        // Refactored : 24/10/2023
+        // 1. Validate if symbol exists
+        try {
+            monthlyService.getMonthlyTimeSeriesProcessed(position.getStockSymbol());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new WildcardResponse(false, "Symbol does not exist", null));
+        }
 
-        // 1. Fetch the portfolio
+        // 2. Fetch the portfolio
         Optional<Portfolio> optionalPortfolio = portfolioService.getPortfolio(portfolioID);
         if (!optionalPortfolio.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -147,7 +157,7 @@ public class PortfolioController {
         }
         Portfolio portfolio = optionalPortfolio.get();
 
-        // 2. Validate if there's enough capital for the new position, unless it's a
+        // 3. Validate if there's enough capital for the new position, unless it's a
         // SELLTOCLOSE
         if (!"SELLTOCLOSE".equals(position.getPosition()) &&
                 PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, position)) {
@@ -163,17 +173,17 @@ public class PortfolioController {
             portfolioService.updatePortfolio(portfolio);
         }
 
-        // 3. Save the position
+        // 4. Save the position
         Position savedPosition = positionService.save(position);
 
-        // 4. Update the portfolio with the new position
+        // 5. Update the portfolio with the new position
         if (portfolio.getPositions() == null) {
             portfolio.setPositions(new ArrayList<>());
         }
         portfolio.getPositions().add(savedPosition);
         Portfolio updatedPortfolio = portfolioService.updatePortfolio(portfolio);
 
-        // 5. Return the result
+        // 6. Return the result
         return ResponseEntity.ok(new WildcardResponse(true, "Success", updatedPortfolio));
     }
 
