@@ -141,11 +141,10 @@ public class PortfolioController {
 
     @PostMapping("/{portfolioID}/position/create")
     public ResponseEntity<WildcardResponse> createPositionForPortfolio(@PathVariable int portfolioID,
-            @RequestBody Position position) {
-        // Refactored : 24/10/2023
+            @RequestBody Position newPosition) {
         // 1. Validate if symbol exists
         try {
-            monthlyService.getMonthlyTimeSeriesProcessed(position.getStockSymbol());
+            monthlyService.getMonthlyTimeSeriesProcessed(newPosition.getStockSymbol());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new WildcardResponse(false, "Symbol does not exist", null));
@@ -159,24 +158,32 @@ public class PortfolioController {
         }
         Portfolio portfolio = optionalPortfolio.get();
 
-        // 3. Validate if there's enough capital for the new position, unless it's a
-        // SELLTOCLOSE
-        if (!"SELLTOCLOSE".equals(position.getPosition()) &&
-                PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, position)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new WildcardResponse(false, "Portfolio not enough capital", position));
-        }
+        // 3. Handle SELLTOCLOSE
+        if ("SELLTOCLOSE".equals(newPosition.getPosition())) {
+            int totalQuantity = portfolio.getPositions().stream()
+                    .filter(p -> p.getStockSymbol().equals(newPosition.getStockSymbol()))
+                    .mapToInt(Position::getQuantity)
+                    .sum();
 
-        // After validating and before saving the position, adjust capitalUSD for
-        // SELLTOCLOSE
-        if ("SELLTOCLOSE".equals(position.getPosition())) {
-            float closePositionValue = position.getPrice() * position.getQuantity();
+            if (totalQuantity < newPosition.getQuantity()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new WildcardResponse(false, "Not enough positions to sell", null));
+            }
+
+            // Adjust capitalUSD for SELLTOCLOSE
+            float closePositionValue = newPosition.getPrice() * newPosition.getQuantity();
             portfolio.setCapitalUSD(portfolio.getCapitalUSD() + closePositionValue);
             portfolioService.updatePortfolio(portfolio);
+        } else {
+            // Validate if there's enough capital for the new position
+            if (PortfolioService.checkPortfolioCapitalForNewPosition(portfolio, newPosition)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new WildcardResponse(false, "Portfolio not enough capital", newPosition));
+            }
         }
 
         // 4. Save the position
-        Position savedPosition = positionService.save(position);
+        Position savedPosition = positionService.save(newPosition);
 
         // 5. Update the portfolio with the new position
         if (portfolio.getPositions() == null) {

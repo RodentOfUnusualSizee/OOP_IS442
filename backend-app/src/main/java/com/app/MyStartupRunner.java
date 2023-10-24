@@ -23,7 +23,16 @@ public class MyStartupRunner implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         // Execute the SQL statement to alter the table, because positions uses
         // serialization to store, as it is nested, default limit is too small
+
+        // for h2
         entityManager.createNativeQuery("ALTER TABLE user_portfolio ALTER COLUMN POSITIONS VARBINARY(2048);")
                 .executeUpdate();
+
+        // for aws
+        // entityManager
+        // .createNativeQuery(
+        // "ALTER TABLE user_portfolio ALTER COLUMN positions TYPE bytea USING
+        // convert_to(positions, 'UTF8');")
+        // .executeUpdate();
     }
 }

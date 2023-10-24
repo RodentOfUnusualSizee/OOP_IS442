@@ -23,19 +23,19 @@ public class MainApp {
         SpringApplication.run(MainApp.class, args);
     }
 
-    @Bean
-    public CommandLineRunner demoData() {
-        return args -> {
-            // Create and save mock stocks using constructor
-            Stock apple = new Stock("AAPL", "Apple Inc.", "NASDAQ", "USD", "Technology");
-            stockService.saveStock(apple);
+    // @Bean
+    // public CommandLineRunner demoData() {
+    //     return args -> {
+    //         // Create and save mock stocks using constructor
+    //         Stock apple = new Stock("AAPL", "Apple Inc.", "NASDAQ", "USD", "Technology");
+    //         stockService.saveStock(apple);
 
-            // You can add more mock stocks
-            Stock microsoft = new Stock("MSFT", "Microsoft Corp.", "NASDAQ", "USD",
-            "Technology");
-            stockService.saveStock(microsoft);
-        };
-    }
+    //         // You can add more mock stocks
+    //         Stock microsoft = new Stock("MSFT", "Microsoft Corp.", "NASDAQ", "USD",
+    //         "Technology");
+    //         stockService.saveStock(microsoft);
+    //     };
+    // }
 
     @Bean
     public RestTemplate restTemplate() {
