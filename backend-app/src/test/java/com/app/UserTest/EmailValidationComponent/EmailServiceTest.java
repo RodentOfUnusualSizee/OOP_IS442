@@ -1,4 +1,4 @@
-package com.app.UserTest;
+package com.app.UserTest.EmailValidationComponent;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 

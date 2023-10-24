@@ -1,4 +1,4 @@
-package com.app.UserTest;
+package com.app.UserActivityLogTest;
 
 import com.app.User.UserEvent;
 import com.app.UserActivityLog.UserActivityLog;
