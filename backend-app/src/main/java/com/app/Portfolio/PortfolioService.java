@@ -2,6 +2,10 @@
 package com.app.Portfolio;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -208,24 +212,118 @@ public class PortfolioService {
         return historicalValue;
     }
 
-    // Depricated for now
-    // public double computeCumValueForMonth(String date, Portfolio portfolio,
-    // MonthlyController monthlyController) {
-    // double monthlyValue = 0.0;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    // for (Position position : portfolio.getPositions()) {
-    // StockTimeSeriesMonthlyDTO stockData =
-    // monthlyController.getMonthlyTimeSeries(position.getStockSymbol());
-    // Map<String, StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries =
-    // stockData.getTimeSeries();
+    public Map<String, Object> calculateReturns(PortfolioDTO portfolio) {
+        Map<String, Object> returns = new HashMap<>();
+        Map<String, Double> portfolioHistoricalValue = portfolio.getPortfolioHistoricalValue();
 
-    // StockTimeSeriesMonthlyDTO.MonthlyStockData monthData =
-    // monthlyTimeSeries.get(date);
-    // double priceForMonth = monthData.getClose();
+        // 1. Calculate Quarterly Returns, Quarterly Returns Percentage, and Date Ranges
+        Map<String, Map<String, String>> quarterlyResults = calculateQuarterlyReturns(portfolioHistoricalValue);
+        Map<String, String> quarterlyReturns = new HashMap<>();
+        Map<String, String> quarterlyReturnsPercentage = new HashMap<>();
+        Map<String, String> quarterlyDateRanges = new HashMap<>();
 
-    // monthlyValue += priceForMonth * position.getQuantity();
-    // }
+        for (Map.Entry<String, Map<String, String>> entry : quarterlyResults.entrySet()) {
+            quarterlyReturns.put(entry.getKey(), entry.getValue().get("return"));
+            quarterlyReturnsPercentage.put(entry.getKey(), entry.getValue().get("percentage"));
+            quarterlyDateRanges.put(entry.getKey(), entry.getValue().get("dateRange"));
+        }
 
-    // return monthlyValue;
-    // }
+        // 2. Calculate Annualized Returns and Annualized Returns Percentage
+        String annualizedReturnsPercentage = calculateAnnualizedReturnsPercentage(portfolioHistoricalValue);
+
+        // 3. Put results in the returns map
+        returns.put("quarterlyReturns", quarterlyReturns);
+        returns.put("quarterlyReturnsPercentage", quarterlyReturnsPercentage);
+        returns.put("quarterlyDateRanges", quarterlyDateRanges);
+        returns.put("annualizedReturnsPercentage", annualizedReturnsPercentage);
+
+        return returns;
+    }
+
+    private Map<String, Map<String, String>> calculateQuarterlyReturns(Map<String, Double> historicalValues) {
+        Map<String, Map<String, String>> quarterlyResults = new HashMap<>();
+        List<String> quarters = Arrays.asList("Q1", "Q2", "Q3", "Q4");
+        int currentYear = LocalDate.now().getYear();
+
+        Map<String, LocalDate[]> quarterDateRanges = Map.of(
+                "Q1", new LocalDate[] { LocalDate.of(currentYear, 1, 1), LocalDate.of(currentYear, 3, 31) },
+                "Q2", new LocalDate[] { LocalDate.of(currentYear, 4, 1), LocalDate.of(currentYear, 6, 30) },
+                "Q3", new LocalDate[] { LocalDate.of(currentYear, 7, 1), LocalDate.of(currentYear, 9, 30) },
+                "Q4", new LocalDate[] { LocalDate.of(currentYear, 10, 1), LocalDate.of(currentYear, 12, 31) });
+
+        for (String quarter : quarters) {
+            LocalDate startDate = quarterDateRanges.get(quarter)[0];
+            LocalDate endDate = quarterDateRanges.get(quarter)[1];
+
+            Map.Entry<String, Double> startValueEntry = historicalValues.entrySet().stream()
+                    .filter(e -> LocalDate.parse(e.getKey(), DATE_FORMATTER).isAfter(startDate.minusDays(1))
+                            && LocalDate.parse(e.getKey(), DATE_FORMATTER).isBefore(endDate.plusDays(1)))
+                    .min(Map.Entry.comparingByKey())
+                    .orElse(null);
+
+            Map.Entry<String, Double> endValueEntry = historicalValues.entrySet().stream()
+                    .filter(e -> LocalDate.parse(e.getKey(), DATE_FORMATTER).isAfter(startDate.minusDays(1))
+                            && LocalDate.parse(e.getKey(), DATE_FORMATTER).isBefore(endDate.plusDays(1)))
+                    .max(Map.Entry.comparingByKey())
+                    .orElse(null);
+
+            if (startValueEntry != null && endValueEntry != null) {
+                double returnAmount = endValueEntry.getValue() - startValueEntry.getValue();
+                double returnPercentage = (returnAmount / startValueEntry.getValue()) * 100;
+                String dateRange = endDate + " to " + startDate;
+                Map<String, String> results = new HashMap<>();
+                results.put("return", String.format("%.2f", returnAmount));
+                results.put("percentage", String.format("%.2f%%", returnPercentage));
+                results.put("dateRange", dateRange);
+                quarterlyResults.put(quarter, results);
+            } else {
+                Map<String, String> results = new HashMap<>();
+                results.put("return", "N/A");
+                results.put("percentage", "N/A");
+                results.put("dateRange", "N/A");
+                quarterlyResults.put(quarter, results);
+            }
+        }
+        return quarterlyResults;
+    }
+
+    // Calculate Annualized Returns Percentage
+    private String calculateAnnualizedReturnsPercentage(Map<String, Double> historicalValues) {
+        if (historicalValues == null || historicalValues.size() < 2) {
+            return null; // Not enough data to calculate annualized returns
+        }
+
+        Map.Entry<String, Double> firstEntry = historicalValues.entrySet().iterator().next();
+        Map.Entry<String, Double> lastEntry = null;
+
+        for (Map.Entry<String, Double> entry : historicalValues.entrySet()) {
+            lastEntry = entry;
+        }
+
+        if (firstEntry != null && lastEntry != null) {
+            try {
+                LocalDate startDate = LocalDate.parse(lastEntry.getKey(), DATE_FORMATTER);
+                LocalDate endDate = LocalDate.parse(firstEntry.getKey(), DATE_FORMATTER);
+                double startValue = lastEntry.getValue();
+                double endValue = firstEntry.getValue();
+
+                long daysBetween = ChronoUnit.DAYS.between(startDate, endDate);
+                if (daysBetween == 0) {
+                    return null; // Portfolio has no historical data or only one day of data
+                }
+
+                double yearsBetween = (double) daysBetween / 365;
+                double annualizedReturn = (Math.pow(endValue / startValue, 1 / yearsBetween) - 1) * 100;
+                return String.format("%.2f%%", annualizedReturn);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    
+
 }

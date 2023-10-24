@@ -68,8 +68,20 @@ public class PortfolioController {
 
     // Endpoint to retrieve a portfolio
     @GetMapping("/get/{portfolioID}")
-    public Optional<Portfolio> getPortfolio(@PathVariable int portfolioID) {
-        return portfolioService.getPortfolio(portfolioID);
+    public ResponseEntity<WildcardResponse> getPortfolio(@PathVariable int portfolioID) {
+        try {
+            Optional<Portfolio> portfolioOptional = portfolioService.getPortfolio(portfolioID);
+            if (!portfolioOptional.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(new WildcardResponse(false, "Portfolio not found", null));
+            }
+
+            PortfolioDTO dto = transformPortfolioToDTO(portfolioOptional.get());
+            return ResponseEntity.ok(new WildcardResponse(true, "Success", dto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new WildcardResponse(false, e.getMessage(), null));
+        }
     }
 
     // Endpoint to retrieve all portfolios of a user
@@ -92,46 +104,7 @@ public class PortfolioController {
 
             // 4. Loop through each portfolio to transform its data into the required format
             for (Portfolio portfolio : portfolios) {
-                List<Map<String, Object>> cumPositions = new ArrayList<>(); // Initialize cumPositions as an empty list
-                double currentTotalPortfolioValue = 0.0 + portfolio.getCapitalUSD();
-
-                List<Position> positions = portfolio.getPositions();
-                if (positions != null && !positions.isEmpty()) {
-                    // Compute the cumulative positions for this portfolio
-                    cumPositions = portfolioService.computeCumPositions(positions);
-
-                    for (Map<String, Object> cumPosition : cumPositions) {
-                        currentTotalPortfolioValue += (Double) cumPosition.get("currentValue");
-                    }
-                }
-
-                Map<String, Double> allocationBySector = new HashMap<>();
-                if (!cumPositions.isEmpty()) {
-                    for (Map<String, Object> cumPosition : cumPositions) {
-                        String sector = (String) cumPosition.get("stockSector");
-                        double value = (Double) cumPosition.get("currentValue");
-                        allocationBySector.put(sector, allocationBySector.getOrDefault(sector, 0.0) + value);
-                    }
-                }
-
-                if (!allocationBySector.isEmpty()) {
-                    for (Map.Entry<String, Double> entry : allocationBySector.entrySet()) {
-                        allocationBySector.put(entry.getKey(), (entry.getValue() / currentTotalPortfolioValue) * 100);
-                    }
-                }
-
-                double cashPercentage = (portfolio.getCapitalUSD() / currentTotalPortfolioValue) * 100;
-                allocationBySector.put("CASH", cashPercentage);
-
-                // 4.2 Compute the portfolio historical value
-                Map<String, Double> portfolioHistoricalValue = portfolioService
-                        .computePortfolioHistoricalValue(portfolio, monthlyController);
-
-                // 4.3 Create a DTO (Data Transfer Object) and add it to the response list
-                PortfolioDTO dto = new PortfolioDTO(portfolio, cumPositions);
-                dto.setPortfolioHistoricalValue(portfolioHistoricalValue);
-                dto.setCurrentTotalPortfolioValue(currentTotalPortfolioValue);
-                dto.setPortfolioAllocationBySector(allocationBySector); // Set the computed allocation by sector
+                PortfolioDTO dto = transformPortfolioToDTO(portfolio);
                 responseTemplates.add(dto);
             }
 
@@ -286,4 +259,57 @@ public class PortfolioController {
         portfolio.getPositions().removeIf(pos -> pos.getPositionID() == positionID);
         return portfolioService.updatePortfolio(portfolio);
     }
+
+    public PortfolioDTO transformPortfolioToDTO(Portfolio portfolio) {
+        List<Map<String, Object>> cumPositions = new ArrayList<>(); // Initialize cumPositions as an empty list
+        double currentTotalPortfolioValue = 0.0 + portfolio.getCapitalUSD();
+
+        List<Position> positions = portfolio.getPositions();
+        if (positions != null && !positions.isEmpty()) {
+            // Compute the cumulative positions for this portfolio
+            cumPositions = portfolioService.computeCumPositions(positions);
+
+            for (Map<String, Object> cumPosition : cumPositions) {
+                currentTotalPortfolioValue += (Double) cumPosition.get("currentValue");
+            }
+        }
+
+        Map<String, Double> allocationBySector = new HashMap<>();
+        if (!cumPositions.isEmpty()) {
+            for (Map<String, Object> cumPosition : cumPositions) {
+                String sector = (String) cumPosition.get("stockSector");
+                double value = (Double) cumPosition.get("currentValue");
+                allocationBySector.put(sector, allocationBySector.getOrDefault(sector, 0.0) + value);
+            }
+        }
+
+        if (!allocationBySector.isEmpty()) {
+            for (Map.Entry<String, Double> entry : allocationBySector.entrySet()) {
+                allocationBySector.put(entry.getKey(), (entry.getValue() / currentTotalPortfolioValue) * 100);
+            }
+        }
+
+        double cashPercentage = (portfolio.getCapitalUSD() / currentTotalPortfolioValue) * 100;
+        allocationBySector.put("CASH", cashPercentage);
+
+        // Compute the portfolio historical value
+        Map<String, Double> portfolioHistoricalValue = portfolioService
+                .computePortfolioHistoricalValue(portfolio, monthlyController);
+
+        // Create a DTO (Data Transfer Object)
+        PortfolioDTO dto = new PortfolioDTO(portfolio, cumPositions);
+        dto.setPortfolioHistoricalValue(portfolioHistoricalValue);
+        dto.setCurrentTotalPortfolioValue(currentTotalPortfolioValue);
+        dto.setPortfolioAllocationBySector(allocationBySector); // Set the computed allocation by sector
+
+        // Compute returns:
+        Map<String, Object> returns = portfolioService.calculateReturns(dto);
+        dto.setQuarterlyReturns((Map<String, String>) returns.get("quarterlyReturns"));
+        dto.setQuarterlyReturnsPercentage((Map<String, String>) returns.get("quarterlyReturnsPercentage"));
+        dto.setQuarterlyDateRanges((Map<String, String>) returns.get("quarterlyDateRanges"));
+        dto.setAnnualizedReturnsPercentage((String) returns.get("annualizedReturnsPercentage"));
+
+        return dto;
+    }
+
 }

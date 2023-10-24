@@ -134,6 +134,10 @@ public class UserService {
             String reqEmail = loginRequest.getEmail();
             String reqPassword = loginRequest.getPassword();
             User user = userRepository.findByEmail(reqEmail);
+            if (user == null) {
+                return new WildcardResponse(false, "Email does not exist", null);
+
+            }
             if (user.isEmailVerified() == false) {
                 return new WildcardResponse(false, "Account is not yet verified.", null);
             } else {

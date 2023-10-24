@@ -25,6 +25,11 @@ public class PortfolioDTO {
     private Map<String, Double> portfolioHistoricalValue;
     private Map<String, Double> portfolioAllocationBySector;
 
+    private Map<String, String> quarterlyReturns;
+    private String annualizedReturnsPercentage;
+    private Map<String, String> quarterlyReturnsPercentage;
+    private Map<String, String> quarterlyDateRanges;
+
     // Constructors, getters, setters, etc.
     public PortfolioDTO() {
     }
@@ -39,6 +44,30 @@ public class PortfolioDTO {
         this.cumPositions = cumPositions;
         this.createdTimestamp = portfolio.getCreatedTimestamp();
         this.lastModifiedTimestamp = portfolio.getLastModifiedTimestamp();
+    }
+
+    public Map<String, String> getQuarterlyReturns() {
+        return quarterlyReturns;
+    }
+
+    public void setQuarterlyReturns(Map<String, String> quarterlyReturns) {
+        this.quarterlyReturns = quarterlyReturns;
+    }
+
+    public String getAnnualizedReturnsPercentage() {
+        return annualizedReturnsPercentage;
+    }
+
+    public void setAnnualizedReturnsPercentage(String annualizedReturnsPercentage) {
+        this.annualizedReturnsPercentage = annualizedReturnsPercentage;
+    }
+
+    public Map<String, String> getQuarterlyReturnsPercentage() {
+        return quarterlyReturnsPercentage;
+    }
+
+    public void setQuarterlyReturnsPercentage(Map<String, String> quarterlyReturnsPercentage) {
+        this.quarterlyReturnsPercentage = quarterlyReturnsPercentage;
     }
 
     public void setCurrentTotalPortfolioValue(Double currentTotalPortfolioValue) {
@@ -131,5 +160,13 @@ public class PortfolioDTO {
 
     public void setPortfolioHistoricalValue(Map<String, Double> portfolioHistoricalValue) {
         this.portfolioHistoricalValue = portfolioHistoricalValue;
+    }
+
+    public Map<String, String> getQuarterlyDateRanges() {
+        return quarterlyDateRanges;
+    }
+
+    public void setQuarterlyDateRanges(Map<String, String> quarterlyDateRanges) {
+        this.quarterlyDateRanges = quarterlyDateRanges;
     }
 }
