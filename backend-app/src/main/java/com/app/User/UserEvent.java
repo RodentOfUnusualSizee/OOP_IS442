@@ -10,6 +10,7 @@ public class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Define the generation strategy for the ID
     private long userEventId;
+    private long userId;
     private String event;
     private LocalDateTime timestamp;
 
@@ -17,17 +18,37 @@ public class UserEvent {
     public UserEvent() {
     }
     
-    public UserEvent(String event, LocalDateTime timestamp) {
+    public UserEvent(String event, LocalDateTime timestamp, long userId) {
         this.event = event;
         this.timestamp = timestamp;
+        this.userId = userId;
     }
 
     public String getEvent() {
         return event;
     }
 
+    public long getUserEventId() {
+        return userEventId;
+    }
+    public long getUserId() {
+        return userId;
+    }
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
+    public void setUserEventId(long userEventId) {
+        this.userEventId = userEventId;
+    }
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
 
+    public void setEvent(String event) {
+        this.event = event;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
 }

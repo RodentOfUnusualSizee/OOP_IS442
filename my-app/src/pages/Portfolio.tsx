@@ -24,6 +24,11 @@ function Portfolio() {
     const [searchParams] = useSearchParams();
     const [data, setData] = React.useState<Portfolio[]>([]);
 
+    // persist login
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
+    const [userIsLoggedIn, setUserIsLoggedIn] = React.useState<boolean>(false);
+    const [userId, setUserId] = React.useState<number>(1);
+
     const handleAddClick = () => {
         setShowModal(true);
     }
@@ -49,7 +54,7 @@ function Portfolio() {
     const today = new Date();
     const todayString = today.getFullYear() + '-' + String(today.getMonth() + 1) + '-' + String(today.getDate()).padStart(2, '0');
 
-    const userId = authUser.id;
+    // const userId = authUser.id;
     let portfolioId = searchParams.get("id")
 
     const handleButtons = () => {
@@ -59,8 +64,8 @@ function Portfolio() {
 
         // add position
         let position = {"stockSymbol": stockCode, "price": price, "position": side, "quantity": quantity, "positionAddDate": date}
-        const positionAPI = createPortfolioPosition(portfolioId, position);
 
+        const positionAPI = createPortfolioPosition(portfolioId, position);
         positionAPI.then((response) => {
             if (response["success"]) {
                 alert("Position created")
@@ -80,16 +85,27 @@ function Portfolio() {
 
     // get portfolios
     React.useEffect(() => {
-        if (!hasFetchedData) {
-            const portfolio = getPortfolioByUserId(userId);
-            portfolio.then((response) => {
-                setData(response.data)
-                setHasFetchedData(true);
-            }).catch((error) => {
-                console.log(error);
-            });
+        if (authUser) {
+            setIsLoading(false);
+            setUserIsLoggedIn(true);
+            setUserId(authUser.id);
+
+            if (!hasFetchedData) {
+                const portfolio = getPortfolioByUserId(userId);
+                portfolio.then((response) => {
+                    setData(response.data)
+                    setHasFetchedData(true);
+                }).catch((error) => {
+                    console.log(error);
+                });
+            }
+            console.log("Auth has loaded")
+
+        } else {
+            console.log("Auth has not loaded");
         }
-    }, [portfolioId]);
+
+    }, [authUser, isLoggedIn]);
 
     // create portfolio interface
     interface Portfolio {
@@ -315,7 +331,7 @@ function Portfolio() {
                                 <div className="items-center">
                                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-center">
                                         <h3 className="font-semibold leading-6 text-gsgray90 text-3xl" id="modal-title">Add New Position</h3>
-                                        <form id="modalForm" className="my-6" onSubmit={(e) => {
+                                        <form action={`/portfolio/${portfolioId}`} id="modalForm" className="my-6" onSubmit={(e) => {
                                             e.preventDefault();
                                             handleModalClose();
                                         }}>

@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @GetMapping("/get/all")
-    public List<User> getAllUsers() {
+    public WildcardResponse getAllUsers() {
         return userService.findAll();
     }
 
@@ -76,6 +76,11 @@ public class UserController {
         } else {
             return ResponseEntity.status(404).body(activityLog);
         }
+    }
+    
+    @GetMapping("/all/events")
+    public WildcardResponse getAllEvents() {
+        return userService.findAllEvents();
     }
 
     @PostMapping("/{userId}/add-event")

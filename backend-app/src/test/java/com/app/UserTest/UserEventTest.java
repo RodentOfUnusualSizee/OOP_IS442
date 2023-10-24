@@ -16,7 +16,7 @@ public class UserEventTest {
     @BeforeEach
     public void setUp() {
         LocalDateTime timestamp = LocalDateTime.now();
-        userEvent = new UserEvent("login", timestamp);
+        userEvent = new UserEvent("LogIn", timestamp,1);
     }
 
     @Test

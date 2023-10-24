@@ -3,8 +3,6 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CSSTransition } from 'react-transition-group';
 import '../styles/home.css';
-import { loginUser } from '../utils/api';
-
 
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +10,13 @@ import { useNavigate } from 'react-router-dom';
 
 function Home() {
 
-    const {setAuthUser, setIsLoggedIn} = useAuth();
+    interface authToken {
+        id: number;
+        email: string;
+        role: string;
+    }
+
+    const { login, setAuthUser, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
@@ -20,32 +24,31 @@ function Home() {
 
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
+    const [error, setError] = React.useState<string>("");
 
-    const submitLogin = (e: React.FormEvent<HTMLButtonElement>) => {
+    const submitLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        const buttonName = e.currentTarget.name;
-
-        if (buttonName == "userLogin") {
-            let data = {
-                "email": email,
-                "password": password
+        // alert("Email: " + email + ", Password: " + password );
+        try {
+            const userRole = (await login(email, password)) as unknown as string;
+            console.log("User Role:", userRole);
+            let role = userRole;
+            if (role === "user") {
+                navigate("/UserHome");
             }
-            const loginAPI = loginUser(data);
-            loginAPI.then((response) => {
-                if (response["success"]) {
-                    setAuthUser(response["data"]);
-                    setIsLoggedIn(true);
-                    navigate("/UserHome");
-                } else {
-                    alert("Invalid username or password");
-                }
-            }).catch((error) => {
-                console.log(error);
-            });
+            else {
+                navigate("/AdminHome");
+            }
+        } catch (error : unknown) {
+            if (error instanceof Error) {
+                console.error("An error occurred during login", error);
+                setError(error.message);
+            } else {
+                console.error("An error occurred during login", error);
+                setError("An error occurred during login");
+            }
         }
     }
-
-
 
     return (
         <div>
@@ -86,14 +89,14 @@ function Home() {
                                         required>
                                     </input>
                                 </div>
+                                <div id="errorMessage" className="text-gsred60 text-sm font-light w-30 pb-2 px-2">
+                                    {error}
+                                </div>
                                 <div id="loginButtons">
-                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="userLogin">
-                                        User Login
+                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="Login">
+                                        Login
                                     </button>
 
-                                    <button className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded-sm mx-2 my-2" type="submit" onClick={submitLogin} name="adminLogin">
-                                        Admin Login
-                                    </button>
                                 </div>
                                 <div>
                                     <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50 my-2" href="#">
