@@ -47,14 +47,9 @@ public class DailyController {
 
         Map<String, Object> responseBody = response.getBody();
 
-        // Implement your mapping logic to map the response to your
         // StockTimeSeriesDailyDTO.
-        // Note: Normally, you would want to create a service layer to handle the
-        // business logic
-        // and keep your controller clean.
         StockTimeSeriesDailyDTO StockTimeSeriesDailyDTO = mapResponseToDTO(responseBody);
         stockDataCache.put(symbol, StockTimeSeriesDailyDTO);
-        // Pass StockTimeSeriesDailyDTO to your internal system here
 
         return StockTimeSeriesDailyDTO;
         // return responseBody;

@@ -98,10 +98,9 @@ public class CompanyOverviewController {
             try {
                 return LocalDate.parse(dateStr);
             } catch (DateTimeParseException e) {
-                // Handle the exception (e.g., log it, set a default date, etc.)
             }
         }
-        return null; // Return null or a default date
+        return null; 
     }
 
 }

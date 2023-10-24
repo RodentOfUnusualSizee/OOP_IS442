@@ -96,7 +96,7 @@ public class NewsSentimentByStockController {
             if (getFeed != null) {
                 getFeed.add(feed);
             } else {
-                // Handle the case when feed is null
+                
             }
             
         }
