@@ -1,11 +1,90 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
-import Stock from './Stock';
+import { useLocation } from 'react-router-dom';
+import { useAuth } from "../context/AuthContext";
+import Table from "../components/Table";
+import { getPortfolioByPortfolioId, getStockPrice } from "../utils/api";
+import { getStockRecordsByStockCode, formatTimestamp } from "../utils/transform";
+import { PencilIcon, EyeIcon} from '@heroicons/react/20/solid';
 
 
 function StockRecord() {
+
+    const location = useLocation();
+    const { authUser, isLoggedIn } = useAuth();
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
+    const [userId, setUserId] = React.useState<number>(1);
+    const [userRole, setUserRole] = React.useState<string>("user");
+    const [userIsLoggedIn, setUserIsLoggedIn] = React.useState<boolean>(true);
+    const management = userRole === "management" || userRole === "user";
+    const [stockCode, setStockCode] = React.useState<string>("");
+    const [portfolioId, setPortfolioId] = React.useState<string>("");
+
+    useEffect(() => {
+        if (authUser) {
+            console.log("auth loaded");
+
+            setUserId(authUser.id);
+            setUserRole(authUser.role);
+            setUserIsLoggedIn(true);
+            setIsLoading(false);
+
+            const queryParams = new URLSearchParams(location.search);
+            const stockCode = queryParams.get("stock");
+            const portfolioId = queryParams.get("id");
+
+            setStockCode(stockCode || "");
+            setPortfolioId(portfolioId || "");
+
+            const getStockRecords = async () => {
+                try {
+                    const stockPriceData = await getStockPrice(stockCode);
+                    const currentValue = stockPriceData.timeSeries[0].close;
+                    const response = await getPortfolioByPortfolioId(portfolioId);
+                    const positions = response.data.positions;
+                    const filteredStockRecords = getStockRecordsByStockCode(positions, stockCode);
+                    setStockRecords(filteredStockRecords.map((record: any) => ({
+                        id: record.positionId,
+                        dateAdded: formatTimestamp(record.createdTimestamp),
+                        position: record.position,
+                        quantity: record.quantity,
+                        price: record.price,
+                        totalCost: record.price * record.quantity,
+                        currentValue: record.position === "LONG" ? currentValue * record.quantity : record.price * record.quantity,
+                    })))
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            getStockRecords();
+        } else {
+            console.log("auth never loaded");
+        }
+    }, [authUser, location.search])
+
+    // Stats
+    
+
+    // Table
+    const tableHeaders = [
+        { header: "Date Added", key: "dateAdded" },
+        { header: "Position", key: "position" },
+        { header: "Quantity", key: "quantity" },
+        { header: "Price", key: "price" },
+        { header: "Total Cost", key: "totalCost" },
+        { header: "Current Value", key: "currentValue" }
+    ]
+
+    const [stockRecords, setStockRecords] = React.useState<any[]>([]);
+
+    const tableTitle = "";
+    const tableDescription = "";
+    const tableAction = "";
+    const tableLink = "";
+
+    // modal
 
     const [showModal, setShowModal] = React.useState<boolean>(false);
 
@@ -21,7 +100,7 @@ function StockRecord() {
         setQuantity("");
         setPrice("");
     }
-    
+
     // form inputs
     const [side, setSide] = React.useState<string>("");
     const [date, setDate] = React.useState<string>("");
@@ -34,13 +113,12 @@ function StockRecord() {
     const today = new Date();
     const todayString = today.getFullYear() + '-' + String(today.getMonth() + 1) + '-' + String(today.getDate()).padStart(2, '0');
 
-    const handleButtons = () => {
-        const form = document.getElementById("modalForm") as HTMLFormElement;
-        form.submit();
+    const handleButtons = (e: any) => {
+        e.preventDefault();
         alert("Side: " + side + ", Date: " + date + ", Quantity: " + quantity + ", Price: " + price);
         // insert API call below
     }
-    
+
     const summary = () => {
         return null;
     }
@@ -48,17 +126,40 @@ function StockRecord() {
 
     return (
         <div className="PortfolioRecord">
-            <Header management={true} userType={"user"} login={true}/>
-                <div>
-                    <h1>Stock Code</h1> {/* Replace with the stock code selected from the previous page (Portfolio) idk like {stockcode} or smt */}
-
-                    <button onClick={handleAddClick} className="bg-gsblue60">Edit</button>
-                    <Link to="/stock?" className="bg-gsblue60">View Performance</Link> {/* This links to the individual stock page */}
-
-                    {/* Table of stock records here */}
+            <Header management={management} userType={userRole} login={userIsLoggedIn} />
+            <div className='my-2 px-6'>
+                <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
+                    <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                        {stockCode + " Records"}
+                    </h3>
+                    <div className="mt-5 flex lg:ml-4 lg:mt-0">
+                        <span className="hidden sm:block">
+                            <button
+                                type="button"
+                                className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                onClick={handleAddClick}
+                            >
+                                <PencilIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                Add New Position
+                            </button>
+                        </span>
+                        <span className="hidden sm:block mx-1">
+                            <Link to={'/Stock?ticker=' + stockCode}>
+                            <button
+                                type="button"
+                                className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            >
+                                <EyeIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                View Stock Performance
+                            </button>
+                            </Link>
+                        </span>
+                    </div>
                 </div>
+                <Table tableTitle={tableTitle} tableData={stockRecords} tableDescription={tableDescription} tableHeaders={tableHeaders} tableAction={tableAction} tableLink={tableLink}></Table>
+            </div>
 
-                {showModal && (
+            {showModal && (
                 <div className="fixed z-10 inset-0 overflow-y-auto">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -74,10 +175,10 @@ function StockRecord() {
                                             e.preventDefault();
                                             handleModalClose();
                                         }}>
-                                        <div className="mb-3">
+                                            <div className="mb-3">
                                                 <select required value={side} onChange={(e) => setSide(e.target.value)} onMouseUp={summary}
-                                                className= "w-full appearance-none border rounded py-2 px-3 text-gsgray70 leading-tight" 
-                                                id="side">
+                                                    className="w-full appearance-none border rounded py-2 px-3 text-gsgray70 leading-tight"
+                                                    id="side">
                                                     <option value="" disabled selected className="font-bold">Side</option>
                                                     <option value="BUY">BUY</option>
                                                     <option value="SELL">SELL</option>
@@ -86,8 +187,8 @@ function StockRecord() {
                                             {/* These should be autofilled in the future, hardcoded for now */}
                                             <div className="mb-3">
                                                 <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
-                                                    id="quantity" 
-                                                    type="number" 
+                                                    id="quantity"
+                                                    type="number"
                                                     placeholder="Stock Quantity"
                                                     required
                                                     value={quantity}
@@ -97,15 +198,15 @@ function StockRecord() {
                                                 >
                                                 </input>
                                             </div>
-            
+
                                             <div className="mb-3">
                                                 <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
-                                                    id="price" 
-                                                    type="number" 
+                                                    id="price"
+                                                    type="number"
                                                     placeholder="Stock Price"
                                                     required
                                                     value={price}
-                                                    onChange= {(e) => setPrice(e.target.value)}
+                                                    onChange={(e) => setPrice(e.target.value)}
                                                     onKeyUp={summary}
                                                     onMouseUp={summary}
                                                 >
@@ -114,14 +215,14 @@ function StockRecord() {
 
                                             <div className="mb-3">
                                                 <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
-                                                    id="date" 
+                                                    id="date"
                                                     type="date"
                                                     required
                                                     value={date}
                                                     onChange={(e) => setDate(e.target.value)}
                                                     onKeyUp={summary} // for typing
                                                     onMouseUp={summary} // for clicking
-                                                    max = {todayString} // limit date because you cannot buy/sell in the future
+                                                    max={todayString} // limit date because you cannot buy/sell in the future
                                                 >
                                                 </input>
                                             </div>
@@ -132,7 +233,7 @@ function StockRecord() {
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                            <button type="button" onClick= {handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
+                                            <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
 
                                             <button type="submit" onClick={handleButtons} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Stock Position</button>
                                         </div>
@@ -143,7 +244,7 @@ function StockRecord() {
                     </div>
                 </div>
             )}
-            <Footer/>
+            <Footer />
         </div>
     );
 }

@@ -59,11 +59,10 @@ export function getTickerFeed(data: Data, ticker: string, limit = 20): MappedFee
         const formattedSentimentScore = tickerSentiment
             ? parseFloat(tickerSentiment.tickerSentimentScore.toFixed(2))
             : "N/A";
-
         return {
             title: item.title,
             url: item.url,
-            timePublished: formatTimestamp(item.timePublished),
+            timePublished: formatStockTimestamp(item.timePublished),
             summary: item.summary,
             tickerSentimentScore: formattedSentimentScore.toString(),
         };
@@ -72,7 +71,7 @@ export function getTickerFeed(data: Data, ticker: string, limit = 20): MappedFee
     return feed;
 }
 
-function formatTimestamp(timestamp: string): string {
+function formatStockTimestamp(timestamp: string): string {
     if (!/^\d{8}T\d{6}$/.test(timestamp)) {
         throw new Error('Invalid timestamp format');
     }
@@ -89,6 +88,18 @@ function formatTimestamp(timestamp: string): string {
     return date.toLocaleString();
 }
 
+export function formatTimestamp(timestamp: string): string {
+
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}\+\d{2}:\d{2}$/.test(timestamp)) {
+        const parsedDate = new Date(timestamp);
+        const formattedDateString = parsedDate.toLocaleString();
+
+        return formattedDateString;
+    }
+
+    throw new Error('Invalid timestamp format');
+}
+
 export function getStockPriceStats(timeSeries: StockValue[]) {
     const latest = timeSeries[timeSeries.length - 1].close;
     const oneDay = timeSeries[timeSeries.length - 2].close;
@@ -102,18 +113,18 @@ export function getStockPriceStats(timeSeries: StockValue[]) {
         const change = current - previous;
         const percentageChange = ((change / previous) * 100);
         return {
-            change: change.toFixed(2), 
-            percentageChange: percentageChange.toFixed(2), 
+            change: change.toFixed(2),
+            percentageChange: percentageChange.toFixed(2),
             changeType: change > 0 ? 'increase' : change < 0 ? 'decrease' : 'no change'
         };
     }
-    
+
 
     const oneDayChange = calculateChange(latest, oneDay);
     const sevenDaysChange = calculateChange(latest, sevenDays);
     const thirtyDaysChange = calculateChange(latest, thirtyDays);
 
-    const formatStats = (period : string, stats : StockPriceChange) => ({
+    const formatStats = (period: string, stats: StockPriceChange) => ({
         name: `Change from ${period} ago`,
         stat: latest.toFixed(2),
         previousStat: period === '1 day' ? oneDay : period === '7 days' ? sevenDays : thirtyDays,
@@ -128,4 +139,9 @@ export function getStockPriceStats(timeSeries: StockValue[]) {
         formatStats('7 days', sevenDaysChange),
         formatStats('30 days', thirtyDaysChange)
     ];
+}
+
+export function getStockRecordsByStockCode(positions: any[], stockCode: any) {
+    const stockRecords = positions.filter((position) => position.stockSymbol === stockCode);
+    return stockRecords;
 }

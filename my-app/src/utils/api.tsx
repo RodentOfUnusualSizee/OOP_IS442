@@ -59,6 +59,16 @@ export async function getPortfolioByUserId(userId: any) {
   }
 }
 
+export async function getPortfolioByPortfolioId(portfolioId: any) {
+  try {
+    // localhost:8080/api/portfolio/get/1
+    const response = await axios.get(`${BASE_PORTFOLIO_URL}/get/${portfolioId}`);
+    return response.data;
+  } catch (error) { 
+    throw error;
+  }
+}
+
 export async function getStockStats() {
   try {
     const response = await axios.get(`${BASE_STOCK_URL}/topGainerLoser`);
@@ -140,23 +150,14 @@ export async function createNewUserEvent(userId: any, data: any) {
   } catch (error) {
       throw error;
   }
-  //Request:
-  // {
-  //   "event": "logout",
-  //   "timestamp": "2023-10-01T12:10:22"
-  // }
-  
-  //Response:
-  // {
-  //   "success": true,
-  //   "message": "Event added successfully.",
-  //   "data": {
-  //       "userEventId": 0,
-  //       "userId": 1,
-  //       "event": "logout",
-  //       "timestamp": "2023-10-01T12:10:00"
-  //   }
-  // }
-
 }
 
+export async function getStockPrice(stockCode: any) {
+  try {
+    // http://localhost:8080/api/stock/dailyTimeSeries/TSLA
+    const response = await axios.get(`${BASE_STOCK_URL}/dailyTimeSeries/${stockCode}`);
+    return response.data 
+  } catch (error) { 
+    throw error;
+  }
+}

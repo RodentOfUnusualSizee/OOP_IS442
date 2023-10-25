@@ -746,6 +746,11 @@ video {
   margin-bottom: auto;
 }
 
+.my-1 {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .-ml-0 {
   margin-left: -0px;
 }
