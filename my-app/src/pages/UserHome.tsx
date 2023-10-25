@@ -156,7 +156,7 @@ function UserHome() {
                     </div>
                 </div>
                 <div className="grid grid-cols-6" id="AddNewPortBtn">
-                    <button onClick={handleAddClick} className="col-end-6 col-span-1 bg-gsgreen50 hover:bg-gsgreen60 text-white font-bold py-2 px-4 rounded">Create New Portfolio</button>
+                    <button onClick={handleAddClick} className="col-start-3 col-span-2 bg-gsgreen50 hover:bg-gsgreen60 text-white font-bold py-2 px-4 rounded">Create New Portfolio</button>
                 </div>
                 <div className="mx-auto mt-8 max-w-2xl mb-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
                     <PortfolioCard portfolioList={portfolioData}></PortfolioCard>

@@ -27,7 +27,7 @@ const PortfolioCard = ({portfolioList}: PortfolioCardProps) => {
                             <img className="mx-auto h-32 w-32 flex-shrink-0 rounded-full" src="/images/portfolio.png" alt="" />
                             <h3 className="mt-6 text-sm font-medium text-gray-900">{portfolio.name}</h3>
                             <dl className="mt-1 flex flex-grow flex-col justify-between">
-                                <dt className="sr-only">Strategy</dt>
+                                <dt className="sr-only">Strategy Description</dt>
                                 <dd className="text-sm text-gray-500">{portfolio.strategy}</dd>
                                 <dt className="sr-only">Capital</dt>
                                 <dd className="mt-3">

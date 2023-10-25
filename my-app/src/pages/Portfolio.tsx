@@ -162,7 +162,7 @@ function Portfolio() {
 
         setStats([
             { name: 'Capital Change ($)', stat: diffAbs > 0 ? `+$${diffAbs}` : `-$${-diffAbs}` },
-            { name: 'Capital Change (%)', stat: `${diffPercent}%` },
+            { name: 'Capital Change (%)', stat: isNaN(diffPercent) ? `0%` : `${diffPercent}%` },
             { name: 'Days since Portfolio Active', stat: `${roundTo(timeDiff / (1000 * 60 * 60 * 24), 0)} days` },
         ]);
     }
