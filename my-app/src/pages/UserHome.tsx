@@ -1,10 +1,11 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect } from 'react';
 import Table from '../components/Table';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
 import { createPortfolio, getPortfolioByUserId } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { Slide, toast, ToastContainer } from 'react-toastify';
 
 
 function UserHome() {
@@ -26,10 +27,17 @@ function UserHome() {
     const [userIsLoggedIn, setUserIsLoggedIn] = React.useState<boolean>(false);
     const management = userRole === "admin" || userRole === "user";
     console.log(authUser);
-    console.log("User role: " + userRole)
-    console.log("User logged in: " + userIsLoggedIn)
 
-    React.useEffect(() => {
+    function fetchPortfolios(user: number = userId){
+        const portfolio = getPortfolioByUserId(user);
+        portfolio.then((response) => {
+            setData(response.data)
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+
+    useEffect(() => {
         if (authUser) {
             setIsLoading(false);
             setUserId(authUser.id);
@@ -37,18 +45,13 @@ function UserHome() {
             setUserIsLoggedIn(true);
             console.log("login part");
             if (!hasFetchedData) {
-                const portfolio = getPortfolioByUserId(authUser.id);
-                portfolio.then((response) => {
-                    setData(response.data)
-                    setHasFetchedData(true);
-                }).catch((error) => {
-                    console.log(error);
-                });
+                fetchPortfolios(authUser.id);
+                setHasFetchedData(true);
             }
         } else {
             console.log("auth never loaded");
         }
-    }, [authUser, isLoggedIn]);
+    }, [authUser, isLoggedIn, hasFetchedData]);
 
     let portfolioData: any[] = [];
     data.forEach((item) => {
@@ -65,7 +68,7 @@ function UserHome() {
     const handleAddClick = () => {
         setShowModal(true);
     }
-    
+
     const handleModalClose = () => {
         setShowModal(false);
         //clear form inputs
@@ -74,30 +77,57 @@ function UserHome() {
         setPortfolioStrategy("");
     }
 
-    const handleSubmit = () => {
-        const form = document.getElementById("modalForm") as HTMLFormElement;
-        form.submit();
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
         let portfolio = {
             "user": {
                 "id": userId
             },
             "portfolioName": portfolioName,
             "strategyDesc": portfolioStrategy,
-            "capitalUSD" : portfolioCapital
+            "capitalUSD": portfolioCapital
         }
         const portfolioAPI = createPortfolio(portfolio);
-        
+
         portfolioAPI.then((response) => {
             if (response["success"]) {
-                alert("Portfolio Successfully Created")
-                
+                console.log(response);
+                toast.success('Successfully created Portfolio', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                });
+                fetchPortfolios();
             } else {
-                alert("Error creating new Portfolio")
+                toast.error('Error creating portfolio', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                });
             }
         }).catch((error) => {
-            console.log(error);
+            toast.success('Error creating portfolio', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+                theme: "colored",
+            });
         });
-
+        handleModalClose();
     }
 
 
@@ -106,7 +136,7 @@ function UserHome() {
             <div>Loading...</div>
         )
     }
-    
+
     return (
         <div>
             <div className="UserHome">
@@ -151,24 +181,24 @@ function UserHome() {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="mb-3 flex flex-col">
                                                     <input className="appearance-none border rounded py-2 px-3 text-gsgray70 leading-tight"
-                                                            id="portfolioName" 
-                                                            type="text" 
-                                                            placeholder="Portfolio Name"
-                                                            value={portfolioName}
-                                                            onChange={(e) => setPortfolioName(e.target.value)}
-                                                            required
+                                                        id="portfolioName"
+                                                        type="text"
+                                                        placeholder="Portfolio Name"
+                                                        value={portfolioName}
+                                                        onChange={(e) => setPortfolioName(e.target.value)}
+                                                        required
                                                     >
                                                     </input>
                                                 </div>
-                
+
                                                 <div className="mb-3 flex flex-col">
                                                     <input className="appearance-none border rounded py-2 px-3 text-gsgray70 leading-tight"
-                                                            id="portfolioCapital" 
-                                                            type="number" 
-                                                            placeholder="Capital"
-                                                            value={portfolioCapital}
-                                                            onChange={(e) => setPortfolioCapital(e.target.value)}
-                                                            required
+                                                        id="portfolioCapital"
+                                                        type="number"
+                                                        placeholder="Capital"
+                                                        value={portfolioCapital}
+                                                        onChange={(e) => setPortfolioCapital(e.target.value)}
+                                                        required
                                                     >
                                                     </input>
                                                 </div>
@@ -176,11 +206,11 @@ function UserHome() {
 
                                             <div className="mb-3">
                                                 <textarea className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
-                                                        id="portfolioStrategy"
-                                                        placeholder="Strategy"
-                                                        value={portfolioStrategy}
-                                                        onChange={(e) => setPortfolioStrategy(e.target.value)}
-                                                        required
+                                                    id="portfolioStrategy"
+                                                    placeholder="Strategy"
+                                                    value={portfolioStrategy}
+                                                    onChange={(e) => setPortfolioStrategy(e.target.value)}
+                                                    required
                                                 >
                                                 </textarea>
                                             </div>
@@ -191,9 +221,9 @@ function UserHome() {
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                            <button type="button" onClick= {handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
+                                            <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
 
-                                            <button type="submit" onClick= {handleSubmit} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Position</button>
+                                            <button type="submit" onClick={(e) => handleSubmit(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Portfolio</button>
                                         </div>
                                     </div>
                                 </div>
@@ -202,7 +232,7 @@ function UserHome() {
                     </div>
                 </div>
             )}
-            
+            <ToastContainer transition={Slide} />
             <Footer></Footer>
         </div>
     );

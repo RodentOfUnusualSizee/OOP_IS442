@@ -65,12 +65,12 @@ const Header = ({ management, userType, login }: HeaderProps) => {
             <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
                 {isManagement ? (
                     // Switch between admin and userhome
-                    <Link to={"/userhome"} className="block text-white-600">
+                    <Link to={"/"} className="block text-white-600">
                         <span className="sr-only">Home</span>
                         <img src='/images/gs-white.png' className='h-8 w-auto' />
                     </Link>
                 ) : (
-                <Link to={"/"} className="block text-white-600">
+                <Link to={"/userhome"} className="block text-white-600">
                     <span className="sr-only">Home</span>
                     <img src='/images/gs-white.png' className='h-8 w-auto' />
                 </Link>
