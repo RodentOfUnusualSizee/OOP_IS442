@@ -13,10 +13,11 @@ import Registration from './pages/Registration';
 import Stock from './pages/Stock';
 import Sandbox from './pages/Sandbox';
 import StockRecord from './pages/StockRecord';
+import ResetPassword from './pages/ResetPassword';
 
 import { AuthProvider } from './context/AuthContext';
 
-import ProtectedWrapper from './components/ProtectedWrapper';
+// import ProtectedWrapper from './components/ProtectedWrapper';
 
 import './App.css';
 
@@ -46,6 +47,7 @@ function App() {
           <Route path="stock" element={<Stock/>}/>
           <Route path="sandbox" element={<Sandbox />} />
           <Route path="stockrecord" element={<StockRecord />} />
+          <Route path="resetpassword" element={<ResetPassword />} />
         </Routes>
       </div>
     </AuthProvider>
