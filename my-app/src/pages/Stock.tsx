@@ -191,7 +191,7 @@ function Stock() {
         const positionAPI = createPortfolioPosition(selectedPortfolio, position);
         positionAPI.then((response) => {
             if (response["success"]) {
-                toast.success('Successfully added' + stockCode + ' to portfolio', {
+                toast.success('Successfully added ' + stockCode + ' to portfolio', {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -230,7 +230,7 @@ function Stock() {
 
     const summary = () => {
         const summary = document.getElementById("summary") as HTMLSpanElement;
-        summary.innerHTML = selectedPortfolio + ":  " + side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
+        summary.innerHTML = side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
     }
 
     if (isLoading) {
