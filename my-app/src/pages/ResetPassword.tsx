@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { useSearchParams } from "react-router-dom";
 
 function ResetPassword() {
 
@@ -9,6 +10,9 @@ function ResetPassword() {
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
     const [error, setError] = React.useState<string>("");
+
+    const [searchParams] = useSearchParams();
+    let token = searchParams.get("token");
 
     // email
     const form = useRef<HTMLFormElement | null>(null);

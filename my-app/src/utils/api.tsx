@@ -161,3 +161,42 @@ export async function getStockPrice(stockCode: any) {
     throw error;
   }
 }
+
+export async function getResetPasswordToken(email: any) {
+  try {
+      const response = await axios.get(`${BASE_USER_URL}/getToken/${email}`);
+      return response.data;
+  } catch (error) {
+      throw error;
+  }
+}
+
+export async function checkResetPasswordToken(email: any, token: any) {
+  try {
+      const response = await axios.get(`${BASE_USER_URL}/checkToken`, {
+        params: {
+          'email': email,
+          'token': token
+        }
+      });
+
+      return response.data;
+      
+  } catch (error) {
+      throw error;
+  }
+}
+
+export async function resetPassword(email: any, password: any) {
+  try {
+      const response = await axios.put(`${BASE_USER_URL}/updatePassword`, {
+        'email': email,
+        'password': password
+      });
+
+      return response.data;
+
+  } catch (error) {
+      throw error;
+  }
+}
