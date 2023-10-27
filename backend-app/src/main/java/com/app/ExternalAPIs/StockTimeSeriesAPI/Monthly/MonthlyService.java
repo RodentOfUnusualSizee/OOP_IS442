@@ -114,7 +114,7 @@ public class MonthlyService {
         // Save to Stock repo
         newStock.setTimeSeries(timeSeriesMonthly);
 
-        WildcardResponse tmp = stockService.save(newStock);
+        stockService.save(newStock);
         return stockTimeSeriesMonthlyDTO;
     }
 
