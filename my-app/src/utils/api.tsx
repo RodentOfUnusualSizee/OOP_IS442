@@ -9,6 +9,7 @@ export function roundTo(number: number, decimalPlaces: number) {
 const BASE_USER_URL = 'http://localhost:8080/api/user';
 const BASE_PORTFOLIO_URL = 'http://localhost:8080/api/portfolio';
 const BASE_STOCK_URL = 'http://localhost:8080/api/stock';
+const BASE_URL = 'http://localhost:8080'
 
 export async function registerUser(data: any) {
   try {
@@ -164,7 +165,7 @@ export async function getStockPrice(stockCode: any) {
 
 export async function getResetPasswordToken(email: any) {
   try {
-      const response = await axios.get(`${BASE_USER_URL}/getToken/${email}`);
+      const response = await axios.get(`${BASE_USER_URL}/resetPassword/getToken/${email}`);
       return response.data;
   } catch (error) {
       throw error;
@@ -173,7 +174,7 @@ export async function getResetPasswordToken(email: any) {
 
 export async function checkResetPasswordToken(email: any, token: any) {
   try {
-      const response = await axios.get(`${BASE_USER_URL}/checkToken`, {
+      const response = await axios.get(`${BASE_USER_URL}/resetPassword/checkToken`, {
         params: {
           'email': email,
           'token': token
@@ -196,6 +197,29 @@ export async function resetPassword(email: any, password: any) {
 
       return response.data;
 
+  } catch (error) {
+      throw error;
+  }
+}
+
+export async function sendResetPasswordEmail(email: any, token: any) {
+  try {
+      let message = "Dear User,\n\n"
+      +"We have received your password reset request. To reset your password, please click on the following link:\n\n"
+      +"http://localhost:3000/resetpassword?email=" + email + "&token=" + token + "\n\n"
+      +"Best regards,\n"
+      +"Your Application Team";
+
+      const response = await axios.get(`${BASE_URL}/sendEmail`, {
+        params: {
+          'toEmail': email,
+          'subject': "Reset Password",
+          'message': message
+        }
+      });
+
+      return response.data;
+      
   } catch (error) {
       throw error;
   }
