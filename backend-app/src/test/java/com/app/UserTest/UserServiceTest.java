@@ -1,3 +1,5 @@
+package com.app.UserTest;
+
 import com.app.User.User;
 import com.app.User.UserDTO;
 import com.app.User.UserEvent;
