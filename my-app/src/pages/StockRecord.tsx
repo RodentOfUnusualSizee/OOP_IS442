@@ -5,9 +5,10 @@ import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 import Table from "../components/Table";
-import { getPortfolioByPortfolioId, getStockPrice } from "../utils/api";
+import { getPortfolioByPortfolioId, getStockPrice, createPortfolioPosition } from "../utils/api";
 import { getStockRecordsByStockCode, formatTimestamp } from "../utils/transform";
-import { PencilIcon, EyeIcon} from '@heroicons/react/20/solid';
+import { PencilIcon, EyeIcon } from '@heroicons/react/20/solid';
+import { toast, ToastContainer, Slide } from 'react-toastify';
 
 
 function StockRecord() {
@@ -22,6 +23,46 @@ function StockRecord() {
     const [stockCode, setStockCode] = React.useState<string>("");
     const [portfolioId, setPortfolioId] = React.useState<string>("");
 
+    async function getStockRecords(stockCode: any, portfolioId: any) {
+        console.log("Function called");
+        try {
+            const stockPriceData = await getStockPrice(stockCode);
+            const currentValue = stockPriceData.timeSeries[0].close;
+            const response = await getPortfolioByPortfolioId(portfolioId);
+            const positions = response.data.positions;
+            const filteredStockRecords = getStockRecordsByStockCode(positions, stockCode);
+
+            const stockRecords = filteredStockRecords.map((record) => ({
+                id: record.positionId,
+                dateAdded: formatTimestamp(record.createdTimestamp),
+                position: record.position,
+                quantity: record.quantity,
+                price: record.price,
+                totalCost: record.price * record.quantity,
+                currentValue:
+                    record.position === "LONG"
+                        ? currentValue * record.quantity
+                        : record.price * record.quantity,
+            }));
+
+            const cumPositions = response.data.cumPositions;
+            const filteredCumPositions = getStockRecordsByStockCode(cumPositions, stockCode);
+            const netStockQuantity = filteredCumPositions[0].totalQuantity;
+            const totalStockCost = filteredCumPositions[0].totalQuantity * filteredCumPositions[0].averagePrice;
+            const profitLoss = filteredCumPositions[0].currentValue * netStockQuantity - totalStockCost;
+
+            setStockRecords(stockRecords);
+
+            setStockStats([
+                { name: "Total Net Stock Quantity", stat: netStockQuantity },
+                { name: "Total Stock Cost", stat: '$' + totalStockCost },
+                { name: "Profit/Loss", stat: '$' + profitLoss },
+            ]);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
         if (authUser) {
             console.log("auth loaded");
@@ -29,7 +70,6 @@ function StockRecord() {
             setUserId(authUser.id);
             setUserRole(authUser.role);
             setUserIsLoggedIn(true);
-            setIsLoading(false);
 
             const queryParams = new URLSearchParams(location.search);
             const stockCode = queryParams.get("stock");
@@ -37,35 +77,20 @@ function StockRecord() {
 
             setStockCode(stockCode || "");
             setPortfolioId(portfolioId || "");
-
-            const getStockRecords = async () => {
-                try {
-                    const stockPriceData = await getStockPrice(stockCode);
-                    const currentValue = stockPriceData.timeSeries[0].close;
-                    const response = await getPortfolioByPortfolioId(portfolioId);
-                    const positions = response.data.positions;
-                    const filteredStockRecords = getStockRecordsByStockCode(positions, stockCode);
-                    setStockRecords(filteredStockRecords.map((record: any) => ({
-                        id: record.positionId,
-                        dateAdded: formatTimestamp(record.createdTimestamp),
-                        position: record.position,
-                        quantity: record.quantity,
-                        price: record.price,
-                        totalCost: record.price * record.quantity,
-                        currentValue: record.position === "LONG" ? currentValue * record.quantity : record.price * record.quantity,
-                    })))
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-            getStockRecords();
+            getStockRecords(stockCode, portfolioId);
+            setIsLoading(false);
         } else {
             console.log("auth never loaded");
         }
     }, [authUser, location.search])
 
     // Stats
-    
+    const [stockStats, setStockStats] = React.useState<any[]>([
+        { name: "Total Net Stock Quantity", stat: "" },
+        { name: "Total Stock Cost", stat: "" },
+        { name: "Profit/Loss", stat: "" }
+    ]);
+
 
     // Table
     const tableHeaders = [
@@ -107,7 +132,6 @@ function StockRecord() {
     const [quantity, setQuantity] = React.useState<string>("");
     const [price, setPrice] = React.useState<string>("");
 
-    // const [stockCode, setStockCode] = React.useState<string>(""); < This should be taken from the previous page (Portfolio)
 
     // get today's date and parse as string containing yy/mm/dd
     const today = new Date();
@@ -115,12 +139,60 @@ function StockRecord() {
 
     const handleButtons = (e: any) => {
         e.preventDefault();
-        alert("Side: " + side + ", Date: " + date + ", Quantity: " + quantity + ", Price: " + price);
-        // insert API call below
+
+        let position = {};
+        if (side === "BUY") {
+            position = { "stockSymbol": stockCode, "price": price, "position": "LONG", "quantity": quantity, "positionAddDate": date }
+        } else {
+            position = { "stockSymbol": stockCode, "price": price, "position": "SELLTOCLOSE", "quantity": quantity, "positionAddDate": date }
+        }
+
+        const positionAPI = createPortfolioPosition(portfolioId, position);
+        positionAPI.then((response) => {
+            console.log(response);
+            if (response['success']) {
+                toast.success('Successfully added ' + stockCode + 'record to portfolio', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                });
+                getStockRecords(stockCode, portfolioId);
+            } else {
+                toast.error('Failed to add ' + stockCode + 'record to portfolio', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                });
+            }
+        }).catch((error) => {
+            toast.error('Failed to add ' + stockCode + 'record to portfolio (ez)', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: false,
+                progress: undefined,
+                theme: "colored",
+            });
+            console.log(error);
+        });
+        handleModalClose();
     }
 
     const summary = () => {
-        return null;
+        const summary = document.getElementById("summary") as HTMLSpanElement;
+        summary.innerHTML = side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
     }
 
 
@@ -145,18 +217,35 @@ function StockRecord() {
                         </span>
                         <span className="hidden sm:block mx-1">
                             <Link to={'/Stock?ticker=' + stockCode}>
-                            <button
-                                type="button"
-                                className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                            >
-                                <EyeIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
-                                View Stock Performance
-                            </button>
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                >
+                                    <EyeIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                    View Stock Performance
+                                </button>
                             </Link>
                         </span>
                     </div>
                 </div>
-                <Table tableTitle={tableTitle} tableData={stockRecords} tableDescription={tableDescription} tableHeaders={tableHeaders} tableAction={tableAction} tableLink={tableLink}></Table>
+                <div className='my-2 px-6'>
+                    <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                        {stockStats.map((item) => (
+                            <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                                <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
+
+                                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{item.stat}</dd>
+                                <p className="ml-2 flex items-baseline text-sm font-semibold"></p>
+                            </div>
+                        ))}
+                    </dl>
+                </div>
+                <div className='my-2 px-6'>
+                    <Table tableTitle={tableTitle} tableData={stockRecords} tableDescription={tableDescription} tableHeaders={tableHeaders} tableAction={tableAction} tableLink={tableLink}></Table>
+                    <Link to={"/portfolio?id=" + portfolioId} className="inline-block rounded border border-indigo-600 my-4 px-12 py-3 text-sm font-medium text-indigo-600 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:bg-indigo-500">
+                        Back to Portfolio
+                    </Link>
+                </div>
             </div>
 
             {showModal && (
@@ -183,6 +272,12 @@ function StockRecord() {
                                                     <option value="BUY">BUY</option>
                                                     <option value="SELL">SELL</option>
                                                 </select>
+                                            </div>
+                                            <div className="mb-3">
+                                                <div id="stockCode" className="w-full appearance-none border rounded py-2 px-3 text-gsgray70 leading-tight">
+                                                    {stockCode}
+                                                </div>
+                                                <input type="hidden" name="stockCode" value={stockCode} />
                                             </div>
                                             {/* These should be autofilled in the future, hardcoded for now */}
                                             <div className="mb-3">
@@ -245,6 +340,7 @@ function StockRecord() {
                 </div>
             )}
             <Footer />
+            <ToastContainer transition={Slide} />
         </div>
     );
 }

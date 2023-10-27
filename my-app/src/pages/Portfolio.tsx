@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import {
@@ -6,15 +6,24 @@ import {
     CalendarIcon,
     CurrencyDollarIcon,
     PencilIcon,
+    ArrowUpIcon,
+    ArrowDownIcon,
+    TagIcon,
+    BanknotesIcon
 } from '@heroicons/react/20/solid';
 import LineChartComponent from '../components/LineChartComponent';
 import PieChartComponent from '../components/PieChartComponent';
 import Table from '../components/Table';
-import { createPortfolioPosition, getPortfolioByUserId, roundTo } from '../utils/api';
+import { createPortfolioPosition, getPortfolioByUserId, getTickerData, getStockPrice } from '../utils/api';
+import { roundTo } from '../utils/transform';
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from "react-router-dom";
 import { Slide, toast, ToastContainer } from 'react-toastify';
 
+
+function classNames(...classes: String[]) {
+    return classes.filter(Boolean).join(' ')
+}
 
 function Portfolio() {
     interface portfolioDetails {
@@ -23,12 +32,12 @@ function Portfolio() {
         capital: string;
     }
 
-    const [stockTableData, setStockTableData] = React.useState<any[]>([]);
-    const [piechartdata, setPiechartdata] = React.useState<any[]>([]);
-    const [linechartdata, setLinechartdata] = React.useState<any[]>([]);
-    const [PortfolioData, setPortfolioData] = React.useState<portfolioDetails>({ name: "", strategy: "", capital: "" });
+    const [stockTableData, setStockTableData] = useState<any[]>([]);
+    const [piechartdata, setPiechartdata] = useState<any[]>([]);
+    const [linechartdata, setLinechartdata] = useState<any[]>([]);
+    const [PortfolioData, setPortfolioData] = useState<portfolioDetails>({ name: "", strategy: "", capital: "" });
 
-    const [stats, setStats] = React.useState<any[]>([
+    const [stats, setStats] = useState<any[]>([
         { name: 'Capital Change ($)', stat: "" },
         { name: 'Capital Change (%)', stat: "" },
         { name: 'Days since Portfolio Active', stat: "" },
@@ -38,15 +47,15 @@ function Portfolio() {
     let portfolioId = searchParams.get("id");
     const today = new Date();
 
-    const [showModal, setShowModal] = React.useState<boolean>(false);
+    const [showModal, setShowModal] = useState<boolean>(false);
     const { authUser, isLoggedIn } = useAuth();
-    const [hasFetchedData, setHasFetchedData] = React.useState(false);
+    const [hasFetchedData, setHasFetchedData] = useState(false);
 
     // persist login
-    const [isLoading, setIsLoading] = React.useState<boolean>(true);
-    const [userIsLoggedIn, setUserIsLoggedIn] = React.useState<boolean>(true);
-    const [userId, setUserId] = React.useState<number>(1);
-    const [userRole, setUserRole] = React.useState<string>("user");
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [userIsLoggedIn, setUserIsLoggedIn] = useState<boolean>(true);
+    const [userId, setUserId] = useState<number>(1);
+    const [userRole, setUserRole] = useState<string>("user");
     const management = userRole === "admin" || userRole === "user";
     console.log("management: " + management)
 
@@ -60,12 +69,50 @@ function Portfolio() {
         { header: 'Action', key: 'action' }
     ];
 
-
     const tableTitle = 'Stocks';
     const tableDescription = 'List of stocks in portfolio and related data';
     const tableAction = "View Portfolio Stock Record";
 
     const tableLink = '/StockRecord?id=' + portfolioId + '&stock=';
+
+    // Portfolio Performance
+    const [performanceStats, setPerformanceStats] = useState<any[]>([
+        { name: 'Portfolio MoM Growth %', stat: "" },
+        { name: 'Portfolio QoQ Growth %', stat: "" },
+        { name: 'Portfolio YoY Growth %', stat: "" },
+    ]);
+
+    const [quarterlyStats, setQuarterlyStats] = useState<any[]>([
+        { name: 'Quarterly Returns ($)', stat: [] },
+        { name: 'Quarterly Returns (%)', stat: [] },
+    ]);
+
+
+    // Ticker 
+    const [tickers, setTickers] = useState<any[]>([]);
+    const [activeTab, setActiveTab] = useState(0);
+    const [selectedTicker, setSelectedTicker] = useState<any>({
+        symbol: '',
+        name: '',
+        type: '',
+        currency: '',
+    });
+
+    const handleTabClick = (index: any) => {
+        setActiveTab(index);
+        setSelectedTicker(tickers[index]);
+        setStockCode(tickers[index].symbol);
+    };
+
+    const handleMarketPrice = () => {
+        const priceData = getStockPrice(selectedTicker.symbol);
+        priceData.then((response) => {
+            setPrice(response["timeSeries"][0]["close"]);
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+
 
     useEffect(() => {
         if (authUser) {
@@ -93,6 +140,36 @@ function Portfolio() {
             console.log(error);
         };
     }
+
+    async function tickerData(stockCode: string) {
+        try {
+            const response = await getTickerData(stockCode);
+            console.log(response);
+            return response;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    async function handleSearch() {
+        try {
+            const stockSymbol = (document.getElementById("stockSearch") as HTMLInputElement).value;
+            const tickers = await tickerData(stockSymbol);
+            console.log(tickers);
+            setTickers(
+                tickers['bestMatches'].map((ticker: any) => ({
+                    symbol: ticker.symbol,
+                    name: ticker.name,
+                    type: ticker.type,
+                    currency: ticker.currency,
+                }))
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
 
     function organiseData(data: any) {
         const portfolio = data.find((portfolio: any) => portfolio.portfolioID.toString() === portfolioId);
@@ -165,14 +242,54 @@ function Portfolio() {
             { name: 'Capital Change (%)', stat: isNaN(diffPercent) ? `0%` : `${diffPercent}%` },
             { name: 'Days since Portfolio Active', stat: `${roundTo(timeDiff / (1000 * 60 * 60 * 24), 0)} days` },
         ]);
+
+        // performance 
+        const MoM = portfolio.portfolioMoM;
+        const QoQ = portfolio.portfolioQoQ;
+        const YoY = portfolio.portfolioYoY;
+
+
+        setPerformanceStats([
+            { name: 'Portfolio MoM Growth %', stat: MoM },
+            { name: 'Portfolio QoQ Growth %', stat: QoQ },
+            { name: 'Portfolio YoY Growth %', stat: YoY },
+        ]);
+
+        // quarterly
+        const quarterlyReturns = portfolio.quarterlyReturns;
+        const quarterlyReturnsPercent = portfolio.quarterlyReturnsPercentage;
+
+        const tempQuarterlyStats = [];
+        const tempQuarterlyStatsPercent = [];
+
+        for (var h in quarterlyReturns) {
+            tempQuarterlyStats.push({ "date": h, "price": quarterlyReturns[h] })
+            if (!lastVal) {
+                lastVal = quarterlyReturns[h];
+            }
+            firstVal = quarterlyReturns[h];
+        }
+
+        for (var h in quarterlyReturnsPercent) {
+            tempQuarterlyStatsPercent.push({ "date": h, "price": quarterlyReturnsPercent[h] })
+            if (!lastVal) {
+                lastVal = quarterlyReturnsPercent[h];
+            }
+            firstVal = quarterlyReturnsPercent[h];
+        }
+
+        setQuarterlyStats([
+            { name: 'Quarterly Returns ($)', stat: tempQuarterlyStats },
+            { name: 'Quarterly Returns (%)', stat: tempQuarterlyStatsPercent },
+        ]);
     }
 
     // modal 
-    const [side, setSide] = React.useState<string>("");
-    const [stockCode, setStockCode] = React.useState<string>("");
-    const [date, setDate] = React.useState<string>("");
-    const [quantity, setQuantity] = React.useState<string>("");
-    const [price, setPrice] = React.useState<string>("");
+    const [side, setSide] = useState<string>("");
+    const [stockCode, setStockCode] = useState<string>("");
+    const [date, setDate] = useState<string>("");
+    const [quantity, setQuantity] = useState<string>("");
+    const [price, setPrice] = useState<string>("");
 
     const todayString = today.getFullYear() + '-' + String(today.getMonth() + 1) + '-' + String(today.getDate()).padStart(2, '0');
 
@@ -303,8 +420,32 @@ function Portfolio() {
             </div>
             <h4 className='font-semibold'>Portfolio Performance</h4>
             <div className="flex my-6">
-                <LineChartComponent data={linechartdata}></LineChartComponent>
+                <LineChartComponent data={linechartdata} width={600} height={300} ></LineChartComponent>
                 <PieChartComponent data={piechartdata}></PieChartComponent>
+            </div>
+            <div className='my-2 px-6'>
+                <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                    {performanceStats.map((item) => (
+                        <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                            <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
+
+                            <dd className={classNames(
+                                item.stat.includes('-') ? 'text-red-600' : 'text-green-600', 'mt-1 text-3xl font-semibold tracking-tight text-gray-900')}>{item.stat}</dd>
+                            <p
+                                className={classNames(
+                                    item.stat.includes('-') ? 'text-red-600' : 'text-green-600',
+                                    'ml-2 flex items-baseline text-sm font-semibold'
+                                )}
+                            >
+                                {item.stat.includes('-') ? (
+                                    <ArrowDownIcon className="h-5 w-5 flex-shrink-0 self-center text-red-500" aria-hidden="true" />
+                                ) : (
+                                    <ArrowUpIcon className="h-5 w-5 flex-shrink-0 self-center text-green-500" aria-hidden="true" />
+                                )}
+                            </p>
+                        </div>
+                    ))}
+                </dl>
             </div>
             <div className="my-6 px-6">
                 <Table
@@ -340,17 +481,36 @@ function Portfolio() {
                                                 </select>
                                             </div>
 
-                                            <div className="mb-3">
-                                                <select required value={stockCode} onChange={(e) => setStockCode(e.target.value)} onMouseUp={summary}
-                                                    className="w-full appearance-none border rounded py-2 px-3 text-gsgray70 leading-tight"
-                                                    id="stock">
-                                                    {/* These should be autofilled in the future, hardcoded for now */}
-                                                    <option value="" disabled selected className="font-bold">Stock Code</option>
-                                                    <option value="AAPL">AAPL</option>
-                                                    <option value="TSLA">TSLA</option>
-                                                    <option value="NVDA">NVDA</option>
-                                                    <option value="META">META</option>
-                                                </select>
+                                            <div className="mb-3 flex">
+                                                <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
+                                                    id="stockSearch"
+                                                    type="text"
+                                                    placeholder="Stock Symbol"
+                                                    required
+                                                >
+                                                </input>
+                                                <button onClick={(e) => handleSearch()} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Search</button>
+                                            </div>
+
+                                            <div>
+                                                {tickers.map((ticker, index) => (
+                                                    <button
+                                                        key={ticker.symbol}
+                                                        className={`my-1 px-4 py-2 mx-1 rounded-full ${activeTab === index
+                                                            ? 'bg-blue-500 text-white'
+                                                            : 'bg-gray-300 text-gray-700'
+                                                            }`}
+                                                        onClick={(e) => handleTabClick(index)}
+                                                    >
+                                                        {ticker.name}
+                                                    </button>
+                                                ))}
+                                                {selectedTicker.symbol !== '' ?
+                                                    <p className='text-gray-400 my-2 '>
+                                                        Type: {tickers[activeTab].type} | Currency: {tickers[activeTab].currency}
+                                                    </p> : <p></p>
+                                                }
+                                                <input type="hidden" name="stockCode" value={stockCode} />
                                             </div>
 
                                             <div className="mb-3">
@@ -367,7 +527,7 @@ function Portfolio() {
                                                 </input>
                                             </div>
 
-                                            <div className="mb-3">
+                                            <div className="mb-3 flex">
                                                 <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
                                                     id="price"
                                                     type="number"
@@ -379,6 +539,7 @@ function Portfolio() {
                                                     onMouseUp={summary}
                                                 >
                                                 </input>
+                                                <button onClick={(e) => handleMarketPrice()} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Use Market Price</button>
                                             </div>
 
                                             <div className="mb-3">

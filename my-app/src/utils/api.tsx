@@ -1,9 +1,5 @@
 import axios from 'axios';
 
-export function roundTo(number: number, decimalPlaces: number) {
-  const multiplier = Math.pow(10, decimalPlaces);
-  return Math.round(number * multiplier) / multiplier;
-}
 
 
 const BASE_USER_URL = 'http://localhost:8080/api/user';
@@ -223,5 +219,14 @@ export async function sendResetPasswordEmail(email: any, token: any) {
       
   } catch (error) {
       throw error;
+  }
+}
+
+export async function getTickerData(stockSymbol : any) {
+  try { 
+    const response = await axios.get(`${BASE_STOCK_URL}/tickerSearch/${stockSymbol}`);
+    return response.data;
+  } catch (error) {
+    throw error;
   }
 }

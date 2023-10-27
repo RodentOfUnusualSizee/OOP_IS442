@@ -145,3 +145,8 @@ export function getStockRecordsByStockCode(positions: any[], stockCode: any) {
     const stockRecords = positions.filter((position) => position.stockSymbol === stockCode);
     return stockRecords;
 }
+
+export function roundTo(number: number, decimalPlaces: number) {
+    const multiplier = Math.pow(10, decimalPlaces);
+    return Math.round(number * multiplier) / multiplier;
+}
