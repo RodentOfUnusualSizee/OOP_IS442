@@ -1,12 +1,17 @@
 package com.app.StockDataPoint;
+
 import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
 import com.app.Stock.Stock;
+
 @Entity
 public class StockDataPoint {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String symbol;
     private String date;
     private double open;
@@ -14,14 +19,10 @@ public class StockDataPoint {
     private double low;
     private double close;
     private long volume;
-    @ManyToOne
-    @JoinColumn(name = "stock_symbol", referencedColumnName = "symbol")
-    private Stock stock;
 
-    //Default
+    // Default
     public StockDataPoint() {
     }
-
 
     public StockDataPoint(String date, double open, double high, double low, double close, int volume) {
         this.date = date;
@@ -32,78 +33,61 @@ public class StockDataPoint {
         this.volume = volume;
     }
 
-    //Getters
+    // Getters
     public String getDate() {
         return date;
     }
-
 
     public double getOpen() {
         return open;
     }
 
-
     public double getHigh() {
         return high;
     }
-
 
     public double getLow() {
         return low;
     }
 
-
     public double getClose() {
         return close;
     }
-
 
     public long getVolume() {
         return volume;
     }
 
-
-    public Stock getStock() {
-        return stock;
-    }
-
-
     public void setDate(String date) {
         this.date = date;
     }
-
 
     public void setOpen(double open) {
         this.open = open;
     }
 
-
     public void setHigh(double high) {
         this.high = high;
     }
-
 
     public void setLow(double low) {
         this.low = low;
     }
 
-
     public void setClose(double close) {
         this.close = close;
     }
-
 
     public void setVolume(long volume) {
         this.volume = volume;
     }
 
-
-    public void setStock(Stock stock) {
-        this.stock = stock;
+    public String getSymbol() {
+        return symbol;
     }
-    
-    
 
-
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
 
 }

@@ -1,4 +1,5 @@
 package com.app.Stock;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,6 @@ public class StockController {
         WildcardResponse res = stockService.save(stock);
         return ResponseEntity.status(200).body(res);
     }
-
 
     @GetMapping("/{symbol}")
     public Stock getStockBySymbol(@PathVariable String symbol) {
@@ -48,12 +48,9 @@ public class StockController {
         return ResponseEntity.status(HttpStatus.OK).body(exists);
     }
 
-    
     @DeleteMapping("/{symbol}")
     public ResponseEntity<Void> deleteStockBySymbol(@PathVariable String symbol) {
         stockService.deleteStockBySymbol(symbol);
         return ResponseEntity.noContent().build();
     }
 }
-
-   

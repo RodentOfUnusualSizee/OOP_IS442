@@ -29,6 +29,8 @@ public class MonthlyService {
     public StockTimeSeriesMonthlyDTO getMonthlyTimeSeriesProcessed(String symbol) {
         Stock stock = stockService.getStock(symbol);
         if (stock != null && isLastRefreshedLessThanOneMonthAgo(stock.getLastRefreshed())) {
+
+            System.out.println("Using stock monthly price from database for:" + stock.getSymbol());
             StockTimeSeriesMonthlyDTO stockTimeSeriesMonthlyDTO = new StockTimeSeriesMonthlyDTO();
             MetaData metaData = new MetaData();
             List<StockDataPoint> timeSeries = stock.getTimeSeries();
@@ -39,17 +41,18 @@ public class MonthlyService {
             stockTimeSeriesMonthlyDTO.setMetaData(metaData);
             stockTimeSeriesMonthlyDTO.setTimeSeries(timeSeries);
             return stockTimeSeriesMonthlyDTO;
-    
         }
+
+        System.out.println("Using stock monthly price from API for:" + symbol);
         StockTimeSeriesMonthlyDTO StockTimeSeriesMonthlyDTO = mapResponseToDTO(getMonthlyTimeSeriesRaw(symbol));
 
         return StockTimeSeriesMonthlyDTO;
     }
 
     public Map<String, Object> getMonthlyTimeSeriesRaw(String symbol) {
- 
+
         // Gerald: add here to search for Stock data in db
-        
+
         // if stock exist and lastRefreshed is less than 1 month ago use the stock Data
         // else query as u see below
 
@@ -69,10 +72,10 @@ public class MonthlyService {
         return responseBody;
     }
 
-    private static StockTimeSeriesMonthlyDTO mapResponseToDTO(Map<String, Object> responseBody) {
-        //For saving into repo
-        Stock newStock = new  Stock();
-        //For conversion to DTO
+    private StockTimeSeriesMonthlyDTO mapResponseToDTO(Map<String, Object> responseBody) {
+        // For saving into repo
+        Stock newStock = new Stock();
+        // For conversion to DTO
         StockTimeSeriesMonthlyDTO stockTimeSeriesMonthlyDTO = new StockTimeSeriesMonthlyDTO();
         MetaData metaData = new MetaData();
         List<StockDataPoint> timeSeriesMonthly = new ArrayList<>();
@@ -95,6 +98,7 @@ public class MonthlyService {
 
         for (Map.Entry<String, Map<String, String>> entry : apiTimeSeriesMonthly.entrySet()) {
             StockDataPoint monthlyStockData = new StockDataPoint();
+            monthlyStockData.setSymbol(apiMetaData.get("2. Symbol"));
             monthlyStockData.setDate(entry.getKey());
             monthlyStockData.setOpen(Double.parseDouble(entry.getValue().get("1. open")));
             monthlyStockData.setHigh(Double.parseDouble(entry.getValue().get("2. high")));
@@ -107,10 +111,10 @@ public class MonthlyService {
         stockTimeSeriesMonthlyDTO.setTimeSeries(timeSeriesMonthly);
         stockTimeSeriesMonthlyDTO.getMetaData();
 
-        //Save to Stock repo
+        // Save to Stock repo
         newStock.setTimeSeries(timeSeriesMonthly);
-        StockService service = new StockService();
-        service.save(newStock);
+
+        WildcardResponse tmp = stockService.save(newStock);
         return stockTimeSeriesMonthlyDTO;
     }
 
@@ -118,15 +122,13 @@ public class MonthlyService {
         try {
             // Parse the lastRefreshed date string into a LocalDate object
             LocalDate lastRefreshedDate = LocalDate.parse(lastRefreshed, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    
+
             // Calculate the date one month ago from today
             LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
-    
+
             // Compare lastRefreshedDate with oneMonthAgo
             return lastRefreshedDate.isAfter(oneMonthAgo);
         } catch (Exception e) {
-            // Handle parsing errors or invalid date formats here
-            // You may want to log the error or return a default value
             return false; // For simplicity, return false if there's an error
         }
     }

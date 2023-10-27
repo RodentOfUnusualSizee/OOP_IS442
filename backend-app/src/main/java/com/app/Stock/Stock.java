@@ -12,7 +12,7 @@ public class Stock {
     private String information;
     private String lastRefreshed;
     private String timeZone;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stock")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "symbol")
     private List<StockDataPoint> timeSeries = new ArrayList<>();
 
     // Hide for now cause not ready
@@ -70,6 +70,16 @@ public class Stock {
     public void setTimeSeries(List<StockDataPoint> timeSeries) {
         this.timeSeries = timeSeries;
     }
-    
-    
+
+    // for debug
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "symbol='" + symbol + '\'' +
+                ", information='" + information + '\'' +
+                ", lastRefreshed='" + lastRefreshed + '\'' +
+                ", timeZone='" + timeZone + '\'' +
+                ", timeSeries=" + timeSeries +
+                '}';
+    }
 }
