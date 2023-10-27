@@ -16,8 +16,6 @@ function ResetPassword() {
     // token
     const [token, setToken] = useSearchParams();
     const [isValid, setIsValid] = React.useState<boolean>(false);
-    const [searchParams] = useSearchParams();
-    let tmptoken = searchParams.get("token");
 
 
     // send email
@@ -48,10 +46,14 @@ function ResetPassword() {
 
 
     // check if email is valid
-    if (tmptoken != null){
-        const resetPasswordToken = checkResetPasswordToken(email, token);
+    const searchParams = new URLSearchParams(window.location.href);
+    let tmptoken = searchParams.get("token");
+    let useremail = searchParams.get("http://localhost:3000/resetpassword?email");
+
+    if (tmptoken !== null && useremail !== null) {
+        const resetPasswordToken = checkResetPasswordToken(useremail, tmptoken);
+
         resetPasswordToken.then((response) => {
-            console.log(response);
             if (response.success){
                 setIsValid(true);
             }
@@ -66,23 +68,20 @@ function ResetPassword() {
     // reset password
     const userResetPassword = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-
-        if (form.current){  
-            let ele = form.current.getElementById('password').value
-
-            const passwordReset = resetPassword(email, ele);
-            passwordReset.then((response) => {
+        
+        if (form.current) {
+            const passwordReset = resetPassword(email, password);
+            
+            passwordReset
+            .then((response) => {
                 console.log(response);
-                if (response.success){
-                    setMsg('Password Reset')
-                }
-                
-            }).catch((error) => {
+                setMsg(response);
+            })
+            .catch((error) => {
                 console.log(error);
             });
         }
-
-    }
+    };
 
     return (
     <div>

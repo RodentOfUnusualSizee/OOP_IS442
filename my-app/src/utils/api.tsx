@@ -188,17 +188,18 @@ export async function checkResetPasswordToken(email: any, token: any) {
   }
 }
 
-export async function resetPassword(email: any, password: any) {
+export async function resetPassword(email: string, newPassword: string) {
   try {
-      const response = await axios.put(`${BASE_USER_URL}/updatePassword`, {
-        'email': email,
-        'password': password
-      });
+    const response = await axios.put(`${BASE_USER_URL}/updatePassword`, null, {
+      params: {
+        email: email,
+        newPassword: newPassword,
+      }
+    });
 
-      return response.data;
-
+    return response.data;
   } catch (error) {
-      throw error;
+    throw error;
   }
 }
 
