@@ -21,6 +21,12 @@ public class MonthlyService {
 
     private Map<String, Map<String, Object>> stockDataCache = new HashMap<>();
 
+    public StockTimeSeriesMonthlyDTO getMonthlyTimeSeriesProcessed(String symbol) {
+        StockTimeSeriesMonthlyDTO StockTimeSeriesMonthlyDTO = mapResponseToDTO(getMonthlyTimeSeriesRaw(symbol));
+
+        return StockTimeSeriesMonthlyDTO;
+    }
+
     public Map<String, Object> getMonthlyTimeSeriesRaw(String symbol) {
         // check if data for the given symbol exists in cache
         if (stockDataCache.containsKey(symbol)) {
@@ -36,13 +42,10 @@ public class MonthlyService {
 
         ResponseEntity<Map> response = restTemplate.getForEntity(apiUrl, Map.class);
         Map<String, Object> responseBody = response.getBody();
+
+        stockDataCache.put(symbol, responseBody);
+        //Make sure when u get back can wrap back to responseBody
         return responseBody;
-    }
-
-    public StockTimeSeriesMonthlyDTO getMonthlyTimeSeriesProcessed(String symbol) {
-        StockTimeSeriesMonthlyDTO StockTimeSeriesMonthlyDTO = mapResponseToDTO(getMonthlyTimeSeriesRaw(symbol));
-
-        return StockTimeSeriesMonthlyDTO;
     }
 
     private static StockTimeSeriesMonthlyDTO mapResponseToDTO(Map<String, Object> responseBody) {
