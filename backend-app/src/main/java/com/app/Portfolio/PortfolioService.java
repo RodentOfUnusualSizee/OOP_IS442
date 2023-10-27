@@ -439,8 +439,81 @@ public class PortfolioService {
         dto.setPortfolioBeta(portfolioBeta);
         dto.setInformationRatio(informationRatio);
 
-        // 14. Return the populated DTO
+        // 14 Calculate YoY
+        LocalDate oneYearAgo = LocalDate.now().minusYears(1);
+        String oneYearAgoFormatted = oneYearAgo.format(DateTimeFormatter.ISO_DATE);
+        Double valueOneYearAgo = getPortfolioValueAtDate(portfolioHistoricalValue, oneYearAgoFormatted);
+
+        String yoy;
+        if (valueOneYearAgo != null) {
+            yoy = String.format("%.2f%%", ((currentTotalPortfolioValue - valueOneYearAgo) / valueOneYearAgo) * 100);
+        } else {
+            // Handle the case when historical data for one year ago is not available
+            yoy = "N/A";
+        }
+
+        // 15 Calculate QoQ
+        Map<String, String> quarterlyDateRanges = (Map<String, String>) returns.get("quarterlyDateRanges");
+        String qoq = "N/A";
+        LocalDate currentDate = LocalDate.now();
+        YearMonth currentYearMonth = YearMonth.from(currentDate);
+        // Find the current quarter
+        String currentQuarter = null;
+        String startDateOfCurrentQuarter = null;
+        List<String> quarters = new ArrayList<>(quarterlyDateRanges.keySet());
+
+        for (String quarter : quarters) {
+            String[] dateRange = quarterlyDateRanges.get(quarter).split(" to ");
+            YearMonth endDate = YearMonth.from(LocalDate.parse(dateRange[0], DateTimeFormatter.ISO_LOCAL_DATE));
+            YearMonth startDate = YearMonth.from(LocalDate.parse(dateRange[1], DateTimeFormatter.ISO_LOCAL_DATE));
+
+            if ((currentYearMonth.equals(startDate) || currentYearMonth.isAfter(startDate))
+                    && (currentYearMonth.equals(endDate) || currentYearMonth.isBefore(endDate))) {
+                currentQuarter = quarter;
+                startDateOfCurrentQuarter = dateRange[1];
+                break;
+            }
+        }
+        Double previousQuarterValue = getPortfolioValueAtDate(portfolioHistoricalValue, startDateOfCurrentQuarter);
+
+        if (previousQuarterValue != null) {
+            double qoqValue = ((currentTotalPortfolioValue - previousQuarterValue) / previousQuarterValue) * 100;
+            qoq = String.format("%.2f%%", qoqValue);
+        }
+
+        // 16 Calculate MoM
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+        String oneMonthAgoFormatted = oneMonthAgo.format(DateTimeFormatter.ISO_DATE);
+        Double valueOneMonthAgo = getPortfolioValueAtDate(portfolioHistoricalValue, oneMonthAgoFormatted);
+
+        String mom;
+        if (valueOneMonthAgo != null) {
+            mom = String.format("%.2f%%", ((currentTotalPortfolioValue - valueOneMonthAgo) / valueOneMonthAgo) * 100);
+        } else {
+            // Handle the case when historical data for one month ago is not available
+            mom = "N/A";
+        }
+
+        // 17. Compute YoY,QoQ,MoM
+        dto.setPortfolioYoY(yoy);
+        dto.setPortfolioQoQ(qoq);
+        dto.setPortfolioMoM(mom);
+
+        // 18. Return the populated DTO
         return dto;
+    }
+
+    public Double getPortfolioValueAtDate(Map<String, Double> portfolioHistoricalValue, String date) {
+        // Extracting the yyyy-MM part from the date string
+        String datePrefix = date.substring(0, 7);
+
+        // because dd cannot match need to filter and with startwith
+        Map.Entry<String, Double> entry = portfolioHistoricalValue.entrySet().stream()
+                .filter(e -> e.getKey().startsWith(datePrefix))
+                .findFirst()
+                .orElse(null);
+
+        return entry != null ? entry.getValue() : null;
     }
 
     @Autowired

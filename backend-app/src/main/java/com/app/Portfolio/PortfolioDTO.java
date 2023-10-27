@@ -22,6 +22,9 @@ public class PortfolioDTO {
     private Double currentTotalPortfolioValue;
     private Double portfolioBeta;
     private Double informationRatio;
+    private String portfolioYoY;
+    private String portfolioQoQ;
+    private String portfolioMoM;
 
     // --- Time-Related Information ---
     private Date createdTimestamp;
@@ -52,6 +55,30 @@ public class PortfolioDTO {
         this.cumPositions = cumPositions;
         this.createdTimestamp = portfolio.getCreatedTimestamp();
         this.lastModifiedTimestamp = portfolio.getLastModifiedTimestamp();
+    }
+
+    public String getPortfolioYoY() {
+        return portfolioYoY;
+    }
+
+    public void setPortfolioYoY(String portfolioYoY) {
+        this.portfolioYoY = portfolioYoY;
+    }
+
+    public String getPortfolioQoQ() {
+        return portfolioQoQ;
+    }
+
+    public void setPortfolioQoQ(String portfolioQoQ) {
+        this.portfolioQoQ = portfolioQoQ;
+    }
+
+    public String getPortfolioMoM() {
+        return portfolioMoM;
+    }
+
+    public void setPortfolioMoM(String portfolioMoM) {
+        this.portfolioMoM = portfolioMoM;
     }
 
     // --- Identification Information ---
