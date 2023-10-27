@@ -32,6 +32,9 @@ public class MonthlyService {
         if (stockDataCache.containsKey(symbol)) {
             return stockDataCache.get(symbol);
         }
+        // Gerald: add here to search for Stock data in dc
+        // if stock exist and lastRefreshed is less than 1 month ago use the stock Data
+        // else query as u see below
 
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
@@ -44,7 +47,9 @@ public class MonthlyService {
         Map<String, Object> responseBody = response.getBody();
 
         stockDataCache.put(symbol, responseBody);
-        //Make sure when u get back can wrap back to responseBody
+        // Make sure to also add back the stockdata into the database.. i think need to
+        // override. either Update or Delete den Insert
+        // Make sure when u get back can wrap back to responseBody
         return responseBody;
     }
 
