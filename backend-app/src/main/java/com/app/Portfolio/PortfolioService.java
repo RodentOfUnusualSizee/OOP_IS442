@@ -110,7 +110,9 @@ public class PortfolioService {
                     .filter(p -> !"SELLTOCLOSE".equals(p.getPosition()))
                     .mapToDouble(p -> p.getPrice() * p.getQuantity())
                     .sum()
-                    / symbolPositions.stream().filter(p -> !"SELLTOCLOSE".equals(p.getPosition()))
+                    /
+                    symbolPositions.stream()
+                            .filter(p -> !"SELLTOCLOSE".equals(p.getPosition()))
                             .mapToDouble(Position::getQuantity).sum();
 
             // Compute the total quantity, considering "SELLTOCLOSE" actions as negative
@@ -555,8 +557,14 @@ public class PortfolioService {
     }
 
     public double calculateCovariance(Map<String, Double> returns1, Map<String, Double> returns2) {
-        double mean1 = returns1.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
-        double mean2 = returns2.values().stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        double mean1 = returns1.values().stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0);
+        double mean2 = returns2.values().stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0);
 
         double covariance = 0;
         int n = 0;

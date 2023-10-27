@@ -214,10 +214,11 @@ public class PortfolioController {
 
         // 3. Handle SELLTOCLOSE
         if ("SELLTOCLOSE".equals(newPosition.getPosition())) {
-            int totalQuantity = portfolio.getPositions().stream()
-                    .filter(p -> p.getStockSymbol().equals(newPosition.getStockSymbol()))
-                    .mapToInt(Position::getQuantity)
-                    .sum();
+            int totalQuantity = 
+                portfolio.getPositions().stream()
+                                        .filter(p -> p.getStockSymbol().equals(newPosition.getStockSymbol()))
+                                        .mapToInt(Position::getQuantity)
+                                        .sum();
 
             if (totalQuantity < newPosition.getQuantity()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)

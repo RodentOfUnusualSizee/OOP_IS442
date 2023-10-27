@@ -78,13 +78,14 @@ public class DailyController {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(days);
 
-        List<DailyStockData> filteredTimeSeries = fullData.getTimeSeries().stream()
-                .filter(entry -> {
-                    LocalDate date = LocalDate.parse(entry.getDate(), formatter);
-                    return date.isAfter(startDate) && date.isBefore(endDate);
-                })
-                .sorted(Comparator.comparing(entry -> LocalDate.parse(entry.getDate(), formatter))) // Sort by date
-                .collect(Collectors.toList());
+        List<DailyStockData> filteredTimeSeries = 
+            fullData.getTimeSeries().stream()
+                                    .filter(entry -> {
+                                        LocalDate date = LocalDate.parse(entry.getDate(), formatter);
+                                        return date.isAfter(startDate) && date.isBefore(endDate);
+                                    })
+                                    .sorted(Comparator.comparing(entry -> LocalDate.parse(entry.getDate(), formatter))) // Sort by date
+                                    .collect(Collectors.toList());
 
         filteredData.setTimeSeries(filteredTimeSeries);
         return filteredData;
