@@ -3,44 +3,107 @@ import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
-import com.app.StockSeries.StockSeries;
-
+import com.app.Stock.Stock;
 @Entity
-@Table(name = "stock_data_points")
 public class StockDataPoint {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private LocalDateTime timeStamp;
-    private float price;
-    private int volume;
-
+    private String symbol;
+    private String date;
+    private double open;
+    private double high;
+    private double low;
+    private double close;
+    private long volume;
     @ManyToOne
-    @JoinColumn(name = "stock_series_id")
-    private StockSeries stockSeries;
+    @JoinColumn(name = "stock_symbol", referencedColumnName = "symbol")
+    private Stock stock;
 
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
+    //Default
+    public StockDataPoint() {
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
+
+    public StockDataPoint(String date, double open, double high, double low, double close, int volume) {
+        this.date = date;
+        this.open = open;
+        this.high = high;
+        this.low = low;
+        this.close = close;
+        this.volume = volume;
     }
 
-    public float getPrice() {
-        return price;
+    //Getters
+    public String getDate() {
+        return date;
     }
 
-    public void setPrice(float price) {
-        this.price = price;
+
+    public double getOpen() {
+        return open;
     }
 
-    public int getVolume() {
+
+    public double getHigh() {
+        return high;
+    }
+
+
+    public double getLow() {
+        return low;
+    }
+
+
+    public double getClose() {
+        return close;
+    }
+
+
+    public long getVolume() {
         return volume;
     }
 
-    public void setVolume(int volume) {
+
+    public Stock getStock() {
+        return stock;
+    }
+
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+
+    public void setOpen(double open) {
+        this.open = open;
+    }
+
+
+    public void setHigh(double high) {
+        this.high = high;
+    }
+
+
+    public void setLow(double low) {
+        this.low = low;
+    }
+
+
+    public void setClose(double close) {
+        this.close = close;
+    }
+
+
+    public void setVolume(long volume) {
         this.volume = volume;
     }
+
+
+    public void setStock(Stock stock) {
+        this.stock = stock;
+    }
+    
+    
+
+
 
 }

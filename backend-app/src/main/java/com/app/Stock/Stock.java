@@ -1,18 +1,19 @@
 package com.app.Stock;
 
 import javax.persistence.*;
-
-import com.app.StockSeries.StockSeries;
+import java.util.*;
+import com.app.StockDataPoint.*;
 
 @Entity
 @Table(name = "stocks")
 public class Stock {
     @Id
     private String symbol;
-    private String companyName;
-    private String exchangeTraded;
-    private String currency;
-    private String companySector;
+    private String information;
+    private String lastRefreshed;
+    private String timeZone;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "stock")
+    private List<StockDataPoint> timeSeries = new ArrayList<>();
 
     // Hide for now cause not ready
     // @OneToOne(cascade = CascadeType.ALL)
@@ -23,12 +24,11 @@ public class Stock {
         // Default constructor
     }
 
-    public Stock(String symbol, String companyName, String exchangeTraded, String currency, String companySector) {
+    public Stock(String symbol, String information, String lastRefreshed, String timeZone) {
         this.symbol = symbol;
-        this.companyName = companyName;
-        this.exchangeTraded = exchangeTraded;
-        this.currency = currency;
-        this.companySector = companySector;
+        this.information = information;
+        this.lastRefreshed = lastRefreshed;
+        this.timeZone = timeZone;
     }
 
     public String getSymbol() {
@@ -39,44 +39,37 @@ public class Stock {
         this.symbol = symbol;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getInformation() {
+        return information;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setInformation(String information) {
+        this.information = information;
     }
 
-    public String getExchangeTraded() {
-        return exchangeTraded;
+    public String getLastRefreshed() {
+        return lastRefreshed;
     }
 
-    public void setExchangeTraded(String exchangeTraded) {
-        this.exchangeTraded = exchangeTraded;
+    public void setLastRefreshed(String lastRefreshed) {
+        this.lastRefreshed = lastRefreshed;
     }
 
-    public String getCurrency() {
-        return currency;
+    public String getTimeZone() {
+        return timeZone;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
     }
 
-    public String getCompanySector() {
-        return companySector;
+    public List<StockDataPoint> getTimeSeries() {
+        return timeSeries;
     }
 
-    public void setCompanySector(String companySector) {
-        this.companySector = companySector;
+    public void setTimeSeries(List<StockDataPoint> timeSeries) {
+        this.timeSeries = timeSeries;
     }
-
-    // Commenting out the getter and setter for stockPrices
-    // public StockSeries getStockPrices() {
-    // return stockPrices;
-    // }
-
-    // public void setStockPrices(StockSeries stockPrices) {
-    // this.stockPrices = stockPrices;
-    // }
+    
+    
 }

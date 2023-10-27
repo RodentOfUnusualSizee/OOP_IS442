@@ -17,10 +17,11 @@ import com.app.WildcardResponse;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyController;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyService;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
-import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO.MonthlyStockData;
+import com.app.StockDataPoint.StockDataPoint;
 import com.app.Portfolio.PortfolioComparisionDTOs.FinancialStatsDTO;
 import com.app.Position.Position;
 import com.app.Position.PositionService;
+import com.app.StockDataPoint.StockDataPoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -124,14 +125,14 @@ public class PortfolioService {
             // Fetch the monthly stock data for the current stock symbol
             StockTimeSeriesMonthlyDTO stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
             // Extract the monthly time series data from the DTO
-            List<StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
+            List<StockDataPoint> monthlyTimeSeries = stockData.getTimeSeries();
 
             // Sort the time series data by date in descending order to get the most recent
             // data first
             monthlyTimeSeries.sort((data1, data2) -> data2.getDate().compareTo(data1.getDate()));
 
             // Get the most recent stock data
-            StockTimeSeriesMonthlyDTO.MonthlyStockData recentStockData = monthlyTimeSeries.get(0);
+           StockDataPoint recentStockData = monthlyTimeSeries.get(0);
             // Get the closing price from the most recent stock data
             Double recentStockPrice = recentStockData.getClose();
 
@@ -179,7 +180,7 @@ public class PortfolioService {
 
             // Fetch the monthly time series data for the current position's stock symbol
             StockTimeSeriesMonthlyDTO stockData = monthlyController.getMonthlyTimeSeries(stockSymbol);
-            List<StockTimeSeriesMonthlyDTO.MonthlyStockData> monthlyTimeSeries = stockData.getTimeSeries();
+            List<StockDataPoint> monthlyTimeSeries = stockData.getTimeSeries();
 
             // Initialize the historical values map for this stock symbol if it doesn't
             // exist
@@ -187,7 +188,7 @@ public class PortfolioService {
             Map<String, Double> historicalValues = historicalValuesByStock.get(stockSymbol);
 
             // Compute the historical values for this stock symbol
-            for (StockTimeSeriesMonthlyDTO.MonthlyStockData monthlyData : monthlyTimeSeries) {
+            for (StockDataPoint monthlyData : monthlyTimeSeries) {
                 String date = monthlyData.getDate();
                 double priceForMonth = monthlyData.getClose();
                 double valueForMonth = priceForMonth * position.getQuantity();
@@ -525,7 +526,7 @@ public class PortfolioService {
         StockTimeSeriesMonthlyDTO spyData = monthlyService.getMonthlyTimeSeriesProcessed("SPY");
 
         Map<String, Double> spyReturns = new HashMap<>();
-        List<MonthlyStockData> timeSeries = spyData.getTimeSeries();
+        List<StockDataPoint> timeSeries = spyData.getTimeSeries();
 
         for (int i = 1; i < timeSeries.size(); i++) {
             String currentDate = timeSeries.get(i).getDate();

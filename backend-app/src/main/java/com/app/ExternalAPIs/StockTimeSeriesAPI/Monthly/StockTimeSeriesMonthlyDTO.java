@@ -1,12 +1,12 @@
 package com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly;
 
 import java.util.*;
-
+import com.app.StockDataPoint.StockDataPoint;
 // Stock Time Series Data Transfer Object
 public class StockTimeSeriesMonthlyDTO {
 
     private MetaData metaData;
-    private List<MonthlyStockData> timeSeries;
+    private List<StockDataPoint> timeSeries;
 
     // Getters
     public MetaData getMetaData() {
@@ -17,11 +17,11 @@ public class StockTimeSeriesMonthlyDTO {
         this.metaData = metaData;
     }
 
-    public List<MonthlyStockData> getTimeSeries() {
+    public List<StockDataPoint> getTimeSeries() {
         return timeSeries;
     }
 
-    public void setTimeSeries(List<MonthlyStockData> timeSeries) {
+    public void setTimeSeries(List<StockDataPoint> timeSeries) {
         this.timeSeries = timeSeries;
     }
 
@@ -73,64 +73,5 @@ public class StockTimeSeriesMonthlyDTO {
             this.timeZone = timeZone;
         }
     }
-
-    // Inner class for Monthly Stock Data
-    public static class MonthlyStockData {
-        private String date;
-        private double open;
-        private double high;
-        private double low;
-        private double close;
-        private long volume;
-
-        // Getters
-        public double getOpen() {
-            return open;
-        }
-
-        public double getHigh() {
-            return high;
-        }
-
-        public double getLow() {
-            return low;
-        }
-
-        public double getClose() {
-            return close;
-        }
-
-        public long getVolume() {
-            return volume;
-        }
-
-        // Setters
-        public void setOpen(double open) {
-            this.open = open;
-        }
-
-        public void setHigh(double high) {
-            this.high = high;
-        }
-
-        public void setLow(double low) {
-            this.low = low;
-        }
-
-        public void setClose(double close) {
-            this.close = close;
-        }
-
-        public void setVolume(long volume) {
-            this.volume = volume;
-        }
-
-        public String getDate() {
-            return date;
-        }
-
-        public void setDate(String date) {
-            this.date = date;
-        }
-    }
+   
 }

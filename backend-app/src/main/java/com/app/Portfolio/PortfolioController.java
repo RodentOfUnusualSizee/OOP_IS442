@@ -22,7 +22,7 @@ import com.app.WildcardResponse;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyController;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyService;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
-import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO.MonthlyStockData;
+import com.app.StockDataPoint.StockDataPoint;
 import com.app.Portfolio.PortfolioComparisionDTOs.FinancialStatsDTO;
 import com.app.Portfolio.PortfolioComparisionDTOs.PortfolioComparisonDTO;
 
