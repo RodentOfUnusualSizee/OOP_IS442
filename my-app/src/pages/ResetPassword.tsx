@@ -20,32 +20,23 @@ function ResetPassword() {
 
     // send email
     const form = useRef<HTMLFormElement | null>(null);
-    const sendEmail = (e: { preventDefault: () => void; }) => {
+    const sendEmail = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        if (form.current) {
-            const resetPasswordToken = getResetPasswordToken(email);
-            resetPasswordToken.then((response) => {
-                console.log(response);
-                setToken(response.data.token)
+        try {
+            const response1 = await getResetPasswordToken(email);
+            setToken(response1.data.token);
+    
+            const response2 = await sendResetPasswordEmail(email, response1.data.token);
+            setMsg(response2);
 
-            }).catch((error) => {
-                console.log(error);
-
-            });
-
-            const resetPasswordEmail = sendResetPasswordEmail(email, token);
-            resetPasswordEmail.then((response) => {
-                console.log(response);
-                setMsg(response);
-            }).catch((error) => {
-                console.log(error);
-            });
+        } catch (error) {
+            console.log(error);
         }
     };
 
 
-    // check if email is valid
+    // check if email and token are valid
     const searchParams = new URLSearchParams(window.location.href);
     let tmptoken = searchParams.get("token");
     let useremail = searchParams.get("http://localhost:3000/resetpassword?email");
@@ -60,7 +51,6 @@ function ResetPassword() {
 
         }).catch((error) => {
             console.log(error);
-
         });
     }
 
@@ -68,20 +58,17 @@ function ResetPassword() {
     // reset password
     const userResetPassword = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
+        const passwordReset = resetPassword(email, password);
         
-        if (form.current) {
-            const passwordReset = resetPassword(email, password);
+        passwordReset.then((response) => {
+            console.log(response);
+            setMsg(response);
             
-            passwordReset
-            .then((response) => {
-                console.log(response);
-                setMsg(response);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        }
+        }).catch((error) => {
+            console.log(error);
+        });
     };
+
 
     return (
     <div>
