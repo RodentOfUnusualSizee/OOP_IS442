@@ -15,7 +15,6 @@ function ResetPassword() {
 
 
     // token
-    const [token, setToken] = useSearchParams();
     const [isValid, setIsValid] = React.useState<boolean>(false);
 
 
@@ -26,8 +25,6 @@ function ResetPassword() {
 
         try {
             const response1 = await getResetPasswordToken(email);
-            setToken(response1.data.token);
-    
             const response2 = await sendResetPasswordEmail(email, response1.data.token);
             setMsg(response2);
 
@@ -40,14 +37,15 @@ function ResetPassword() {
     // check if email and token are valid
     const searchParams = new URLSearchParams(window.location.href);
     let tmptoken = searchParams.get("token");
-    let useremail = searchParams.get("http://localhost:3000/resetpassword?email");
+    let useremail = searchParams.get("http://localhost:3000/resetpassword?email") || "";
 
-    if (tmptoken !== null && useremail !== null) {
+    if (tmptoken !== null && useremail !== "") {
         const resetPasswordToken = checkResetPasswordToken(useremail, tmptoken);
 
         resetPasswordToken.then((response) => {
             if (response.success){
                 setIsValid(true);
+                setEmail(useremail);
             }
 
         }).catch((error) => {
@@ -72,7 +70,7 @@ function ResetPassword() {
                 console.log(error);
             });
         } else {
-            setErrorMsg("Your password is not valid. Please try again.")
+            setErrorMsg("Your password is invalid. Please try again.")
         }
     };
 
@@ -150,11 +148,8 @@ function ResetPassword() {
                         <div className="mb-4">
                             <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
                                 id="email"
-                                type="text"
-                                placeholder="Email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
+                                readOnly // user not allowed to reset other users passwords
                             >
                             </input>
                         </div>
