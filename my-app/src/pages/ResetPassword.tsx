@@ -11,6 +11,7 @@ function ResetPassword() {
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
     const [msg, setMsg] = React.useState<string>("");
+    const [errorMsg, setErrorMsg] = React.useState<string>("");
 
 
     // token
@@ -58,16 +59,55 @@ function ResetPassword() {
     // reset password
     const userResetPassword = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        const passwordReset = resetPassword(email, password);
-        
-        passwordReset.then((response) => {
-            console.log(response);
-            setMsg(response);
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if(passwordRegex.test(password)){
+            const passwordReset = resetPassword(email, password);
             
-        }).catch((error) => {
-            console.log(error);
-        });
+            passwordReset.then((response) => {
+                console.log(response);
+                setMsg(response);
+                
+            }).catch((error) => {
+                console.log(error);
+            });
+        } else {
+            setErrorMsg("Your password is not valid. Please try again.")
+        }
     };
+
+
+    // check if password is valid
+    const passwordReqs = () => {
+        const lengthRegex = /^.{8,25}$/;
+        const upperLowerRegex = /^(?=.*[a-z])(?=.*[A-Z])/;
+        const symbolRegex = /^(?=.*[@$!%*?&])/;
+        const numberRegex = /^(?=.*\d)/;
+        
+        if(lengthRegex.test(password)){
+            document.getElementById("rq1")!.style.color = "green";
+        } else{
+            document.getElementById("rq1")!.style.color = "red";
+        }
+
+        if(upperLowerRegex.test(password)){
+            document.getElementById("rq2")!.style.color = "green";
+        }else{
+            document.getElementById("rq2")!.style.color = "red";
+        }
+
+        if(symbolRegex.test(password)){
+            document.getElementById("rq3")!.style.color = "green";
+        }else{
+            document.getElementById("rq3")!.style.color = "red";
+        }
+
+        if(numberRegex.test(password)){
+            document.getElementById("rq4")!.style.color = "green";
+        }else{
+            document.getElementById("rq4")!.style.color = "red";
+        }
+    }
 
 
     return (
@@ -92,7 +132,7 @@ function ResetPassword() {
                             >
                             </input>
                         </div>
-                        <div id="errorMessage" className="text-gsgreen60 text-sm font-light w-30 pb-2 px-2">
+                        <div id="" className="text-gsgreen60 text-sm font-light w-30 pb-2 px-2">
                             {msg}
                         </div>
                         <div id="loginButtons">
@@ -125,14 +165,30 @@ function ResetPassword() {
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                onKeyUp={() => {
+                                    passwordReqs();
+                                    setErrorMsg("");
+                                    setMsg("");
+                                }}
                                 required>
                             </input>
                         </div>
-                        <div id="errorMessage" className="text-gsgreen60 text-sm font-light w-30 pb-2 px-2">
+                        <div>
+                            <ul className="">
+                                <li className="text-xs font-thin" id="rq1">• Your password can be 8-25 characters long</li>
+                                <li className="text-xs font-thin" id="rq2">• Include at least one Uppercase and Lowercase Character</li>
+                                <li className="text-xs font-thin" id="rq3">• At least 1 symbol used</li>
+                                <li className="text-xs font-thin" id="rq4">• At least 1 number used</li>
+                            </ul>
+                        </div>
+                        <div id="" className="text-gsgreen60 text-sm font-light w-30 pb-2 px-2 pt-2">
                             {msg}
                         </div>
+                        <div id="" className="text-gsred60 text-sm font-light w-30 pb-2 px-2">
+                            {errorMsg}
+                        </div>
                         <div id="loginButtons">
-                            <input className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded mx-2" type="submit" value="Reset Password" />
+                            <input className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-4 rounded mx-2" type="submit" value="Reset Password" />
                         </div>
                     </form>
                 </div>

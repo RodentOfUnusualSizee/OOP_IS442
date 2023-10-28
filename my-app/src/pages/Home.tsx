@@ -99,7 +99,8 @@ function Home() {
 
                                 </div>
                                 <div>
-                                    <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50 my-2" href="#">
+                                    <a className="inline-block align-baseline font-bold text-xs text-gsblue60 hover:text-gsblue50 my-2" href="/resetpassword
+                                    ">
                                         Forgot Password?
                                     </a>
                                 </div>
