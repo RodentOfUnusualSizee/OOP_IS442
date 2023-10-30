@@ -29,6 +29,7 @@ function ResetPassword() {
             setMsg(response2);
 
         } catch (error) {
+            setErrorMsg("Email does not exist.")
             console.log(error);
         }
     };
@@ -126,12 +127,19 @@ function ResetPassword() {
                                 placeholder="Email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                onKeyUp={() => {
+                                    setErrorMsg("");
+                                    setMsg("");
+                                }}
                                 required
                             >
                             </input>
                         </div>
                         <div id="" className="text-gsgreen60 text-sm font-light w-30 pb-2 px-2">
                             {msg}
+                        </div>
+                        <div id="" className="text-gsred60 text-sm font-light w-30 pb-2 px-2">
+                            {errorMsg}
                         </div>
                         <div id="loginButtons">
                             <input className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded mx-2" type="submit" value="Reset Password" />
