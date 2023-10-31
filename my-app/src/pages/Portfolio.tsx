@@ -207,19 +207,18 @@ function Portfolio() {
 
         setPiechartdata(tempPieChartData);
 
-        let firstVal = 0; // first historical price value
-        let lastVal = 0; // last historical price value
-
         // line chart
+        let firstVal = 0;
+        let lastVal = 0;
         const tempLineChartData = [];
 
         for (var h in historicalVal) {
             tempLineChartData.push({ "date": h, "price": historicalVal[h] })
-            if (!lastVal) {
-                lastVal = historicalVal[h];
-            }
-            firstVal = historicalVal[h];
         }
+
+        tempLineChartData.sort((a, b) =>  new Date(a.date).getTime() - new Date(b.date).getTime()); // sort by date
+        firstVal = parseInt(tempLineChartData[0].price); // get first historical price value
+        lastVal = parseInt(tempLineChartData[tempLineChartData.length - 1].price); // get last historical price value
 
         setLinechartdata(tempLineChartData);
 
