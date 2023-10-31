@@ -55,18 +55,20 @@ public class TickerSearchController {
         List<Map<String, String>> apiBestMatches = (List<Map<String, String>>) responseBody.get("bestMatches");
 
         for (Map<String, String> apiMatch : apiBestMatches) {
-            TickerSearchDTO.Match match = new TickerSearchDTO.Match();
-            match.setSymbol(apiMatch.get("1. symbol"));
-            match.setName(apiMatch.get("2. name"));
-            match.setType(apiMatch.get("3. type"));
-            match.setRegion(apiMatch.get("4. region"));
-            match.setMarketOpen(apiMatch.get("5. marketOpen"));
-            match.setMarketClose(apiMatch.get("6. marketClose"));
-            match.setTimezone(apiMatch.get("7. timezone"));
-            match.setCurrency(apiMatch.get("8. currency"));
-            match.setMatchScore(apiMatch.get("9. matchScore"));
+            if(apiMatch.get("8. currency").equals("USD")){
+                TickerSearchDTO.Match match = new TickerSearchDTO.Match();
+                match.setSymbol(apiMatch.get("1. symbol"));
+                match.setName(apiMatch.get("2. name"));
+                match.setType(apiMatch.get("3. type"));
+                match.setRegion(apiMatch.get("4. region"));
+                match.setMarketOpen(apiMatch.get("5. marketOpen"));
+                match.setMarketClose(apiMatch.get("6. marketClose"));
+                match.setTimezone(apiMatch.get("7. timezone"));
+                match.setCurrency(apiMatch.get("8. currency"));
+                match.setMatchScore(apiMatch.get("9. matchScore"));
 
-            bestMatches.add(match);
+                bestMatches.add(match);
+            }
         }
 
         tickerSearchDTO.setBestMatches(bestMatches);
