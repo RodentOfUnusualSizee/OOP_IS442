@@ -32,8 +32,6 @@ export function AuthProvider(props: { children: React.ReactNode }) {
         const token = localStorage.getItem('authToken');
         if (token) {
             setIsLoggedIn(true);
-            console.log("Refreshed token");
-            console.log(token);
             setAuthUser(JSON.parse(token));
         }
     }, []);

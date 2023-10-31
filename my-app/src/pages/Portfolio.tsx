@@ -57,7 +57,6 @@ function Portfolio() {
     const [userId, setUserId] = useState<number>(1);
     const [userRole, setUserRole] = useState<string>("user");
     const management = userRole === "admin" || userRole === "user";
-    console.log("management: " + management)
 
     // Tables
     const tableHeaders = [
@@ -86,6 +85,13 @@ function Portfolio() {
         { name: 'Quarterly Returns ($)', stat: [] },
         { name: 'Quarterly Returns (%)', stat: [] },
     ]);
+
+    // Portfolio Benchmarks
+    const [benchmarks, setBenchmarks] = useState<any[]>([
+        { name: 'Portfolio Beta', stat: "", desc:""},
+        { name: 'Information Ratio', stat: "", desc:""},
+    ]);
+
 
 
     // Ticker 
@@ -124,10 +130,10 @@ function Portfolio() {
                 refreshData(portfolioId);
                 setHasFetchedData(true);
             }
-            console.log("Auth has loaded")
+            // console.log("Auth has loaded")
 
         } else {
-            console.log("Auth has not loaded");
+            // console.log("Auth has not loaded");
         }
 
     }, [authUser, isLoggedIn, hasFetchedData, portfolioId]);
@@ -282,6 +288,13 @@ function Portfolio() {
             { name: 'Quarterly Returns ($)', stat: tempQuarterlyStats },
             { name: 'Quarterly Returns (%)', stat: tempQuarterlyStatsPercent },
         ]);
+
+        // benchmarks
+        setBenchmarks([
+            { name: 'Portfolio Beta', stat: roundTo(portfolio.portfolioBeta, 6), desc: "Measures a portfolio's volatility relative to the market, with a beta of 1 indicating movement with the market and a beta less than 1 indicating lower volatility."},
+            { name: 'Information Ratio', stat: roundTo(portfolio.informationRatio, 6), desc: "Measures skill and consistency in generating excess returns relative to the benchmark, with higher information ratio indicating higher skill and consistency."},
+        ]);
+
     }
 
     // modal 
@@ -418,35 +431,56 @@ function Portfolio() {
                     </dl>
                 </div>
             </div>
-            <h4 className='font-semibold'>Portfolio Performance</h4>
-            <div className="flex my-6">
-                <LineChartComponent data={linechartdata} width={600} height={300} ></LineChartComponent>
-                <PieChartComponent data={piechartdata}></PieChartComponent>
-            </div>
-            <div className='my-2 px-6'>
-                <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
-                    {performanceStats.map((item) => (
-                        <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-                            <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
 
-                            <dd className={classNames(
-                                item.stat.includes('-') ? 'text-red-600' : 'text-green-600', 'mt-1 text-3xl font-semibold tracking-tight text-gray-900')}>{item.stat}</dd>
-                            <p
-                                className={classNames(
-                                    item.stat.includes('-') ? 'text-red-600' : 'text-green-600',
-                                    'ml-2 flex items-baseline text-sm font-semibold'
-                                )}
-                            >
-                                {item.stat.includes('-') ? (
-                                    <ArrowDownIcon className="h-5 w-5 flex-shrink-0 self-center text-red-500" aria-hidden="true" />
-                                ) : (
-                                    <ArrowUpIcon className="h-5 w-5 flex-shrink-0 self-center text-green-500" aria-hidden="true" />
-                                )}
-                            </p>
+            <div className="my-6 px-6">
+                <h3 className='font-semibold'>Portfolio Performance</h3>
+                <div className="flex my-6">
+                    <LineChartComponent data={linechartdata} width={600} height={300} ></LineChartComponent>
+                    <PieChartComponent data={piechartdata}></PieChartComponent>
+                </div>
+                <div className='my-2 px-6'>
+                    <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                        {performanceStats.map((item) => (
+                            <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
+                                <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
+
+                                <dd className={classNames(
+                                    item.stat.includes('-') ? 'text-red-600' : 'text-green-600', 'mt-1 text-3xl font-semibold tracking-tight text-gray-900')}>{item.stat}</dd>
+                                <p
+                                    className={classNames(
+                                        item.stat.includes('-') ? 'text-red-600' : 'text-green-600',
+                                        'ml-2 flex items-baseline text-sm font-semibold'
+                                    )}
+                                >
+                                    {item.stat.includes('-') ? (
+                                        <ArrowDownIcon className="h-5 w-5 flex-shrink-0 self-center text-red-500" aria-hidden="true" />
+                                    ) : (
+                                        <ArrowUpIcon className="h-5 w-5 flex-shrink-0 self-center text-green-500" aria-hidden="true" />
+                                    )}
+                                </p>
+                            </div>
+                        ))}
+                    </dl>
+                </div>
+            </div>
+            
+            <div className="my-6 px-6">
+            <h3 className="text-base font-semibold leading-6 text-gray-900">Portfolio Benchmarks</h3>
+                <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    {benchmarks.map((item) => (
+                        <div
+                            key={item.name}
+                            className={`overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 ${parseInt(item.stat) > 0.5 ? 'text-green-600' : 'text-red-600'
+                        }`}
+                        >
+                            <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
+                            <dt className="truncate text-xs font-small text-gray-500 py-2" style={{ maxWidth: '500px', overflow: 'visible', whiteSpace: 'normal'}}>{item.desc}</dt>
+                            <dd className="mt-1 text-3xl font-semibold tracking-tight">{item.stat}</dd>
                         </div>
                     ))}
                 </dl>
             </div>
+
             <div className="my-6 px-6">
                 <Table
                     tableData={stockTableData}
