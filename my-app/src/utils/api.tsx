@@ -230,3 +230,12 @@ export async function getTickerData(stockSymbol : any) {
     throw error;
   }
 }
+
+export async function comparePortfolio(firstPortfolioId: any, secondPortfolioId: any) {
+  try {
+    const response = await axios.get(`${BASE_PORTFOLIO_URL}/compare/${firstPortfolioId}/${secondPortfolioId}`);
+    return response.data; 
+  } catch (error) { 
+    throw error;
+  }
+}

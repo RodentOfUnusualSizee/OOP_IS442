@@ -3,10 +3,14 @@ import Table from '../components/Table';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
-import { createPortfolio, getPortfolioByUserId } from '../utils/api';
+import { createPortfolio, getPortfolioByUserId, comparePortfolio } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { Slide, toast, ToastContainer } from 'react-toastify';
+import { PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/20/solid';
 
+function classNames(...classes: any) {
+    return classes.filter(Boolean).join(' ')
+}
 
 function UserHome() {
     interface Portfolio {
@@ -14,6 +18,25 @@ function UserHome() {
         portfolioName: string;
         strategyDesc: string;
         capitalUSD: number;
+    }
+
+    interface PortfolioStats {
+        currentTotalPortfolioValue: number;
+        portfolioBeta: number;
+        informationRatio: number;
+        quarterlyReturns: {
+            Q1: string;
+            Q2: string;
+            Q3: string;
+            Q4: string;
+        },
+        annualizedReturnsPercentage: string;
+        quarterlyReturnsPercentage: {
+            Q1: string;
+            Q2: string;
+            Q3: string;
+            Q4: string;
+        }
     }
 
     const [hasFetchedData, setHasFetchedData] = React.useState(false);
@@ -28,7 +51,7 @@ function UserHome() {
     const management = userRole === "admin" || userRole === "user";
     console.log(authUser);
 
-    function fetchPortfolios(user: number = userId){
+    function fetchPortfolios(user: number = userId) {
         const portfolio = getPortfolioByUserId(user);
         portfolio.then((response) => {
             setData(response.data)
@@ -116,7 +139,7 @@ function UserHome() {
                 });
             }
         }).catch((error) => {
-            toast.success('Error creating portfolio', {
+            toast.error('Error creating portfolio', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -128,6 +151,61 @@ function UserHome() {
             });
         });
         handleModalClose();
+    }
+
+    // Comparison stuff
+    const [showComparison, setShowComparison] = React.useState<boolean>(false);
+    const [firstPortfolio, setFirstPortfolio] = React.useState<string>("");
+    const [secondPortfolio, setSecondPortfolio] = React.useState<string>("");
+    const [portfolioCheck, setPortfolioCheck] = React.useState<boolean>(false);
+    const [portfolioOneStats, setPortfolioOneStats] = React.useState<PortfolioStats>({} as PortfolioStats);
+    const [portfolioTwoStats, setPortfolioTwoStats] = React.useState<PortfolioStats>({} as PortfolioStats);
+    const [portfolioDifference, setPortfolioDifference] = React.useState<PortfolioStats>({} as PortfolioStats);
+
+
+    const handleComparison = async () => {
+        if (firstPortfolio === secondPortfolio) {
+            setPortfolioCheck(false);
+            document.getElementById('summaryError')?.classList.remove('hidden');
+        } else {
+            document.getElementById('summaryError')?.classList.add('hidden');
+            const comparisonData = await comparePortfolio(firstPortfolio, secondPortfolio);
+            const portfolioOneStats = comparisonData.data.portfolio1Stats;
+            const portfolioTwoStats = comparisonData.data.portfolio2Stats;
+            const portfolioDifference = comparisonData.data.differenceStats;
+
+            setPortfolioOneStats(portfolioOneStats);
+            setPortfolioTwoStats(portfolioTwoStats);
+            setPortfolioDifference(portfolioDifference);
+
+
+
+            setPortfolioCheck(true);
+        }
+    }
+
+
+    const renderOptions = () => {
+        return data.map((item) => (
+            <option key={item.portfolioID} value={item.portfolioID}>
+                {item.portfolioName}
+            </option>
+        ));
+    };
+
+    const renderDivider = (dividerValue: string) => {
+        return (
+            <div className="px-4 py-5 sm:p-6">
+                <div className="relative">
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center">
+                        <span className="bg-white px-2 text-sm text-gray-500">{dividerValue}</span>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
 
@@ -232,6 +310,415 @@ function UserHome() {
                     </div>
                 </div>
             )}
+            <div className="relative my-2 px-6">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center">
+                    <button
+                        type="button" onClick={(e) => setShowComparison(!showComparison)}
+                        className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    >
+                        <PlusIcon className="-ml-1 -mr-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                        Compare Portfolios
+                    </button>
+                </div>
+            </div>
+            {showComparison ? (
+                <div>
+                    <div className='flex my-4 px-6'>
+                        <div className='flex-1 my-2 mx-2'>
+                            <label htmlFor="firstPortfolio" className="block text-sm font-medium leading-6 text-gray-900">
+                                First Portfolio
+                            </label>
+                            <select
+                                id="firstPortfolio"
+                                name="firstPortfolio"
+                                className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                defaultValue="Select First Portfolio"
+                                onChange={(e) => setFirstPortfolio(e.target.value)}
+                            >
+                                <option value="Select First Portfolio" disabled />
+                                {renderOptions()}
+                            </select>
+                        </div>
+                        <div className='flex-1 my-2 mx-2'>
+                            <label htmlFor="secondPortfolio" className="block text-sm font-medium leading-6 text-gray-900">
+                                Second Portfolio
+                            </label>
+                            <select
+                                id="secondPortfolio"
+                                name="secondPortfolio"
+                                onChange={(e) => setSecondPortfolio(e.target.value)}
+                                className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                defaultValue="Select Second Portfolio"
+                            >
+                                <option value="Select Second Portfolio" disabled />
+                                {renderOptions()}
+                            </select>
+                        </div>
+                    </div>
+                    <div className='my-2 px-6'>
+                        <button onClick={handleComparison} className="col-start-3 col-span-2 bg-gsblue50 hover:bg-gsblue60 text-white font-bold py-2 px-4 rounded">Begin Comparison</button>
+                        {/* Error message */}
+                        <div id='summaryError' className="text-red-500 text-xs italic hidden">Please choose different portfolios</div>
+                    </div>
+                    {portfolioCheck ? (
+                        <div>
+                            <div className='flex my-4 px-6'>
+                                {/* Card One */}
+                                <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
+                                    <div className="px-4 py-5 sm:px-6">
+                                        {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName}
+                                    </div>
+                                    <div className='my-2 mx-2'>
+                                        <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
+                                        <p className="text-gray-600">{portfolioOneStats.currentTotalPortfolioValue}</p>
+                                    </div>
+                                    {renderDivider("Portfolio Statistics")}
+                                    <div className='my-1 flex'>
+                                        <div className='my-1 mx-1 flex-1'>
+                                            <h6 className="text-sm font-semibold">Portfolio Beta</h6>
+                                            <p className="text-gray-600">{portfolioOneStats.portfolioBeta}</p>
+                                        </div>
+                                        <div className='my-1 mx-1 flex-1'>
+                                            <h6 className="text-sm font-semibold">Information Ratio</h6>
+                                            <p className="text-gray-600">{portfolioOneStats.informationRatio}</p>
+                                        </div>
+                                    </div>
+                                    {renderDivider("Quarterly Returns")}
+                                    <div>
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <div key="Q1" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gray-900">Q1</dt>
+                                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                        {portfolioOneStats.quarterlyReturns.Q1}
+                                                    </div>
+                                                    <div
+                                                        className={classNames(
+                                                            portfolioOneStats.quarterlyReturns.Q1.includes("-")
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-green-100 text-green-800',
+                                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                                        )}
+                                                    >
+                                                        {portfolioOneStats.quarterlyReturns.Q1.includes("-") ? (
+                                                            <>
+                                                                <ArrowDownIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Decreased by </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ArrowUpIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Increased by </span>
+                                                            </>
+                                                        )}
+                                                        {portfolioOneStats.quarterlyReturnsPercentage.Q1}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div key="Q2" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gray-900">Q2</dt>
+                                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                        {portfolioOneStats.quarterlyReturns.Q2}
+                                                    </div>
+                                                    <div
+                                                        className={classNames(
+                                                            portfolioOneStats.quarterlyReturns.Q2.includes("-")
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-green-100 text-green-800',
+                                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                                        )}
+                                                    >
+                                                        {portfolioOneStats.quarterlyReturns.Q2.includes("-") ? (
+                                                            <>
+                                                                <ArrowDownIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Decreased by </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ArrowUpIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Increased by </span>
+                                                            </>
+                                                        )}
+                                                        {portfolioOneStats.quarterlyReturnsPercentage.Q2}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                    <div>
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <div key="Q3" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gray-900">Q3</dt>
+                                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                        {portfolioOneStats.quarterlyReturns.Q3}
+                                                    </div>
+                                                    <div
+                                                        className={classNames(
+                                                            portfolioOneStats.quarterlyReturns.Q3.includes("-")
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-green-100 text-green-800',
+                                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                                        )}
+                                                    >
+                                                        {portfolioOneStats.quarterlyReturns.Q3.includes("-") ? (
+                                                            <>
+                                                                <ArrowDownIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Decreased by </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ArrowUpIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Increased by </span>
+                                                            </>
+                                                        )}
+                                                        {portfolioOneStats.quarterlyReturnsPercentage.Q3}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div key="Q4" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gray-900">Q4</dt>
+                                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                        {portfolioOneStats.quarterlyReturns.Q4}
+                                                    </div>
+                                                    <div
+                                                        className={classNames(
+                                                            portfolioOneStats.quarterlyReturns.Q4.includes("-")
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-green-100 text-green-800',
+                                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                                        )}
+                                                    >
+                                                        {portfolioOneStats.quarterlyReturns.Q4.includes("-") ? (
+                                                            <>
+                                                                <ArrowDownIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Decreased by </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ArrowUpIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Increased by </span>
+                                                            </>
+                                                        )}
+                                                        {portfolioOneStats.quarterlyReturnsPercentage.Q4}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </div>
+
+                                {/* Card Two */}
+                                <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
+                                    <div className="px-4 py-5 sm:px-6">
+                                        {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}
+                                    </div>
+                                    <div className='my-2 mx-2'>
+                                        <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
+                                        <p className="text-gray-600">{portfolioTwoStats.currentTotalPortfolioValue}</p>
+                                    </div>
+                                    {renderDivider("Portfolio Statistics")}
+                                    <div className='my-1 flex'>
+                                        <div className='my-1 mx-1 flex-1'>
+                                            <h6 className="text-sm font-semibold">Portfolio Beta</h6>
+                                            <p className="text-gray-600">{portfolioTwoStats.portfolioBeta}</p>
+                                        </div>
+                                        <div className='my-1 mx-1 flex-1'>
+                                            <h6 className="text-sm font-semibold">Information Ratio</h6>
+                                            <p className="text-gray-600">{portfolioTwoStats.informationRatio}</p>
+                                        </div>
+                                    </div>
+                                    {renderDivider("Quarterly Returns")}
+                                    <div>
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <div key="Q1" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gray-900">Q1</dt>
+                                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                        {portfolioTwoStats.quarterlyReturns.Q1}
+                                                    </div>
+                                                    <div
+                                                        className={classNames(
+                                                            portfolioTwoStats.quarterlyReturns.Q1.includes("-")
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-green-100 text-green-800',
+                                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                                        )}
+                                                    >
+                                                        {portfolioTwoStats.quarterlyReturns.Q1.includes("-") ? (
+                                                            <>
+                                                                <ArrowDownIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Decreased by </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ArrowUpIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Increased by </span>
+                                                            </>
+                                                        )}
+                                                        {portfolioTwoStats.quarterlyReturnsPercentage.Q1}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div key="Q2" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gray-900">Q2</dt>
+                                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                        {portfolioTwoStats.quarterlyReturns.Q2}
+                                                    </div>
+                                                    <div
+                                                        className={classNames(
+                                                            portfolioTwoStats.quarterlyReturns.Q2.includes("-")
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-green-100 text-green-800',
+                                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                                        )}
+                                                    >
+                                                        {portfolioTwoStats.quarterlyReturns.Q2.includes("-") ? (
+                                                            <>
+                                                                <ArrowDownIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Decreased by </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ArrowUpIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Increased by </span>
+                                                            </>
+                                                        )}
+                                                        {portfolioTwoStats.quarterlyReturnsPercentage.Q2}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                    <div>
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <div key="Q3" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gray-900">Q3</dt>
+                                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                        {portfolioTwoStats.quarterlyReturns.Q3}
+                                                    </div>
+                                                    <div
+                                                        className={classNames(
+                                                            portfolioTwoStats.quarterlyReturns.Q3.includes("-")
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-green-100 text-green-800',
+                                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                                        )}
+                                                    >
+                                                        {portfolioTwoStats.quarterlyReturns.Q3.includes("-") ? (
+                                                            <>
+                                                                <ArrowDownIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Decreased by </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ArrowUpIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Increased by </span>
+                                                            </>
+                                                        )}
+                                                        {portfolioTwoStats.quarterlyReturnsPercentage.Q3}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div key="Q4" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gray-900">Q4</dt>
+                                                <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                        {portfolioTwoStats.quarterlyReturns.Q4}
+                                                    </div>
+                                                    <div
+                                                        className={classNames(
+                                                            portfolioTwoStats.quarterlyReturns.Q4.includes("-")
+                                                                ? 'bg-red-100 text-red-800'
+                                                                : 'bg-green-100 text-green-800',
+                                                            'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
+                                                        )}
+                                                    >
+                                                        {portfolioTwoStats.quarterlyReturns.Q4.includes("-") ? (
+                                                            <>
+                                                                <ArrowDownIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-red-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Decreased by </span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <ArrowUpIcon
+                                                                    className="-ml-1 mr-0.5 h-5 w-5 flex-shrink-0 self-center text-green-500"
+                                                                    aria-hidden="true"
+                                                                />
+                                                                <span className="sr-only">Increased by </span>
+                                                            </>
+                                                        )}
+                                                        {portfolioTwoStats.quarterlyReturnsPercentage.Q4}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                            {/* Comparison Summary */}
+                            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                                <h6>Comparison</h6>
+                                <small>Comparing {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName} to {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}</small>
+                                
+                                                
+                            </div>
+                        </div>
+                    ) : null}
+                </div>
+            ) : null}
             <ToastContainer transition={Slide} />
             <Footer></Footer>
         </div>
