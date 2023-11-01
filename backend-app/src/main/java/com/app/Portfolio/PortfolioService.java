@@ -132,7 +132,7 @@ public class PortfolioService {
             monthlyTimeSeries.sort((data1, data2) -> data2.getDate().compareTo(data1.getDate()));
 
             // Get the most recent stock data
-           StockDataPoint recentStockData = monthlyTimeSeries.get(0);
+            StockDataPoint recentStockData = monthlyTimeSeries.get(0);
             // Get the closing price from the most recent stock data
             Double recentStockPrice = recentStockData.getClose();
 
@@ -446,16 +446,20 @@ public class PortfolioService {
         String yoy = "N/A";
         String mom = "N/A";
 
-        if(!cumPositions.isEmpty()){
-             // 14 Calculate YoY
+        System.out.println("cumPositions");
+        System.out.println(cumPositions);
+
+        if (!cumPositions.isEmpty()) {
+            // 14 Calculate YoY
             LocalDate oneYearAgo = LocalDate.now().minusYears(1);
             String oneYearAgoFormatted = oneYearAgo.format(DateTimeFormatter.ISO_DATE);
             Double valueOneYearAgo = getPortfolioValueAtDate(portfolioHistoricalValue, oneYearAgoFormatted);
 
             if (valueOneYearAgo != null) {
-                yoy = String.format("%.2f%%", ((currentTotalPortfolioValue - valueOneYearAgo) / valueOneYearAgo) * 100);
-            } 
-
+                yoy = String.format("%.2f%%", ((currentTotalPortfolioValue - valueOneYearAgo)
+                        / valueOneYearAgo) * 100);
+            }
+            System.out.println("YoY Caluculated");
             // 15 Calculate QoQ
             Map<String, String> quarterlyDateRanges = (Map<String, String>) returns.get("quarterlyDateRanges");
             LocalDate currentDate = LocalDate.now();
@@ -466,15 +470,18 @@ public class PortfolioService {
             List<String> quarters = new ArrayList<>(quarterlyDateRanges.keySet());
 
             for (String quarter : quarters) {
-                String[] dateRange = quarterlyDateRanges.get(quarter).split(" to ");
-                YearMonth endDate = YearMonth.from(LocalDate.parse(dateRange[0], DateTimeFormatter.ISO_LOCAL_DATE));
-                YearMonth startDate = YearMonth.from(LocalDate.parse(dateRange[1], DateTimeFormatter.ISO_LOCAL_DATE));
+                if (!(quarterlyDateRanges.get(quarter).equals("N/A"))) {
+                    String[] dateRange = quarterlyDateRanges.get(quarter).split(" to ");
+                    YearMonth endDate = YearMonth.from(LocalDate.parse(dateRange[0], DateTimeFormatter.ISO_LOCAL_DATE));
+                    YearMonth startDate = YearMonth
+                            .from(LocalDate.parse(dateRange[1], DateTimeFormatter.ISO_LOCAL_DATE));
 
-                if ((currentYearMonth.equals(startDate) || currentYearMonth.isAfter(startDate))
-                        && (currentYearMonth.equals(endDate) || currentYearMonth.isBefore(endDate))) {
-                    currentQuarter = quarter;
-                    startDateOfCurrentQuarter = dateRange[1];
-                    break;
+                    if ((currentYearMonth.equals(startDate) || currentYearMonth.isAfter(startDate))
+                            && (currentYearMonth.equals(endDate) || currentYearMonth.isBefore(endDate))) {
+                        currentQuarter = quarter;
+                        startDateOfCurrentQuarter = dateRange[1];
+                        break;
+                    }
                 }
             }
             Double previousQuarterValue = getPortfolioValueAtDate(portfolioHistoricalValue, startDateOfCurrentQuarter);
@@ -482,7 +489,9 @@ public class PortfolioService {
             if (previousQuarterValue != null) {
                 double qoqValue = ((currentTotalPortfolioValue - previousQuarterValue) / previousQuarterValue) * 100;
                 qoq = String.format("%.2f%%", qoqValue);
+
             }
+            System.out.println("QoQ Caluculated");
 
             // 16 Calculate MoM
             LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
@@ -490,9 +499,12 @@ public class PortfolioService {
             Double valueOneMonthAgo = getPortfolioValueAtDate(portfolioHistoricalValue, oneMonthAgoFormatted);
 
             if (valueOneMonthAgo != null) {
-                mom = String.format("%.2f%%", ((currentTotalPortfolioValue - valueOneMonthAgo) / valueOneMonthAgo) * 100);
+                mom = String.format("%.2f%%",
+                        ((currentTotalPortfolioValue - valueOneMonthAgo) / valueOneMonthAgo) * 100);
             }
-        }   
+
+            System.out.println("MoM Caluculated");
+        }
 
         // 17. Compute YoY,QoQ,MoM
         dto.setPortfolioYoY(yoy);
@@ -504,6 +516,9 @@ public class PortfolioService {
     }
 
     public Double getPortfolioValueAtDate(Map<String, Double> portfolioHistoricalValue, String date) {
+        if (date == null) {
+            return null;
+        }
         // Extracting the yyyy-MM part from the date string
         String datePrefix = date.substring(0, 7);
 
