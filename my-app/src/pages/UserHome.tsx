@@ -178,8 +178,6 @@ function UserHome() {
             setPortfolioTwoStats(portfolioTwoStats);
             setPortfolioDifference(portfolioDifference);
 
-
-
             setPortfolioCheck(true);
         }
     }
@@ -223,12 +221,11 @@ function UserHome() {
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                         <div className="mx-auto max-w-2xl lg:text-center">
                             <h2 className="text-base font-semibold leading-7 text-indigo-600">Management</h2>
-                            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+                            <p className="mt-2 text-3xl font-bold tracking-tight text-gsgray90 sm:text-4xl">
                                 Your Portfolios
                             </p>
-                            <p className="mt-6 text-lg leading-8 text-gray-600">
-                                All your portfolios at Goldman Sachs at a glance. View your portfolios, create new strategies or edit the portfolios you manage. Feel free to
-                                browse stocks on the market using our in-house tool and enhance your portfolios.
+                            <p className="mt-6 text-lg leading-8 text-gsgray70">
+                                All your portfolios at Goldman Sachs at a glance. View your portfolios, create new strategies or edit the portfolios you manage. Browse stocks on the market using our in-house tool and enhance your portfolios.
                             </p>
                         </div>
                     </div>
@@ -301,7 +298,7 @@ function UserHome() {
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                                             <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
 
-                                            <button type="submit" onClick={(e) => handleSubmit(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Portfolio</button>
+                                            <button type="submit" onClick={(e) => handleSubmit(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Portfolio</button>
                                         </div>
                                     </div>
                                 </div>
@@ -310,14 +307,15 @@ function UserHome() {
                     </div>
                 </div>
             )}
-            <div className="relative my-2 px-6">
+
+            <div className="relative my-2 px-6 max-w-7xl mx-auto">
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center">
                     <button
                         type="button" onClick={(e) => setShowComparison(!showComparison)}
-                        className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                     >
                         <PlusIcon className="-ml-1 -mr-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                         Compare Portfolios
@@ -325,16 +323,16 @@ function UserHome() {
                 </div>
             </div>
             {showComparison ? (
-                <div>
+                <div className="max-w-7xl mx-auto">
                     <div className='flex my-4 px-6'>
                         <div className='flex-1 my-2 mx-2'>
-                            <label htmlFor="firstPortfolio" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label htmlFor="firstPortfolio" className="block text-sm font-medium leading-6 text-gsgray90">
                                 First Portfolio
                             </label>
                             <select
                                 id="firstPortfolio"
                                 name="firstPortfolio"
-                                className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gsgray90 ring-1 ring-inset ring-gray-300 focus:ring-1 sm:text-sm sm:leading-6"
                                 defaultValue="Select First Portfolio"
                                 onChange={(e) => setFirstPortfolio(e.target.value)}
                             >
@@ -343,14 +341,14 @@ function UserHome() {
                             </select>
                         </div>
                         <div className='flex-1 my-2 mx-2'>
-                            <label htmlFor="secondPortfolio" className="block text-sm font-medium leading-6 text-gray-900">
+                            <label htmlFor="secondPortfolio" className="block text-sm font-medium leading-6 text-gsgray90">
                                 Second Portfolio
                             </label>
                             <select
                                 id="secondPortfolio"
                                 name="secondPortfolio"
                                 onChange={(e) => setSecondPortfolio(e.target.value)}
-                                className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gsgray90 ring-1 ring-inset ring-gray-300 focus:ring-1 sm:text-sm sm:leading-6"
                                 defaultValue="Select Second Portfolio"
                             >
                                 <option value="Select Second Portfolio" disabled />
@@ -361,45 +359,45 @@ function UserHome() {
                     <div className='my-2 px-6'>
                         <button onClick={handleComparison} className="col-start-3 col-span-2 bg-gsblue50 hover:bg-gsblue60 text-white font-bold py-2 px-4 rounded">Begin Comparison</button>
                         {/* Error message */}
-                        <div id='summaryError' className="text-red-500 text-xs italic hidden">Please choose different portfolios</div>
+                        <div id='summaryError' className="text-gsred60 text-md italic hidden">Please choose different portfolios</div>
                     </div>
                     {portfolioCheck ? (
-                        <div>
+                        <div className= "pb-8">
                             <div className='flex my-4 px-6'>
                                 {/* Card One */}
-                                <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
+                                <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
                                     <div className="px-4 py-5 sm:px-6">
                                         {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName}
                                     </div>
                                     <div className='my-2 mx-2'>
                                         <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
-                                        <p className="text-gray-600">{portfolioOneStats.currentTotalPortfolioValue}</p>
+                                        <p className="text-gsgray90">{portfolioOneStats.currentTotalPortfolioValue}</p>
                                     </div>
                                     {renderDivider("Portfolio Statistics")}
                                     <div className='my-1 flex'>
                                         <div className='my-1 mx-1 flex-1'>
-                                            <h6 className="text-sm font-semibold">Portfolio Beta</h6>
-                                            <p className="text-gray-600">{portfolioOneStats.portfolioBeta}</p>
+                                            <h6 className="text-md font-semibold">Portfolio Beta</h6>
+                                            <p className="text-gsgray90">{portfolioOneStats.portfolioBeta}</p>
                                         </div>
                                         <div className='my-1 mx-1 flex-1'>
-                                            <h6 className="text-sm font-semibold">Information Ratio</h6>
-                                            <p className="text-gray-600">{portfolioOneStats.informationRatio}</p>
+                                            <h6 className="text-md font-semibold">Information Ratio</h6>
+                                            <p className="text-gsgray90">{portfolioOneStats.informationRatio}</p>
                                         </div>
                                     </div>
                                     {renderDivider("Quarterly Returns")}
                                     <div>
-                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
                                             <div key="Q1" className="px-4 py-5 sm:p-6">
-                                                <dt className="text-base font-normal text-gray-900">Q1</dt>
+                                                <dt className="text-base font-normal text-gsgray90">Q1</dt>
                                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                                         {portfolioOneStats.quarterlyReturns.Q1}
                                                     </div>
                                                     <div
                                                         className={classNames(
                                                             portfolioOneStats.quarterlyReturns.Q1.includes("-")
-                                                                ? 'bg-red-100 text-red-800'
-                                                                : 'bg-green-100 text-green-800',
+                                                                ? 'bg-gsred20 text-gsred60'
+                                                                : 'bg-green-100 text-gsgreen60',
                                                             'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                                         )}
                                                     >
@@ -425,16 +423,16 @@ function UserHome() {
                                                 </dd>
                                             </div>
                                             <div key="Q2" className="px-4 py-5 sm:p-6">
-                                                <dt className="text-base font-normal text-gray-900">Q2</dt>
+                                                <dt className="text-base font-normal text-gsgray90">Q2</dt>
                                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                                         {portfolioOneStats.quarterlyReturns.Q2}
                                                     </div>
                                                     <div
                                                         className={classNames(
                                                             portfolioOneStats.quarterlyReturns.Q2.includes("-")
-                                                                ? 'bg-red-100 text-red-800'
-                                                                : 'bg-green-100 text-green-800',
+                                                                ? 'bg-gsred20 text-gsred60'
+                                                                : 'bg-green-100 text-gsgreen60',
                                                             'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                                         )}
                                                     >
@@ -462,18 +460,18 @@ function UserHome() {
                                         </dl>
                                     </div>
                                     <div>
-                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
                                             <div key="Q3" className="px-4 py-5 sm:p-6">
-                                                <dt className="text-base font-normal text-gray-900">Q3</dt>
+                                                <dt className="text-base font-normal text-gsgray90">Q3</dt>
                                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                                         {portfolioOneStats.quarterlyReturns.Q3}
                                                     </div>
                                                     <div
                                                         className={classNames(
                                                             portfolioOneStats.quarterlyReturns.Q3.includes("-")
-                                                                ? 'bg-red-100 text-red-800'
-                                                                : 'bg-green-100 text-green-800',
+                                                                ? 'bg-gsred20 text-gsred60'
+                                                                : 'bg-green-100 text-gsgreen60',
                                                             'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                                         )}
                                                     >
@@ -499,16 +497,16 @@ function UserHome() {
                                                 </dd>
                                             </div>
                                             <div key="Q4" className="px-4 py-5 sm:p-6">
-                                                <dt className="text-base font-normal text-gray-900">Q4</dt>
+                                                <dt className="text-base font-normal text-gsgray90">Q4</dt>
                                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                                         {portfolioOneStats.quarterlyReturns.Q4}
                                                     </div>
                                                     <div
                                                         className={classNames(
                                                             portfolioOneStats.quarterlyReturns.Q4.includes("-")
-                                                                ? 'bg-red-100 text-red-800'
-                                                                : 'bg-green-100 text-green-800',
+                                                                ? 'bg-gsred20 text-gsred60'
+                                                                : 'bg-green-100 text-gsgreen60',
                                                             'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                                         )}
                                                     >
@@ -538,39 +536,39 @@ function UserHome() {
                                 </div>
 
                                 {/* Card Two */}
-                                <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
+                                <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
                                     <div className="px-4 py-5 sm:px-6">
                                         {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}
                                     </div>
                                     <div className='my-2 mx-2'>
                                         <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
-                                        <p className="text-gray-600">{portfolioTwoStats.currentTotalPortfolioValue}</p>
+                                        <p className="text-gsgray90">{portfolioTwoStats.currentTotalPortfolioValue}</p>
                                     </div>
                                     {renderDivider("Portfolio Statistics")}
                                     <div className='my-1 flex'>
                                         <div className='my-1 mx-1 flex-1'>
-                                            <h6 className="text-sm font-semibold">Portfolio Beta</h6>
-                                            <p className="text-gray-600">{portfolioTwoStats.portfolioBeta}</p>
+                                            <h6 className="text-md font-semibold">Portfolio Beta</h6>
+                                            <p className="text-gsgray90">{portfolioTwoStats.portfolioBeta}</p>
                                         </div>
                                         <div className='my-1 mx-1 flex-1'>
-                                            <h6 className="text-sm font-semibold">Information Ratio</h6>
-                                            <p className="text-gray-600">{portfolioTwoStats.informationRatio}</p>
+                                            <h6 className="text-md font-semibold">Information Ratio</h6>
+                                            <p className="text-gsgray90">{portfolioTwoStats.informationRatio}</p>
                                         </div>
                                     </div>
                                     {renderDivider("Quarterly Returns")}
                                     <div>
-                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
                                             <div key="Q1" className="px-4 py-5 sm:p-6">
-                                                <dt className="text-base font-normal text-gray-900">Q1</dt>
+                                                <dt className="text-base font-normal text-gsgray90">Q1</dt>
                                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                                         {portfolioTwoStats.quarterlyReturns.Q1}
                                                     </div>
                                                     <div
                                                         className={classNames(
                                                             portfolioTwoStats.quarterlyReturns.Q1.includes("-")
-                                                                ? 'bg-red-100 text-red-800'
-                                                                : 'bg-green-100 text-green-800',
+                                                            ? 'bg-gsred20 text-gsred60'
+                                                            : 'bg-green-100 text-gsgreen60',
                                                             'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                                         )}
                                                     >
@@ -596,16 +594,16 @@ function UserHome() {
                                                 </dd>
                                             </div>
                                             <div key="Q2" className="px-4 py-5 sm:p-6">
-                                                <dt className="text-base font-normal text-gray-900">Q2</dt>
+                                                <dt className="text-base font-normal text-gsgray90">Q2</dt>
                                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                                         {portfolioTwoStats.quarterlyReturns.Q2}
                                                     </div>
                                                     <div
                                                         className={classNames(
                                                             portfolioTwoStats.quarterlyReturns.Q2.includes("-")
-                                                                ? 'bg-red-100 text-red-800'
-                                                                : 'bg-green-100 text-green-800',
+                                                            ? 'bg-gsred20 text-gsred60'
+                                                            : 'bg-green-100 text-gsgreen60',
                                                             'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                                         )}
                                                     >
@@ -633,18 +631,18 @@ function UserHome() {
                                         </dl>
                                     </div>
                                     <div>
-                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
                                             <div key="Q3" className="px-4 py-5 sm:p-6">
-                                                <dt className="text-base font-normal text-gray-900">Q3</dt>
+                                                <dt className="text-base font-normal text-gsgray90">Q3</dt>
                                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                                         {portfolioTwoStats.quarterlyReturns.Q3}
                                                     </div>
                                                     <div
                                                         className={classNames(
                                                             portfolioTwoStats.quarterlyReturns.Q3.includes("-")
-                                                                ? 'bg-red-100 text-red-800'
-                                                                : 'bg-green-100 text-green-800',
+                                                            ? 'bg-gsred20 text-gsred60'
+                                                            : 'bg-green-100 text-gsgreen60',
                                                             'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                                         )}
                                                     >
@@ -670,16 +668,16 @@ function UserHome() {
                                                 </dd>
                                             </div>
                                             <div key="Q4" className="px-4 py-5 sm:p-6">
-                                                <dt className="text-base font-normal text-gray-900">Q4</dt>
+                                                <dt className="text-base font-normal text-gsgray90">Q4</dt>
                                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                                         {portfolioTwoStats.quarterlyReturns.Q4}
                                                     </div>
                                                     <div
                                                         className={classNames(
                                                             portfolioTwoStats.quarterlyReturns.Q4.includes("-")
-                                                                ? 'bg-red-100 text-red-800'
-                                                                : 'bg-green-100 text-green-800',
+                                                            ? 'bg-gsred20 text-gsred60'
+                                                            : 'bg-green-100 text-gsgreen60',
                                                             'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                                         )}
                                                     >
@@ -708,14 +706,117 @@ function UserHome() {
                                     </div>
                                 </div>
                             </div>
+
                             {/* Comparison Summary */}
                             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                                <h6>Comparison</h6>
-                                <small>Comparing {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName} to {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}</small>
-                                
-                                                
+                                <h6>Comparison Summary of {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName} to {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}</h6>
+                                <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
+                                    <div className='my-2 mx-2'>
+                                        <h4 className="text-lg font-semibold text-gsgray90">Total Portfolio Value</h4>
+                                        <p  
+                                        className={classNames(
+                                            portfolioDifference.currentTotalPortfolioValue <0
+                                                ? 'text-gsred60'
+                                                : ' text-gsgreen60',
+                                                'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-xl font-medium md:mt-2 lg:mt-0'
+                                            )}>
+                                        {portfolioDifference.currentTotalPortfolioValue}</p>
+                                    </div>
+                                    {renderDivider("Portfolio Statistics")}
+                                    <div className='my-1 flex'>
+                                        <div className='my-1 mx-1 flex-1'>
+                                            <h6 className="text-md font-semibold text-gsgray90">Portfolio Beta</h6>
+                                            <p className={classNames(
+                                            portfolioDifference.portfolioBeta <0
+                                                ? 'text-gsred60'
+                                                : ' text-gsgreen60',
+                                                'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-xl font-medium md:mt-2 lg:mt-0'
+                                            )}>
+                                            {portfolioDifference.portfolioBeta}</p>
+                                        </div>
+                                        <div className='my-1 mx-1 flex-1'>
+                                            <h6 className="text-md font-semibold text-gsgray90">Information Ratio</h6>
+                                            <p className={classNames(
+                                            portfolioDifference.informationRatio <0
+                                                ? 'text-gsred60'
+                                                : ' text-gsgreen60',
+                                                'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-xl font-medium md:mt-2 lg:mt-0'
+                                            )}>
+                                            {portfolioDifference.informationRatio}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {renderDivider("Quarterly Returns")}
+                                    <div>
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <div key="Q1" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gsgray90">Q1</dt>
+                                                <dd className="mt-1 flex justify-center md:block lg:flex">
+                                                    <div className={classNames(
+                                                        portfolioDifference.quarterlyReturns.Q1.includes("-")
+                                                            ? 'text-gsred60'
+                                                            : portfolioDifference.quarterlyReturns.Q1 === ("0.0")
+                                                                ?' text-gsgray70'
+                                                                :' text-gsgreen60',
+                                                            'flex text-2xl font-semibold'
+                                                        )}>
+                                                        {parseFloat(portfolioDifference.quarterlyReturns.Q1).toFixed(2)}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div key="Q2" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gsgray90">Q2</dt>
+                                                <dd className="mt-1 flex justify-center md:block lg:flex">
+                                                    <div className={classNames(
+                                                        portfolioDifference.quarterlyReturns.Q2.includes("-")
+                                                            ? 'text-gsred60'
+                                                            : portfolioDifference.quarterlyReturns.Q2 === ("0.0")
+                                                                ?' text-gsgray70'
+                                                                :' text-gsgreen60',
+                                                            'flex text-2xl font-semibold'
+                                                        )}>
+                                                        {parseFloat(portfolioDifference.quarterlyReturns.Q2).toFixed(2)}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                    <div>
+                                        <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <div key="Q3" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gsgray90">Q3</dt>
+                                                <dd className="mt-1 flex justify-center md:block lg:flex">
+                                                    <div className={classNames(
+                                                        portfolioDifference.quarterlyReturns.Q3.includes("-")
+                                                            ? 'text-gsred60'
+                                                            : portfolioDifference.quarterlyReturns.Q3 === ("0.0")
+                                                                ?' text-gsgray70'
+                                                                :' text-gsgreen60',
+                                                            'flex text-2xl font-semibold'
+                                                        )}>
+                                                        {parseFloat(portfolioDifference.quarterlyReturns.Q3).toFixed(2)}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                            <div key="Q4" className="px-4 py-5 sm:p-6">
+                                                <dt className="text-base font-normal text-gsgray90">Q4</dt>
+                                                <dd className="mt-1 flex justify-center md:block lg:flex">
+                                                    <div className={classNames(
+                                                        portfolioDifference.quarterlyReturns.Q4.includes("-")
+                                                            ? 'text-gsred60'
+                                                            : portfolioDifference.quarterlyReturns.Q4 === ("0.0")
+                                                                ?' text-gsgray70'
+                                                                :' text-gsgreen60',
+                                                            'flex text-2xl font-semibold'
+                                                        )}>
+                                                        {parseFloat(portfolioDifference.quarterlyReturns.Q4).toFixed(2)}
+                                                    </div>
+                                                </dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
                     ) : null}
                 </div>
             ) : null}
