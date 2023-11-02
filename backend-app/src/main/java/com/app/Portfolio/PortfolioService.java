@@ -39,7 +39,7 @@ public class PortfolioService {
     private MonthlyController monthlyController;
 
     @Autowired
-    private PositionService positionService;
+    private MonthlyService monthlyService;
 
     // Method to add a portfolio
     public WildcardResponse addPortfolio(Portfolio portfolio) {
@@ -531,9 +531,6 @@ public class PortfolioService {
         return entry != null ? entry.getValue() : null;
     }
 
-    @Autowired
-    private MonthlyService monthlyService;
-
     public Map<String, Double> calculateSPYReturns() {
         StockTimeSeriesMonthlyDTO spyData = monthlyService.getMonthlyTimeSeriesProcessed("SPY");
 
@@ -633,40 +630,80 @@ public class PortfolioService {
 
         // Calculate the differences and set the properties of differenceStats
         differenceStats.setCurrentTotalPortfolioValue(
-                portfolio1Stats.getCurrentTotalPortfolioValue() - portfolio2Stats.getCurrentTotalPortfolioValue());
-        differenceStats.setPortfolioBeta(portfolio1Stats.getPortfolioBeta() - portfolio2Stats.getPortfolioBeta());
-        differenceStats
-                .setInformationRatio(portfolio1Stats.getInformationRatio() - portfolio2Stats.getInformationRatio());
+                subtractDoublesHandlingNull(portfolio1Stats.getCurrentTotalPortfolioValue(),
+                        portfolio2Stats.getCurrentTotalPortfolioValue()));
+        differenceStats.setPortfolioBeta(
+                subtractDoublesHandlingNull(portfolio1Stats.getPortfolioBeta(), portfolio2Stats.getPortfolioBeta()));
+        differenceStats.setInformationRatio(
+                subtractDoublesHandlingNull(portfolio1Stats.getInformationRatio(),
+                        portfolio2Stats.getInformationRatio()));
 
         // Calculate the differences for quarterly returns
         Map<String, String> quarterlyReturnsDifference = new HashMap<>();
-        for (String quarter : portfolio1Stats.getQuarterlyReturns().keySet()) {
-            double value1 = Double.parseDouble(portfolio1Stats.getQuarterlyReturns().get(quarter));
-            double value2 = Double.parseDouble(portfolio2Stats.getQuarterlyReturns().getOrDefault(quarter, "0.0"));
-            double difference = value1 - value2;
-            quarterlyReturnsDifference.put(quarter, String.valueOf(difference));
-        }
+        portfolio1Stats.getQuarterlyReturns().forEach((quarter, value1) -> {
+            String value2 = portfolio2Stats.getQuarterlyReturns().getOrDefault(quarter, "N/A");
+            if ("N/A".equals(value1) || "N/A".equals(value2)) {
+                quarterlyReturnsDifference.put(quarter, "N/A");
+            } else {
+                try {
+                    double difference = Double.parseDouble(value1) - Double.parseDouble(value2);
+                    quarterlyReturnsDifference.put(quarter, String.valueOf(difference));
+                } catch (NumberFormatException e) {
+                    quarterlyReturnsDifference.put(quarter, "N/A");
+                }
+            }
+        });
         differenceStats.setQuarterlyReturns(quarterlyReturnsDifference);
 
-        // Calculate the difference for annualized returns percentage
-        double annualizedReturnsDifference = Double
-                .parseDouble(portfolio1Stats.getAnnualizedReturnsPercentage().replace("%", ""))
-                - Double.parseDouble(portfolio2Stats.getAnnualizedReturnsPercentage().replace("%", ""));
-        differenceStats.setAnnualizedReturnsPercentage(String.valueOf(annualizedReturnsDifference) + "%");
+        // Handle annualized returns percentage
+        String annual1 = safePercentage(portfolio1Stats.getAnnualizedReturnsPercentage());
+        String annual2 = safePercentage(portfolio2Stats.getAnnualizedReturnsPercentage());
+        if ("N/A".equals(annual1) || "N/A".equals(annual2)) {
+            differenceStats.setAnnualizedReturnsPercentage("N/A");
+        } else {
+            try {
+                double annualizedReturnsDifference = Double.parseDouble(annual1) - Double.parseDouble(annual2);
+                differenceStats.setAnnualizedReturnsPercentage(String.format("%.2f%%", annualizedReturnsDifference));
+            } catch (NumberFormatException e) {
+                differenceStats.setAnnualizedReturnsPercentage("N/A");
+            }
+        }
 
         // Calculate the differences for quarterly returns percentage
         Map<String, String> quarterlyReturnsPercentageDifference = new HashMap<>();
-        for (String quarter : portfolio1Stats.getQuarterlyReturnsPercentage().keySet()) {
-            double value1 = Double
-                    .parseDouble(portfolio1Stats.getQuarterlyReturnsPercentage().get(quarter).replace("%", ""));
-            double value2 = Double.parseDouble(
-                    portfolio2Stats.getQuarterlyReturnsPercentage().getOrDefault(quarter, "0.00").replace("%", ""));
-            double difference = value1 - value2;
-            quarterlyReturnsPercentageDifference.put(quarter, String.valueOf(difference) + "%");
-        }
+        portfolio1Stats.getQuarterlyReturnsPercentage().forEach((quarter, value1) -> {
+            String value2 = safePercentage(
+                    portfolio2Stats.getQuarterlyReturnsPercentage().getOrDefault(quarter, "N/A"));
+            if ("N/A".equals(value1) || "N/A".equals(value2)) {
+                quarterlyReturnsPercentageDifference.put(quarter, "N/A");
+            } else {
+                try {
+                    double difference = Double.parseDouble(value1) - Double.parseDouble(value2);
+                    quarterlyReturnsPercentageDifference.put(quarter, String.format("%.2f%%", difference));
+                } catch (NumberFormatException e) {
+                    quarterlyReturnsPercentageDifference.put(quarter, "N/A");
+                }
+            }
+        });
         differenceStats.setQuarterlyReturnsPercentage(quarterlyReturnsPercentageDifference);
 
         return differenceStats;
+    }
+
+    private double subtractDoublesHandlingNull(Double value1, Double value2) {
+        if (value1 == null || value2 == null) {
+            return 0; // Or handle nulls as you see fit, such as throwing an exception or returning a
+                      // special value
+        }
+        return value1 - value2;
+    }
+
+    private String safePercentage(String percentage) {
+        if (percentage == null || "N/A".equals(percentage)) {
+            return "N/A";
+        } else {
+            return percentage.replace("%", "");
+        }
     }
 
 }

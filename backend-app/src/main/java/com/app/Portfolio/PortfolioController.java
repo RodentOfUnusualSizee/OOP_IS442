@@ -33,7 +33,10 @@ public class PortfolioController {
     private PortfolioService portfolioService;
 
     @Autowired
-    private MonthlyController monthlyController;
+    private PositionService positionService;
+
+    @Autowired
+    private MonthlyService monthlyService;
 
     // Endpoint to create a new portfolio
     @PostMapping("/create")
@@ -163,11 +166,6 @@ public class PortfolioController {
     }
 
     /// POSIITION FUNCTIONS
-    @Autowired
-    private PositionService positionService;
-    @Autowired
-    private MonthlyService monthlyService;
-
     // Retrieve a position from a portfolio
     @GetMapping("/{portfolioID}/position/get/{positionID}")
     public Position getPositionFromPortfolio(@PathVariable int portfolioID, @PathVariable int positionID) {
