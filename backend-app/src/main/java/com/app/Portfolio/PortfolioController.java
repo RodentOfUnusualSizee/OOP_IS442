@@ -6,13 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import com.app.User.User;
 import com.app.User.UserService;
@@ -21,18 +16,10 @@ import com.app.Position.PositionService;
 import com.app.WildcardResponse;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyController;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyService;
-import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
-import com.app.StockDataPoint.StockDataPoint;
 import com.app.Portfolio.PortfolioComparisionDTOs.FinancialStatsDTO;
 import com.app.Portfolio.PortfolioComparisionDTOs.PortfolioComparisonDTO;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -214,11 +201,10 @@ public class PortfolioController {
 
         // 3. Handle SELLTOCLOSE
         if ("SELLTOCLOSE".equals(newPosition.getPosition())) {
-            int totalQuantity = 
-                portfolio.getPositions().stream()
-                                        .filter(p -> p.getStockSymbol().equals(newPosition.getStockSymbol()))
-                                        .mapToInt(Position::getQuantity)
-                                        .sum();
+            int totalQuantity = portfolio.getPositions().stream()
+                    .filter(p -> p.getStockSymbol().equals(newPosition.getStockSymbol()))
+                    .mapToInt(Position::getQuantity)
+                    .sum();
 
             if (totalQuantity < newPosition.getQuantity()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
