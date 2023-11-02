@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import Loading from './Loading';
 import {
     BriefcaseIcon,
     CalendarIcon,
@@ -15,10 +16,10 @@ import LineChartComponent from '../components/LineChartComponent';
 import PieChartComponent from '../components/PieChartComponent';
 import Table from '../components/Table';
 import { createPortfolioPosition, getPortfolioByUserId, getTickerData, getStockPrice } from '../utils/api';
-import { roundTo } from '../utils/transform';
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from "react-router-dom";
 import { Slide, toast, ToastContainer } from 'react-toastify';
+import { roundTo, roundToString, formatPercentages, formatVolume } from '../utils/transform';
 
 
 function classNames(...classes: String[]) {
@@ -29,13 +30,14 @@ function Portfolio() {
     interface portfolioDetails {
         name: string;
         strategy: string;
+        value: string
         capital: string;
     }
 
     const [stockTableData, setStockTableData] = useState<any[]>([]);
     const [piechartdata, setPiechartdata] = useState<any[]>([]);
     const [linechartdata, setLinechartdata] = useState<any[]>([]);
-    const [PortfolioData, setPortfolioData] = useState<portfolioDetails>({ name: "", strategy: "", capital: "" });
+    const [PortfolioData, setPortfolioData] = useState<portfolioDetails>({ name: "", strategy: "", value: "", capital: "" });
 
     const [stats, setStats] = useState<any[]>([
         { name: 'Capital Change ($)', stat: "" },
@@ -88,8 +90,8 @@ function Portfolio() {
 
     // Portfolio Benchmarks
     const [benchmarks, setBenchmarks] = useState<any[]>([
-        { name: 'Portfolio Beta', stat: "", desc:""},
-        { name: 'Information Ratio', stat: "", desc:""},
+        { name: 'Portfolio Beta', stat: "", desc: "" },
+        { name: 'Information Ratio', stat: "", desc: "" },
     ]);
 
 
@@ -122,18 +124,17 @@ function Portfolio() {
 
     useEffect(() => {
         if (authUser) {
-            setIsLoading(false);
             setUserIsLoggedIn(true);
             setUserId(authUser.id);
             setUserRole(authUser.role);
             if (!hasFetchedData) {
                 refreshData(portfolioId);
                 setHasFetchedData(true);
+                setIsLoading(false);
             }
-            // console.log("Auth has loaded")
-
         } else {
-            // console.log("Auth has not loaded");
+            setUserIsLoggedIn(false);
+            setIsLoading(false);
         }
 
     }, [authUser, isLoggedIn, hasFetchedData, portfolioId]);
@@ -180,7 +181,7 @@ function Portfolio() {
     function organiseData(data: any) {
         const portfolio = data.find((portfolio: any) => portfolio.portfolioID.toString() === portfolioId);
 
-        setPortfolioData({ name: portfolio.portfolioName, strategy: portfolio.strategyDesc, capital: portfolio.capitalUSD });
+        setPortfolioData({ name: portfolio.portfolioName, strategy: portfolio.strategyDesc, value: roundToString(parseFloat(portfolio.currentTotalPortfolioValue),2), capital: roundToString(parseFloat(portfolio.capitalUSD),2) });
 
         // table
         setStockTableData(portfolio.cumPositions.map((position: any) => ({
@@ -188,8 +189,8 @@ function Portfolio() {
             stockSymbol: position.stockSymbol,
             stockSector: position.stockSector,
             totalQuantity: position.totalQuantity,
-            averagePrice: position.averagePrice,
-            currentValue: position.currentValue,
+            averagePrice: "$" + roundToString(position.averagePrice,2),
+            currentValue: "$" + roundToString(position.currentValue,2),
         })));
 
         // parse through portfolio data
@@ -202,7 +203,7 @@ function Portfolio() {
 
         for (var k in allocation) {
             let val = roundTo(allocation[k], 4);
-            tempPieChartData.push({ "name": k, "value": val });
+            tempPieChartData.push({ "name": k, "value": roundTo(val,2) });
         }
 
         setPiechartdata(tempPieChartData);
@@ -212,13 +213,14 @@ function Portfolio() {
         let lastVal = 0;
         const tempLineChartData = [];
 
+
         for (var h in historicalVal) {
-            tempLineChartData.push({ "date": h, "price": historicalVal[h] })
+            tempLineChartData.push({ "date": h, "price": roundTo(historicalVal[h],2)})
         }
 
-        tempLineChartData.sort((a, b) =>  new Date(a.date).getTime() - new Date(b.date).getTime()); // sort by date
-        firstVal = parseInt(tempLineChartData[0].price); // get first historical price value
-        lastVal = parseInt(tempLineChartData[tempLineChartData.length - 1].price); // get last historical price value
+        tempLineChartData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // sort by date
+        firstVal = tempLineChartData[0].price; // get first historical price value
+        lastVal = tempLineChartData[tempLineChartData.length - 1].price; // get last historical price value
 
         setLinechartdata(tempLineChartData);
 
@@ -290,8 +292,8 @@ function Portfolio() {
 
         // benchmarks
         setBenchmarks([
-            { name: 'Portfolio Beta', stat: roundTo(portfolio.portfolioBeta, 6), desc: "Measures a portfolio's volatility relative to the market, with a beta of 1 indicating movement with the market and a beta less than 1 indicating lower volatility."},
-            { name: 'Information Ratio', stat: roundTo(portfolio.informationRatio, 6), desc: "Measures skill and consistency in generating excess returns relative to the benchmark, with higher information ratio indicating higher skill and consistency."},
+            { name: 'Portfolio Beta', stat: roundTo(portfolio.portfolioBeta, 6), desc: "Measures a portfolio's volatility relative to the market, with a beta of 1 indicating movement with the market and a beta less than 1 indicating lower volatility." },
+            { name: 'Information Ratio', stat: roundTo(portfolio.informationRatio, 6), desc: "Measures skill and consistency in generating excess returns relative to the benchmark, with higher information ratio indicating higher skill and consistency." },
         ]);
 
     }
@@ -340,6 +342,7 @@ function Portfolio() {
                     progress: undefined,
                     theme: "colored",
                 });
+                console.log(response);
                 refreshData(portfolioId);
             } else {
                 toast.error('Error adding position to portfolio, please try again later', {
@@ -354,7 +357,7 @@ function Portfolio() {
                 });
             }
         }).catch((error) => {
-            toast.error('Error accessing portfolio, please try again later', {
+            toast.error('Error adding stock to portfolio, Not enough capital in portfolio', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -377,7 +380,7 @@ function Portfolio() {
     // TODO isloading
 
     return (
-        <div>
+        <div className='overflow-x-hidden'>
             <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
             <div>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
@@ -392,6 +395,10 @@ function Portfolio() {
                             </div>
                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                 <CurrencyDollarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                                ${PortfolioData.value}
+                            </div>
+                            <div className="mt-2 flex items-center text-sm text-gray-500">
+                                <BanknotesIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
                                 ${PortfolioData.capital}
                             </div>
                             <div className="mt-2 flex items-center text-sm text-gray-500">
@@ -462,18 +469,18 @@ function Portfolio() {
                     </dl>
                 </div>
             </div>
-            
+
             <div className="my-6 px-6">
-            <h3 className="text-base font-semibold leading-6 text-gray-900">Portfolio Benchmarks</h3>
+                <h3 className="text-base font-semibold leading-6 text-gray-900">Portfolio Benchmarks</h3>
                 <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
                     {benchmarks.map((item) => (
                         <div
                             key={item.name}
                             className={`overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 ${parseInt(item.stat) > 0.5 ? 'text-green-600' : 'text-red-600'
-                        }`}
+                                }`}
                         >
                             <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
-                            <dt className="truncate text-xs font-small text-gray-500 py-2" style={{ maxWidth: '500px', overflow: 'visible', whiteSpace: 'normal'}}>{item.desc}</dt>
+                            <dt className="truncate text-xs font-small text-gray-500 py-2" style={{ maxWidth: '500px', overflow: 'visible', whiteSpace: 'normal' }}>{item.desc}</dt>
                             <dd className="mt-1 text-3xl font-semibold tracking-tight">{item.stat}</dd>
                         </div>
                     ))}

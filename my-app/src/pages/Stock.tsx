@@ -3,8 +3,9 @@ import { useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import StockLineChart from '../components/StockLineChart';
-import Table from '../components/Table';
+import Loading from './Loading';
 import NewsFeed from '../components/NewsFeed';
+import NoStock from './NoStock';
 import { getStockOverview, getStockNews, getStockHistoricalValues, getPortfolioByUserId, createPortfolioPosition } from '../utils/api';
 import { getTickerFeed, getStockPriceStats } from '../utils/transform';
 import {
@@ -17,6 +18,8 @@ import {
 } from '@heroicons/react/20/solid';
 import { useAuth } from '../context/AuthContext';
 import { Slide, toast, ToastContainer } from 'react-toastify';
+import { roundTo } from '../utils/transform';
+
 
 
 function classNames(...classes: String[]) {
@@ -61,7 +64,7 @@ function Stock() {
         changeType: string;
     }
 
-    function getStockValues(days: number, symbol: string = stockDetails.symbol) {
+    function getStockValues(days: number, symbol: string = stockCode) {
         const getValuesCall = async () => {
             try {
                 const historicalValues = await getStockHistoricalValues(symbol, days);
@@ -113,9 +116,9 @@ function Stock() {
                     });
 
                     setStockStats([
-                        { name: "Profit Margin", stat: stockOverview.profitMargin },
-                        { name: "Quarterly Earnings Growth YOY", stat: stockOverview.quarterlyEarningsGrowthYOY },
-                        { name: "Quarterly Revenue Growth YOY", stat: stockOverview.quarterlyRevenueGrowthYOY }
+                        { name: "Profit Margin", stat: roundTo(stockOverview.profitMargin, 2) },
+                        { name: "Quarterly Earnings Growth YOY", stat: roundTo(stockOverview.quarterlyEarningsGrowthYOY, 2) },
+                        { name: "Quarterly Revenue Growth YOY", stat: roundTo(stockOverview.quarterlyRevenueGrowthYOY, 2) }
                     ])
 
                     getStockValues(60, stockOverview.symbol);
@@ -123,23 +126,25 @@ function Stock() {
                     const tickerFeed = getTickerFeed(stockNews, stockOverview.symbol);
                     setStockNews(tickerFeed);
 
-                    // Portfolio
-                    const portfolioAPI = getPortfolioByUserId(authUser.id);
-                    portfolioAPI.then((response) => {
-                        if (response["success"]) {
-                            setPortfolios(response["data"]);
-                        } else {
-                            console.log("Error fetching portfolios");
-                        }
-                    }).catch((error) => {
-                        console.log(error);
-                    });
                 } catch (error) {
                     console.error("Error fetching stock details:", error);
+                    getStockValues(60, symbol);
+                    setStockNews([]);
                 }
+                // Portfolio
+                const portfolioAPI = getPortfolioByUserId(authUser.id);
+                portfolioAPI.then((response) => {
+                    if (response["success"]) {
+                        setPortfolios(response["data"]);
+                    } else {
+                        console.log("Error fetching portfolios");
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                });
+                setIsLoading(false);
             };
             getStockDetails();
-            setIsLoading(false);
         } else {
             console.log("auth never loaded");
         }
@@ -187,7 +192,7 @@ function Stock() {
         } else {
             position = { "stockSymbol": stockCode, "price": price, "position": "SELLTOCLOSE", "quantity": quantity, "positionAddDate": date }
         }
-        
+
         const positionAPI = createPortfolioPosition(selectedPortfolio, position);
         positionAPI.then((response) => {
             if (response["success"]) {
@@ -235,7 +240,7 @@ function Stock() {
 
     if (isLoading) {
         return (
-            <div>Loading...</div>
+            <Loading></Loading>
         )
     }
 
@@ -247,18 +252,26 @@ function Stock() {
             <div>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
                     <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                        {stockDetails.symbol}
+                        {stockCode}
                     </h3>
                     <div className="min-w-0 flex-1">
                         <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6 mx-2">
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                {stockDetails.country}
-                            </div>
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <TagIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                {stockDetails.industry}
-                            </div>
+                            {stockDetails.country !== "" ? (
+                                <div className="mt-2 flex items-center text-sm text-gray-500">
+                                    <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                                    {stockDetails.country}
+                                </div>
+                            ) : (
+                                <div></div>
+                            )}
+                            {stockDetails.industry !== "" ? (
+                                <div className="mt-2 flex items-center text-sm text-gray-500">
+                                    <TagIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                                    {stockDetails.industry}
+                                </div>
+                            ) : (
+                                <div></div>
+                            )}
                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                 <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
                                 {formattedDate}
@@ -384,26 +397,34 @@ function Stock() {
                         <span className="bg-white pr-3 text-base font-semibold leading-6 text-gray-900">Company</span>
                     </div>
                 </div>
-                <div className="my-4 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
-                    <div className="px-4 py-5 sm:px-6 font-semibold bg-gsblue60 text-gswhite">
-                        Description
+                {stockNews.length > 0 ? (
+                    <div className="my-4 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+                        <div className="px-4 py-5 sm:px-6 font-semibold bg-gsblue60 text-gswhite">
+                            Description
+                        </div>
+                        <div className="px-4 py-5 sm:p-6">
+                            {stockDetails.description}
+                        </div>
                     </div>
-                    <div className="px-4 py-5 sm:p-6">
-                        {stockDetails.description}
-                    </div>
-                </div>
+                ) : (
+                    <NoStock></NoStock>
+                )}
             </div>
 
-            <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 py-4 px-6 my-2">
-                <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
-                    <div className="px-4 py-5 sm:px-6 font-semibold bg-gsblue60 text-gswhite">
-                        News Feed
-                    </div>
-                    <div className="px-4 py-5 sm:p-6">
-                        <NewsFeed data={stockNews}></NewsFeed>
+            {stockNews.length > 0 ? (
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 py-4 px-6 my-2">
+                    <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+                        <div className="px-4 py-5 sm:px-6 font-semibold bg-gsblue60 text-gswhite">
+                            News Feed
+                        </div>
+                        <div className="px-4 py-5 sm:p-6">
+                            <NewsFeed data={stockNews}></NewsFeed>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                <div></div>
+            )}
 
             {showModal && (
                 <div className="fixed z-10 inset-0 overflow-y-auto">

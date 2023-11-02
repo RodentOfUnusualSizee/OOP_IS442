@@ -9,6 +9,7 @@ import { getPortfolioByPortfolioId, getStockPrice, createPortfolioPosition } fro
 import { getStockRecordsByStockCode, formatTimestamp } from "../utils/transform";
 import { PencilIcon, EyeIcon } from '@heroicons/react/20/solid';
 import { toast, ToastContainer, Slide } from 'react-toastify';
+import { roundToString } from "../utils/transform";
 
 
 function StockRecord() {
@@ -37,12 +38,12 @@ function StockRecord() {
                 dateAdded: formatTimestamp(record.createdTimestamp),
                 position: record.position,
                 quantity: record.quantity,
-                price: record.price,
-                totalCost: record.price * record.quantity,
+                price: "$" + roundToString(record.price,2),
+                totalCost: "$" + roundToString(record.price * record.quantity,2),
                 currentValue:
                     record.position === "LONG"
-                        ? currentValue * record.quantity
-                        : record.price * record.quantity,
+                        ? "$" + roundToString(currentValue * record.quantity,2)
+                        : "$" + roundToString(record.price * record.quantity,2),
             }));
 
             const cumPositions = response.data.cumPositions;
@@ -55,8 +56,8 @@ function StockRecord() {
 
             setStockStats([
                 { name: "Total Net Stock Quantity", stat: netStockQuantity },
-                { name: "Total Stock Cost", stat: '$' + totalStockCost },
-                { name: "Profit/Loss", stat: '$' + profitLoss },
+                { name: "Total Stock Cost", stat: '$' + roundToString(totalStockCost,2) },
+                { name: "Unrealized Profit/Loss", stat: '$' + roundToString(profitLoss,2) },
             ]);
         } catch (error) {
             console.log(error);
@@ -88,7 +89,7 @@ function StockRecord() {
     const [stockStats, setStockStats] = React.useState<any[]>([
         { name: "Total Net Stock Quantity", stat: "" },
         { name: "Total Stock Cost", stat: "" },
-        { name: "Profit/Loss", stat: "" }
+        { name: "Unrealized Profit/Loss", stat: "" }
     ]);
 
 
@@ -175,7 +176,7 @@ function StockRecord() {
                 });
             }
         }).catch((error) => {
-            toast.error('Failed to add ' + stockCode + 'record to portfolio (ez)', {
+            toast.error('Failed to add ' + stockCode + 'record to portfolio. Not enough capital in Portfolio', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -199,7 +200,7 @@ function StockRecord() {
     return (
         <div className="PortfolioRecord">
             <Header management={management} userType={userRole} login={userIsLoggedIn} />
-            <div className='my-2 px-6'>
+            <div className='my-2 px-6 container mx-auto max-w-screen-xl h-screen rounded-l place-items-center'>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
                     <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                         {stockCode + " Records"}

@@ -146,7 +146,35 @@ export function getStockRecordsByStockCode(positions: any[], stockCode: any) {
     return stockRecords;
 }
 
+
 export function roundTo(number: number, decimalPlaces: number) {
     const multiplier = Math.pow(10, decimalPlaces);
     return Math.round(number * multiplier) / multiplier;
+}
+
+export function roundToString(number: number, decimalPlaces: number): string {
+    const multiplier = Math.pow(10, decimalPlaces);
+    const rounded = Math.round(number * multiplier) / multiplier;
+    return rounded.toLocaleString('en-US', { minimumFractionDigits: decimalPlaces, maximumFractionDigits: decimalPlaces });
+}
+
+
+export function formatVolume(volume: string) {
+    const numberVolume = parseInt(volume, 10);
+    if (isNaN(numberVolume)) {
+        return volume;
+    }
+    return numberVolume.toLocaleString('en-US');
+}
+
+export function formatPercentages(decimalPlaces: number, percentage: string) {
+    const numberPercentage = parseFloat(percentage.replace('%', ''));
+
+    if (isNaN(numberPercentage)) {
+        throw new Error("Invalid percentage input");
+    }
+    const multiplier = Math.pow(10, decimalPlaces);
+    const roundedPercentage = Math.round(numberPercentage * multiplier) / multiplier;
+
+    return roundedPercentage.toFixed(decimalPlaces) + "%";
 }

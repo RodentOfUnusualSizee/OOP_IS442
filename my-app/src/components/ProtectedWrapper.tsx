@@ -7,9 +7,9 @@ interface ProtectedWrapperProps {
 }
 
 const ProtectedWrapper: React.FC<ProtectedWrapperProps> = ({ element }) => {
-  const { isLoggedIn } = useAuth();
+  const { authUser } = useAuth();
 
-  if (isLoggedIn) {
+  if (authUser) {
     return element;
   }
 
