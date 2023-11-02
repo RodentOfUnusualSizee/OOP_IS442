@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import Table from '../components/Table';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid'
 import { getStockStats } from '../utils/api';
+import { formatVolume, formatPercentages, roundTo, roundToString } from '../utils/transform';
 
 function StockHome() {
 
@@ -17,17 +18,17 @@ function StockHome() {
         state: number;
         changeAmount: number;
         changePercentage: string;
-        volume: number;
+        volume: string;
         changeType: string;
     }
 
     interface StockData {
         id: number;
         ticker: string;
-        price: number;
+        price: string;
         changeAmount: number;
         changePercentage: string;
-        volume: number;
+        volume: string;
     }
 
     interface StockDataGroup {
@@ -75,16 +76,28 @@ function StockHome() {
             const mostActivelyTradedWithId = stocksFromServer['mostActivelyTraded'].map((stock : StockData, index : number) => ({
                 ...stock,
                 id: stock['ticker'],
+                price: "$"  + roundToString(parseFloat(stock['price']), 2),
+                changeAmount: roundTo(stock['changeAmount'], 2),
+                changePercentage: formatPercentages(2, stock['changePercentage']),
+                volume: formatVolume(stock['volume']),
             }));
 
             const topGainersWithId = stocksFromServer['topGainers'].map((stock : StockData, index : number) => ({
                 ...stock,
                 id: stock['ticker'],
+                price: "$" + roundToString(parseFloat(stock['price']), 2),
+                changeAmount: roundTo(stock['changeAmount'], 2),
+                changePercentage: formatPercentages(2, stock['changePercentage']),
+                volume: formatVolume(stock['volume'])
             }));
 
             const topLosersWithId = stocksFromServer['topLosers'].map((stock : StockData, index : number) => ({
                 ...stock,
                 id: stock['ticker'],
+                price: "$" + roundToString(parseFloat(stock['price']), 2),
+                changeAmount: roundTo(stock['changeAmount'], 2),
+                changePercentage: formatPercentages(2, stock['changePercentage']),
+                volume: formatVolume(stock['volume'])
             }));
 
             setStatsDetails([
@@ -93,7 +106,7 @@ function StockHome() {
                     ticker: mostActiveStock['ticker'],
                     state: mostActiveStock['price'],
                     changeAmount: mostActiveStock['changeAmount'],
-                    changePercentage: mostActiveStock['changePercentage'],
+                    changePercentage: formatPercentages(2, mostActiveStock['changePercentage']),
                     volume: mostActiveStock['volume'],
                     changeType: mostActiveStock['changePercentage'].includes('-') ? 'decrease' : 'increase',
                 },
@@ -102,7 +115,7 @@ function StockHome() {
                     ticker: topGainerStock['ticker'],
                     state: topGainerStock['price'],
                     changeAmount: topGainerStock['changeAmount'],
-                    changePercentage: topGainerStock['changePercentage'],
+                    changePercentage: formatPercentages(2, topGainerStock['changePercentage']),
                     volume: topGainerStock['volume'],
                     changeType: topGainerStock['changePercentage'].includes('-') ? 'decrease' : 'increase',
                 },
@@ -111,11 +124,14 @@ function StockHome() {
                     ticker: topLoserStock['ticker'],
                     state: topLoserStock['price'],
                     changeAmount: topLoserStock['changeAmount'],
-                    changePercentage: topLoserStock['changePercentage'],
+                    changePercentage: formatPercentages(2, topLoserStock['changePercentage']),
                     volume: topLoserStock['volume'],
                     changeType: topLoserStock['changePercentage'].includes('-') ? 'decrease' : 'increase',
                 }
             ])
+
+            
+
             setTableData({
                 mostActivelyTraded: mostActivelyTradedWithId,
                 topGainers: topGainersWithId,
@@ -128,7 +144,7 @@ function StockHome() {
     }, [tableData])
 
     return (
-        <div>
+        <div className="overflow-x-hidden">
             <Header management={true} userType={"user"} login={true} ></Header>
             <div>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
@@ -146,7 +162,7 @@ function StockHome() {
                                         {item.ticker}
                                     </div>
                                     <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
-                                        {item.state}
+                                        ${item.state}
                                     </div>
                                     <div
                                         className={classNames(

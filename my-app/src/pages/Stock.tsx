@@ -18,6 +18,8 @@ import {
 } from '@heroicons/react/20/solid';
 import { useAuth } from '../context/AuthContext';
 import { Slide, toast, ToastContainer } from 'react-toastify';
+import { roundTo } from '../utils/transform';
+
 
 
 function classNames(...classes: String[]) {
@@ -62,7 +64,7 @@ function Stock() {
         changeType: string;
     }
 
-    function getStockValues(days: number, symbol: string = stockDetails.symbol) {
+    function getStockValues(days: number, symbol: string = stockCode) {
         const getValuesCall = async () => {
             try {
                 const historicalValues = await getStockHistoricalValues(symbol, days);
@@ -114,9 +116,9 @@ function Stock() {
                     });
 
                     setStockStats([
-                        { name: "Profit Margin", stat: stockOverview.profitMargin },
-                        { name: "Quarterly Earnings Growth YOY", stat: stockOverview.quarterlyEarningsGrowthYOY },
-                        { name: "Quarterly Revenue Growth YOY", stat: stockOverview.quarterlyRevenueGrowthYOY }
+                        { name: "Profit Margin", stat: roundTo(stockOverview.profitMargin, 2) },
+                        { name: "Quarterly Earnings Growth YOY", stat: roundTo(stockOverview.quarterlyEarningsGrowthYOY, 2) },
+                        { name: "Quarterly Revenue Growth YOY", stat: roundTo(stockOverview.quarterlyRevenueGrowthYOY, 2) }
                     ])
 
                     getStockValues(60, stockOverview.symbol);
@@ -254,14 +256,22 @@ function Stock() {
                     </h3>
                     <div className="min-w-0 flex-1">
                         <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6 mx-2">
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                {stockDetails.country}
-                            </div>
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <TagIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                {stockDetails.industry}
-                            </div>
+                            {stockDetails.country !== "" ? (
+                                <div className="mt-2 flex items-center text-sm text-gray-500">
+                                    <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                                    {stockDetails.country}
+                                </div>
+                            ) : (
+                                <div></div>
+                            )}
+                            {stockDetails.industry !== "" ? (
+                                <div className="mt-2 flex items-center text-sm text-gray-500">
+                                    <TagIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                                    {stockDetails.industry}
+                                </div>
+                            ) : (
+                                <div></div>
+                            )}
                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                 <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
                                 {formattedDate}

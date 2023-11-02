@@ -1,6 +1,7 @@
 import React from 'react';
 import { EyeIcon } from "@heroicons/react/24/solid";
 import { Link } from 'react-router-dom';
+import { formatVolume } from '../utils/transform';
 
 interface PortfolioCardProps {
     portfolioList: Portfolio[];
@@ -32,7 +33,7 @@ const PortfolioCard = ({portfolioList}: PortfolioCardProps) => {
                                 <dt className="sr-only">Capital</dt>
                                 <dd className="mt-3">
                                     <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                        ${portfolio.capital}
+                                        ${formatVolume(portfolio.capital.toString())}
                                     </span>
                                 </dd>
                             </dl>

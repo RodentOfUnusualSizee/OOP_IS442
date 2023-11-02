@@ -16,10 +16,10 @@ import LineChartComponent from '../components/LineChartComponent';
 import PieChartComponent from '../components/PieChartComponent';
 import Table from '../components/Table';
 import { createPortfolioPosition, getPortfolioByUserId, getTickerData, getStockPrice } from '../utils/api';
-import { roundTo } from '../utils/transform';
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from "react-router-dom";
 import { Slide, toast, ToastContainer } from 'react-toastify';
+import { roundTo, roundToString, formatPercentages, formatVolume } from '../utils/transform';
 
 
 function classNames(...classes: String[]) {
@@ -30,13 +30,14 @@ function Portfolio() {
     interface portfolioDetails {
         name: string;
         strategy: string;
+        value: string
         capital: string;
     }
 
     const [stockTableData, setStockTableData] = useState<any[]>([]);
     const [piechartdata, setPiechartdata] = useState<any[]>([]);
     const [linechartdata, setLinechartdata] = useState<any[]>([]);
-    const [PortfolioData, setPortfolioData] = useState<portfolioDetails>({ name: "", strategy: "", capital: "" });
+    const [PortfolioData, setPortfolioData] = useState<portfolioDetails>({ name: "", strategy: "", value: "", capital: "" });
 
     const [stats, setStats] = useState<any[]>([
         { name: 'Capital Change ($)', stat: "" },
@@ -180,7 +181,7 @@ function Portfolio() {
     function organiseData(data: any) {
         const portfolio = data.find((portfolio: any) => portfolio.portfolioID.toString() === portfolioId);
 
-        setPortfolioData({ name: portfolio.portfolioName, strategy: portfolio.strategyDesc, capital: portfolio.capitalUSD });
+        setPortfolioData({ name: portfolio.portfolioName, strategy: portfolio.strategyDesc, value: roundToString(parseFloat(portfolio.currentTotalPortfolioValue),2), capital: roundToString(parseFloat(portfolio.capitalUSD),2) });
 
         // table
         setStockTableData(portfolio.cumPositions.map((position: any) => ({
@@ -188,8 +189,8 @@ function Portfolio() {
             stockSymbol: position.stockSymbol,
             stockSector: position.stockSector,
             totalQuantity: position.totalQuantity,
-            averagePrice: position.averagePrice,
-            currentValue: position.currentValue,
+            averagePrice: "$" + roundToString(position.averagePrice,2),
+            currentValue: "$" + roundToString(position.currentValue,2),
         })));
 
         // parse through portfolio data
@@ -202,7 +203,7 @@ function Portfolio() {
 
         for (var k in allocation) {
             let val = roundTo(allocation[k], 4);
-            tempPieChartData.push({ "name": k, "value": val });
+            tempPieChartData.push({ "name": k, "value": roundTo(val,2) });
         }
 
         setPiechartdata(tempPieChartData);
@@ -214,12 +215,12 @@ function Portfolio() {
 
 
         for (var h in historicalVal) {
-            tempLineChartData.push({ "date": h, "price": historicalVal[h] })
+            tempLineChartData.push({ "date": h, "price": roundTo(historicalVal[h],2)})
         }
 
         tempLineChartData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // sort by date
-        firstVal = parseInt(tempLineChartData[0].price); // get first historical price value
-        lastVal = parseInt(tempLineChartData[tempLineChartData.length - 1].price); // get last historical price value
+        firstVal = tempLineChartData[0].price; // get first historical price value
+        lastVal = tempLineChartData[tempLineChartData.length - 1].price; // get last historical price value
 
         setLinechartdata(tempLineChartData);
 
@@ -356,7 +357,7 @@ function Portfolio() {
                 });
             }
         }).catch((error) => {
-            toast.error('Error accessing portfolio, please try again later', {
+            toast.error('Error adding stock to portfolio, Not enough capital in portfolio', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -379,7 +380,7 @@ function Portfolio() {
     // TODO isloading
 
     return (
-        <div className='container mx-auto max-w-screen-xl'>
+        <div className='overflow-x-hidden'>
             <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
             <div>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
@@ -394,6 +395,10 @@ function Portfolio() {
                             </div>
                             <div className="mt-2 flex items-center text-sm text-gray-500">
                                 <CurrencyDollarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                                ${PortfolioData.value}
+                            </div>
+                            <div className="mt-2 flex items-center text-sm text-gray-500">
+                                <BanknotesIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
                                 ${PortfolioData.capital}
                             </div>
                             <div className="mt-2 flex items-center text-sm text-gray-500">
