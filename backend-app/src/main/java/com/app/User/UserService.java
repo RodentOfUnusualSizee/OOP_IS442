@@ -25,6 +25,8 @@ public class UserService {
     private EventRepository eventRepository;
     @Autowired
     private UserActivityLogRepository userActivityLogRepository;
+    @Autowired
+    private PortfolioRepository portfolioRepository;
 
     public WildcardResponse save(User user) {
         try {
@@ -61,7 +63,6 @@ public class UserService {
         return new WildcardResponse(true, "Success", userConverted);
     }
 
-    // Get past 1000 events
     public WildcardResponse findAllEvents() {
         List<UserEvent> userEvents = eventRepository.findAll();
         return new WildcardResponse(true, "Success", userEvents);
@@ -128,9 +129,6 @@ public class UserService {
             return new WildcardResponse(false, e.getMessage(), null);
         }
     }
-
-    @Autowired
-    private PortfolioRepository portfolioRepository;
 
     public WildcardResponse addPortfolioToUser(Long userId, Portfolio portfolio) {
         try {
