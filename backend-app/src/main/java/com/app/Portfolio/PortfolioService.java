@@ -672,15 +672,21 @@ public class PortfolioService {
         // Calculate the differences for quarterly returns percentage
         Map<String, String> quarterlyReturnsPercentageDifference = new HashMap<>();
         portfolio1Stats.getQuarterlyReturnsPercentage().forEach((quarter, value1) -> {
-            String value2 = safePercentage(
+            String cleanedValue1 = safePercentage(value1);
+            String cleanedValue2 = safePercentage(
                     portfolio2Stats.getQuarterlyReturnsPercentage().getOrDefault(quarter, "N/A"));
-            if ("N/A".equals(value1) || "N/A".equals(value2)) {
+            System.out.println("Quarter: " + quarter + ", Cleaned Value1: " + cleanedValue1 + ", Cleaned Value2: "
+                    + cleanedValue2); // Log cleaned values
+            if ("N/A".equals(cleanedValue1) || "N/A".equals(cleanedValue2)) {
                 quarterlyReturnsPercentageDifference.put(quarter, "N/A");
             } else {
                 try {
-                    double difference = Double.parseDouble(value1) - Double.parseDouble(value2);
+                    double difference = Double.parseDouble(cleanedValue1) - Double.parseDouble(cleanedValue2);
                     quarterlyReturnsPercentageDifference.put(quarter, String.format("%.2f%%", difference));
+                    System.out.println("Calculated difference for " + quarter + ": " + difference); // Log calculated
+                                                                                                    // difference
                 } catch (NumberFormatException e) {
+                    System.out.println("Number format exception for quarter: " + quarter); // Log the exception
                     quarterlyReturnsPercentageDifference.put(quarter, "N/A");
                 }
             }
@@ -692,17 +698,21 @@ public class PortfolioService {
 
     private double subtractDoublesHandlingNull(Double value1, Double value2) {
         if (value1 == null || value2 == null) {
-            return 0; // Or handle nulls as you see fit, such as throwing an exception or returning a
-                      // special value
+            return 0;
         }
         return value1 - value2;
     }
 
     private String safePercentage(String percentage) {
-        if (percentage == null || "N/A".equals(percentage)) {
+        if (percentage == null || "N/A".equals(percentage) || percentage.trim().isEmpty()) {
             return "N/A";
         } else {
-            return percentage.replace("%", "");
+            // Log the original string
+            System.out.println("Original percentage string: '" + percentage + "'");
+            String cleanedPercentage = percentage.replace("%", "").trim();
+            // Log the cleaned string
+            System.out.println("Cleaned percentage string: '" + cleanedPercentage + "'");
+            return cleanedPercentage;
         }
     }
 
