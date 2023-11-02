@@ -56,7 +56,7 @@ function StockRecord() {
             setStockStats([
                 { name: "Total Net Stock Quantity", stat: netStockQuantity },
                 { name: "Total Stock Cost", stat: '$' + totalStockCost },
-                { name: "Profit/Loss", stat: '$' + profitLoss },
+                { name: "Unrealized Profit/Loss", stat: '$' + profitLoss },
             ]);
         } catch (error) {
             console.log(error);
@@ -88,7 +88,7 @@ function StockRecord() {
     const [stockStats, setStockStats] = React.useState<any[]>([
         { name: "Total Net Stock Quantity", stat: "" },
         { name: "Total Stock Cost", stat: "" },
-        { name: "Profit/Loss", stat: "" }
+        { name: "Unrealized Profit/Loss", stat: "" }
     ]);
 
 

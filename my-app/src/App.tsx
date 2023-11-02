@@ -4,8 +4,8 @@ import { Routes, Route } from "react-router-dom";
 import Home from './pages/Home';
 import AdminHome from './pages/AdminHome';
 import Audit from './pages/Audit';
-import DataManagement from './pages/DataManagement';
-import Order from './pages/Order';
+import Loading from './pages/Loading';
+import NoStock from './pages/NoStock';
 import Portfolio from './pages/Portfolio';
 import StockHome from './pages/StockHome';
 import UserHome from './pages/UserHome';
@@ -33,13 +33,10 @@ function App() {
           <Route path="order" element={<ProtectedWrapper element={<Order/>}/>} />
           <Route path="portfolio" element={<ProtectedWrapper element={<Portfolio/>}/>} />
           <Route path="stockhome" element={<ProtectedWrapper element={<StockHome/>}/>} />
-          <Route path="userhome" element={<ProtectedWrapper element={<UserHome/>}/>}/>
           <Route path="registration" element={<Registration />} />
           <Route path="stock" element={<ProtectedWrapper element={<Stock/>}/>} /> */}
           <Route path="adminhome" element={<AdminHome/>} />
           <Route path="audit"element={<Audit/>} />
-          <Route path="datamanagement" element={<DataManagement/>} />
-          <Route path="order" element={<Order/>} />
           <Route path="portfolio" element={<Portfolio/>}/>
           <Route path="stockhome" element={<StockHome/>} />
           <Route path="userhome" element={<UserHome/>}/>
@@ -48,6 +45,8 @@ function App() {
           <Route path="sandbox" element={<Sandbox />} />
           <Route path="stockrecord" element={<StockRecord />} />
           <Route path="resetpassword" element={<ResetPassword />} />
+          <Route path="loading" element={<Loading/>} />
+          <Route path="nostock" element={<NoStock/>} />
         </Routes>
       </div>
     </AuthProvider>
