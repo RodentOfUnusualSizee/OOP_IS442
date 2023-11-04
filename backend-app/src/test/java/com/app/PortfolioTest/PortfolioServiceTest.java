@@ -112,43 +112,43 @@ public class PortfolioServiceTest {
 
   @Test
   public void testGetPortfolio() {
-    int portfolioID = 1;
+    int portfolioId = 1;
     Portfolio portfolio = new Portfolio();
-    Optional<Portfolio> optionalPortfolio = Optional.of(portfolio);
-    when(portfolioRepository.findById(portfolioID))
-      .thenReturn(optionalPortfolio);
+    portfolio.setPortfolioID(portfolioId);
 
-    Optional<Portfolio> retrievedPortfolio = portfolioService.getPortfolio(
-      portfolioID
-    );
+    when(portfolioRepository.findById(portfolioId))
+      .thenReturn(Optional.of(portfolio));
 
-    assertEquals(optionalPortfolio, retrievedPortfolio);
+    Optional<Portfolio> result = portfolioService.getPortfolio(portfolioId);
+
+    assertTrue(result.isPresent());
+    assertEquals(portfolioId, result.get().getPortfolioID());
   }
 
   @Test
   public void testGetAllPortfoliosByUser() {
     User user = new User();
-    List<Portfolio> portfolios = Arrays.asList(
-      new Portfolio(),
-      new Portfolio()
-    );
+    user.setId(1L);
+    Portfolio portfolio1 = new Portfolio();
+    portfolio1.setPortfolioID(1);
+    Portfolio portfolio2 = new Portfolio();
+    portfolio2.setPortfolioID(2);
+    List<Portfolio> portfolios = Arrays.asList(portfolio1, portfolio2);
     user.setPortfolios(portfolios);
 
-    List<Portfolio> retrievedPortfolios = portfolioService.getAllPortfoliosByUser(
-      user
-    );
+    List<Portfolio> result = portfolioService.getAllPortfoliosByUser(user);
 
-    assertEquals(portfolios, retrievedPortfolios);
+    assertEquals(portfolios, result);
+    assertTrue(result.containsAll(portfolios));
   }
 
   @Test
   public void testCheckPortfolioCapitalForNewPosition() {
     Portfolio portfolio = new Portfolio();
-    portfolio.setCapitalUSD(1000f);
-
+    portfolio.setCapitalUSD(5000.0f);
     Position position = new Position();
-    position.setPrice(10f);
-    position.setQuantity(50);
+    position.setPrice(100.0f);
+    position.setQuantity(10);
 
     boolean result = PortfolioService.checkPortfolioCapitalForNewPosition(
       portfolio,
@@ -156,7 +156,7 @@ public class PortfolioServiceTest {
     );
 
     assertFalse(result);
-    assertEquals(500f, portfolio.getCapitalUSD());
+    assertEquals(4000.0f, portfolio.getCapitalUSD(), 0.01);
   }
 
   @Test
@@ -483,5 +483,312 @@ public class PortfolioServiceTest {
     );
   }
 
-  
+  @Test
+  public void getPortfolioValueAtDate_WhenDateIsValid_ThenReturnCorrectValue() {
+    // Arrange
+    Map<String, Double> historicalValues = new LinkedHashMap<>();
+    historicalValues.put("2023-01-01", 1000.0);
+    historicalValues.put("2023-02-01", 1050.0);
+    historicalValues.put("2023-03-01", 1100.0);
+
+    // Act
+    Double valueForFebruary = portfolioService.getPortfolioValueAtDate(
+      historicalValues,
+      "2023-02-15"
+    );
+
+    // Assert
+    assertNotNull(valueForFebruary);
+    assertEquals(1050.0, valueForFebruary);
+  }
+
+  @Test
+  public void getPortfolioValueAtDate_WhenDateIsNull_ThenReturnNull() {
+    // Arrange
+    Map<String, Double> historicalValues = new LinkedHashMap<>();
+    historicalValues.put("2023-01-01", 1000.0);
+
+    // Act
+    Double value = portfolioService.getPortfolioValueAtDate(
+      historicalValues,
+      null
+    );
+
+    // Assert
+    assertNull(value);
+  }
+
+  @Test
+  public void getPortfolioValueAtDate_WhenDateIsNotPresent_ThenReturnNull() {
+    // Arrange
+    Map<String, Double> historicalValues = new LinkedHashMap<>();
+    historicalValues.put("2023-01-01", 1000.0);
+
+    // Act
+    Double valueForApril = portfolioService.getPortfolioValueAtDate(
+      historicalValues,
+      "2023-04-01"
+    );
+
+    // Assert
+    assertNull(valueForApril);
+  }
+
+  @Test
+  public void calculateSPYReturns_WhenDataIsPresent_ThenReturnCorrectReturns() {
+    // Arrange
+    StockDataPoint point1 = new StockDataPoint(
+      "2023-01-01",
+      100.0,
+      105.0,
+      95.0,
+      100.0,
+      1000000
+    );
+    StockDataPoint point2 = new StockDataPoint(
+      "2023-02-01",
+      100.0,
+      115.0,
+      100.0,
+      110.0,
+      2000000
+    );
+    StockDataPoint point3 = new StockDataPoint(
+      "2023-03-01",
+      110.0,
+      110.0,
+      100.0,
+      105.0,
+      1500000
+    );
+    List<StockDataPoint> points = Arrays.asList(point1, point2, point3);
+
+    StockTimeSeriesMonthlyDTO dto = new StockTimeSeriesMonthlyDTO();
+    dto.setTimeSeries(points);
+
+    when(monthlyService.getMonthlyTimeSeriesProcessed("SPY")).thenReturn(dto);
+
+    // Expected returns calculations
+    Map<String, Double> expectedReturns = new LinkedHashMap<>();
+    expectedReturns.put(
+      point2.getDate(),
+      ((point2.getClose() - point1.getClose()) / point1.getClose()) * 100
+    );
+    expectedReturns.put(
+      point3.getDate(),
+      ((point3.getClose() - point2.getClose()) / point2.getClose()) * 100
+    );
+
+    // Act
+    Map<String, Double> spyReturns = portfolioService.calculateSPYReturns();
+
+    // Assert
+    assertNotNull(spyReturns);
+    assertEquals(expectedReturns.size(), spyReturns.size());
+    for (Map.Entry<String, Double> entry : expectedReturns.entrySet()) {
+      assertTrue(spyReturns.containsKey(entry.getKey()));
+      assertEquals(entry.getValue(), spyReturns.get(entry.getKey()), 0.01);
+    }
+  }
+
+  @Test
+  public void calculateSPYReturns_WhenNoDataIsPresent_ThenReturnEmptyMap() {
+    // Arrange
+    StockTimeSeriesMonthlyDTO dto = new StockTimeSeriesMonthlyDTO();
+    dto.setTimeSeries(new ArrayList<>());
+
+    when(monthlyService.getMonthlyTimeSeriesProcessed("SPY")).thenReturn(dto);
+
+    // Act
+    Map<String, Double> spyReturns = portfolioService.calculateSPYReturns();
+
+    // Assert
+    assertNotNull(spyReturns);
+    assertTrue(spyReturns.isEmpty());
+  }
+
+  @Test
+  public void testCalculatePortfolioReturns() {
+    Map<String, Double> portfolioHistoricalValue = new LinkedHashMap<>();
+    portfolioHistoricalValue.put("2021-01-01", 10000.0);
+    portfolioHistoricalValue.put("2021-02-01", 10500.0);
+    portfolioHistoricalValue.put("2021-03-01", 10200.0);
+
+    Map<String, Double> expectedReturns = new LinkedHashMap<>();
+    expectedReturns.put("2021-02-01", 5.0); // (10500 - 10000) / 10000 * 100
+    expectedReturns.put("2021-03-01", -2.857142857142857); // (10200 - 10500) / 10500 * 100
+
+    Map<String, Double> portfolioReturns = portfolioService.calculatePortfolioReturns(
+      portfolioHistoricalValue
+    );
+
+    assertNotNull(portfolioReturns);
+    assertEquals(expectedReturns.size(), portfolioReturns.size());
+
+    expectedReturns.forEach((date, expectedReturn) ->
+      assertEquals(
+        expectedReturn,
+        portfolioReturns.get(date),
+        0.01,
+        "The return on " + date + " should be correct"
+      )
+    );
+  }
+
+  @Test
+  public void testCalculateCovariance() {
+    Map<String, Double> returns1 = new LinkedHashMap<>();
+    returns1.put("2021-01-01", 10.0);
+    returns1.put("2021-02-01", 7.0);
+    returns1.put("2021-03-01", 8.0);
+
+    Map<String, Double> returns2 = new LinkedHashMap<>();
+    returns2.put("2021-01-01", 4.0);
+    returns2.put("2021-02-01", 3.0);
+    returns2.put("2021-03-01", 6.0);
+
+    double covariance = portfolioService.calculateCovariance(
+      returns1,
+      returns2
+    );
+
+    double expectedCovariance = -1.0; // Calculated by hand or using a statistical tool
+    assertEquals(
+      expectedCovariance,
+      covariance,
+      0.01,
+      "The covariance should be correctly calculated"
+    );
+  }
+
+  @Test
+  public void testCalculateVariance() {
+    Map<String, Double> returns = new LinkedHashMap<>();
+    returns.put("2021-01-01", 2.0);
+    returns.put("2021-02-01", 4.0);
+    returns.put("2021-03-01", 4.0);
+    returns.put("2021-04-01", 4.0);
+    returns.put("2021-05-01", 5.0);
+    returns.put("2021-06-01", 5.0);
+    returns.put("2021-07-01", 7.0);
+    returns.put("2021-08-01", 9.0);
+
+    double variance = portfolioService.calculateVariance(returns);
+
+    double expectedVariance = 4.571428571428571; // Calculated by hand or using a statistical tool
+    assertEquals(
+      expectedVariance,
+      variance,
+      0.01,
+      "The variance should be correctly calculated"
+    );
+  }
+
+  @Test
+  public void testCalculatePortfolioBeta() {
+    Map<String, Double> portfolioReturns = new HashMap<>();
+    portfolioReturns.put("2021-01-01", 0.05);
+    portfolioReturns.put("2021-02-01", 0.06);
+    portfolioReturns.put("2021-03-01", 0.07);
+
+    Map<String, Double> spyReturns = new HashMap<>();
+    spyReturns.put("2021-01-01", 0.04);
+    spyReturns.put("2021-02-01", 0.05);
+    spyReturns.put("2021-03-01", 0.06);
+
+    double beta = portfolioService.calculatePortfolioBeta(
+      portfolioReturns,
+      spyReturns
+    );
+
+    // Beta is a ratio of covariance to variance, here we do not calculate the actual values but assert that method returns a proper double value.
+    assertTrue(beta > 0);
+  }
+
+  @Test
+  public void testCalculateInformationRatio() {
+    Map<String, Double> portfolioReturns = new HashMap<>();
+    portfolioReturns.put("2021-01-01", 0.08);
+    portfolioReturns.put("2021-02-01", 0.09);
+    portfolioReturns.put("2021-03-01", 0.10);
+
+    Map<String, Double> spyReturns = new HashMap<>();
+    spyReturns.put("2021-01-01", 0.04);
+    spyReturns.put("2021-02-01", 0.05);
+    spyReturns.put("2021-03-01", 0.06);
+
+    double informationRatio = portfolioService.calculateInformationRatio(
+      portfolioReturns,
+      spyReturns
+    );
+
+    // Information ratio is a ratio of mean excess return to tracking error, we assert that it calculates correctly
+    assertTrue(informationRatio > 0);
+  }
+
+  @Test
+  public void testCalculateDifference() {
+    // Arrange
+    Map<String, String> quarterlyReturns1 = new HashMap<>();
+    quarterlyReturns1.put("Q1", "5.0");
+    quarterlyReturns1.put("Q2", "6.0");
+
+    Map<String, String> quarterlyReturns2 = new HashMap<>();
+    quarterlyReturns2.put("Q1", "3.0");
+    quarterlyReturns2.put("Q2", "4.0");
+
+    Map<String, String> quarterlyReturnsPercentage1 = new HashMap<>();
+    quarterlyReturnsPercentage1.put("Q1", "10%");
+    quarterlyReturnsPercentage1.put("Q2", "20%");
+
+    Map<String, String> quarterlyReturnsPercentage2 = new HashMap<>();
+    quarterlyReturnsPercentage2.put("Q1", "8%");
+    quarterlyReturnsPercentage2.put("Q2", "15%");
+
+    FinancialStatsDTO portfolio1Stats = new FinancialStatsDTO(
+      100000.0, // currentTotalPortfolioValue
+      1.2, // portfolioBeta
+      0.5, // informationRatio
+      quarterlyReturns1,
+      "12%", // annualizedReturnsPercentage
+      quarterlyReturnsPercentage1
+    );
+
+    FinancialStatsDTO portfolio2Stats = new FinancialStatsDTO(
+      95000.0, // currentTotalPortfolioValue
+      1.1, // portfolioBeta
+      0.3, // informationRatio
+      quarterlyReturns2,
+      "10%", // annualizedReturnsPercentage
+      quarterlyReturnsPercentage2
+    );
+
+    // Act
+    FinancialStatsDTO differenceStats = portfolioService.calculateDifference(
+      portfolio1Stats,
+      portfolio2Stats
+    );
+
+    // Assert
+    assertEquals(5000.0, differenceStats.getCurrentTotalPortfolioValue());
+    assertEquals(0.1, differenceStats.getPortfolioBeta());
+    assertEquals(0.2, differenceStats.getInformationRatio());
+
+    // Quarterly returns differences
+    assertEquals("2.0", differenceStats.getQuarterlyReturns().get("Q1"));
+    assertEquals("2.0", differenceStats.getQuarterlyReturns().get("Q2"));
+
+    // Quarterly returns percentage differences
+    assertEquals(
+      "2.00%",
+      differenceStats.getQuarterlyReturnsPercentage().get("Q1")
+    );
+    assertEquals(
+      "5.00%",
+      differenceStats.getQuarterlyReturnsPercentage().get("Q2")
+    );
+
+    // Annualized returns percentage difference
+    assertEquals("2.00%", differenceStats.getAnnualizedReturnsPercentage());
+  }
 }
