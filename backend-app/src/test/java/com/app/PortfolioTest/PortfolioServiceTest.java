@@ -2,6 +2,7 @@ package com.app.PortfolioTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -9,6 +10,8 @@ import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyController;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.MonthlyService;
 import com.app.ExternalAPIs.StockTimeSeriesAPI.Monthly.StockTimeSeriesMonthlyDTO;
 import com.app.Portfolio.Portfolio;
+import com.app.Portfolio.PortfolioComparisionDTOs.FinancialStatsDTO;
+import com.app.Portfolio.PortfolioDTO;
 import com.app.Portfolio.PortfolioRepository;
 import com.app.Portfolio.PortfolioService;
 import com.app.Position.Position;
@@ -18,6 +21,7 @@ import com.app.User.User;
 import com.app.User.UserService;
 import com.app.WildcardResponse;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -304,4 +308,180 @@ public class PortfolioServiceTest {
     // Assert
     assertTrue(historicalValue.isEmpty());
   }
+
+  @Test
+  public void calculateReturns_WithValidData_ReturnsCorrectCalculation() {
+    // Arrange
+    Map<String, Double> historicalValues = new HashMap<>();
+    historicalValues.put(
+      LocalDate.now().minusMonths(4).format(DATE_FORMATTER),
+      100.0
+    );
+    historicalValues.put(
+      LocalDate.now().minusMonths(1).format(DATE_FORMATTER),
+      110.0
+    );
+
+    PortfolioDTO portfolio = mock(PortfolioDTO.class);
+    when(portfolio.getPortfolioHistoricalValue()).thenReturn(historicalValues);
+
+    // Act
+    Map<String, Object> returns = portfolioService.calculateReturns(portfolio);
+
+    // Assert
+    assertNotNull(returns);
+    assertTrue(returns.containsKey("quarterlyReturns"));
+    assertTrue(returns.containsKey("quarterlyReturnsPercentage"));
+    assertTrue(returns.containsKey("quarterlyDateRanges"));
+    assertTrue(returns.containsKey("annualizedReturnsPercentage"));
+  }
+
+  private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(
+    "yyyy-MM-dd"
+  );
+
+  @Test
+  public void transformPortfolioToFinancialStatsDTO_WithValidPortfolio_ReturnsCorrectDTO() {
+    // Arrange
+    PortfolioDTO portfolioDTO = mock(PortfolioDTO.class);
+    when(portfolioDTO.getCurrentTotalPortfolioValue()).thenReturn(1000.0);
+    when(portfolioDTO.getPortfolioBeta()).thenReturn(1.0);
+    when(portfolioDTO.getInformationRatio()).thenReturn(0.5);
+    when(portfolioDTO.getQuarterlyReturns()).thenReturn(new HashMap<>());
+    when(portfolioDTO.getAnnualizedReturnsPercentage()).thenReturn("5.00%");
+    when(portfolioDTO.getQuarterlyReturnsPercentage())
+      .thenReturn(new HashMap<>());
+
+    // Act
+    FinancialStatsDTO financialStatsDTO = portfolioService.transformPortfolioToFinancialStatsDTO(
+      portfolioDTO
+    );
+
+    // Assert
+    assertNotNull(financialStatsDTO);
+    assertEquals(1000.0, financialStatsDTO.getCurrentTotalPortfolioValue());
+    assertEquals(1.0, financialStatsDTO.getPortfolioBeta());
+    assertEquals(0.5, financialStatsDTO.getInformationRatio());
+    assertNotNull(financialStatsDTO.getQuarterlyReturns());
+    assertEquals("5.00%", financialStatsDTO.getAnnualizedReturnsPercentage());
+    assertNotNull(financialStatsDTO.getQuarterlyReturnsPercentage());
+  }
+
+  @Test
+  public void testTransformPortfolioToDTO() {
+    // Create mock Portfolio with all necessary data
+    Portfolio mockPortfolio = new Portfolio();
+    mockPortfolio.setPortfolioID(1);
+    mockPortfolio.setPortfolioName("Test Portfolio");
+    mockPortfolio.setStrategyDesc("Test Strategy");
+    mockPortfolio.setCapitalUSD(1000000f);
+    mockPortfolio.setCreatedTimestamp(new Date());
+    mockPortfolio.setLastModifiedTimestamp(new Date());
+
+    // Mock positions and cumPositions
+    ArrayList<Position> positions = new ArrayList<>();
+    positions.add(new Position()); // You would add actual Position objects with valid data
+    List<Map<String, Object>> cumPositions = new ArrayList<>();
+    cumPositions.add(new HashMap<>()); // Similarly, add actual data here
+
+    // Mock other fields not set in the constructor
+    Double currentTotalPortfolioValue = 1050000.0;
+    Double portfolioBeta = 0.9;
+    Double informationRatio = 1.5;
+    String portfolioYoY = "10%";
+    String portfolioQoQ = "3%";
+    String portfolioMoM = "1%";
+    Map<String, Double> portfolioHistoricalValue = new HashMap<>();
+    Map<String, Double> portfolioAllocationBySector = new HashMap<>();
+    Map<String, Double> portfolioAllocationByGeographicalLocation = new HashMap<>();
+    Map<String, String> quarterlyReturns = new HashMap<>();
+    String annualizedReturnsPercentage = "8%";
+    Map<String, String> quarterlyReturnsPercentage = new HashMap<>();
+    Map<String, String> quarterlyDateRanges = new HashMap<>();
+
+    // Setup historical and analytical data (example data, add actual valid data)
+    portfolioHistoricalValue.put("2020", 950000.0);
+    portfolioAllocationBySector.put("Technology", 50.0);
+    portfolioAllocationByGeographicalLocation.put("North America", 70.0);
+    quarterlyReturns.put("Q1", "2%");
+    quarterlyReturnsPercentage.put("Q1", "2%");
+    quarterlyDateRanges.put("Q1", "2020-01-01 to 2020-03-31");
+
+    // Create DTO from mock portfolio
+    PortfolioDTO portfolioDTO = new PortfolioDTO(mockPortfolio, cumPositions);
+
+    // Set the remaining fields manually
+    portfolioDTO.setCurrentTotalPortfolioValue(currentTotalPortfolioValue);
+    portfolioDTO.setPortfolioBeta(portfolioBeta);
+    portfolioDTO.setInformationRatio(informationRatio);
+    portfolioDTO.setPortfolioYoY(portfolioYoY);
+    portfolioDTO.setPortfolioQoQ(portfolioQoQ);
+    portfolioDTO.setPortfolioMoM(portfolioMoM);
+    portfolioDTO.setPortfolioHistoricalValue(portfolioHistoricalValue);
+    portfolioDTO.setPortfolioAllocationBySector(portfolioAllocationBySector);
+    portfolioDTO.setPortfolioAllocationByGeographicalLocation(
+      portfolioAllocationByGeographicalLocation
+    );
+    portfolioDTO.setQuarterlyReturns(quarterlyReturns);
+    portfolioDTO.setAnnualizedReturnsPercentage(annualizedReturnsPercentage);
+    portfolioDTO.setQuarterlyReturnsPercentage(quarterlyReturnsPercentage);
+    portfolioDTO.setQuarterlyDateRanges(quarterlyDateRanges);
+
+    // Now assert all fields
+    assertEquals(mockPortfolio.getPortfolioID(), portfolioDTO.getPortfolioID());
+    assertEquals(
+      mockPortfolio.getPortfolioName(),
+      portfolioDTO.getPortfolioName()
+    );
+    assertEquals(
+      mockPortfolio.getStrategyDesc(),
+      portfolioDTO.getStrategyDesc()
+    );
+    assertEquals(mockPortfolio.getCapitalUSD(), portfolioDTO.getCapitalUSD());
+    assertEquals(positions, portfolioDTO.getPositions()); // Assuming Position class has a valid equals method
+    assertEquals(cumPositions, portfolioDTO.getCumPositions());
+    assertEquals(
+      currentTotalPortfolioValue,
+      portfolioDTO.getCurrentTotalPortfolioValue()
+    );
+    assertEquals(portfolioBeta, portfolioDTO.getPortfolioBeta());
+    assertEquals(informationRatio, portfolioDTO.getInformationRatio());
+    assertEquals(portfolioYoY, portfolioDTO.getPortfolioYoY());
+    assertEquals(portfolioQoQ, portfolioDTO.getPortfolioQoQ());
+    assertEquals(portfolioMoM, portfolioDTO.getPortfolioMoM());
+    assertEquals(
+      portfolioHistoricalValue,
+      portfolioDTO.getPortfolioHistoricalValue()
+    );
+    assertEquals(
+      portfolioAllocationBySector,
+      portfolioDTO.getPortfolioAllocationBySector()
+    );
+    assertEquals(
+      portfolioAllocationByGeographicalLocation,
+      portfolioDTO.getPortfolioAllocationByGeographicalLocation()
+    );
+    assertEquals(quarterlyReturns, portfolioDTO.getQuarterlyReturns());
+    assertEquals(
+      annualizedReturnsPercentage,
+      portfolioDTO.getAnnualizedReturnsPercentage()
+    );
+    assertEquals(
+      quarterlyReturnsPercentage,
+      portfolioDTO.getQuarterlyReturnsPercentage()
+    );
+    assertEquals(quarterlyDateRanges, portfolioDTO.getQuarterlyDateRanges());
+
+    // Date fields might require special attention depending on precision requirements
+    assertEquals(
+      mockPortfolio.getCreatedTimestamp(),
+      portfolioDTO.getCreatedTimestamp()
+    );
+    assertEquals(
+      mockPortfolio.getLastModifiedTimestamp(),
+      portfolioDTO.getLastModifiedTimestamp()
+    );
+  }
+
+  
 }
