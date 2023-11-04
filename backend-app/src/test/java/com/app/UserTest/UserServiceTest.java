@@ -5,7 +5,6 @@ import static org.mockito.Mockito.*;
 
 import com.app.Portfolio.Portfolio;
 import com.app.Portfolio.PortfolioRepository;
-import com.app.Portfolio.PortfolioRepository;
 import com.app.User.EventRepository;
 import com.app.User.LoginRequest;
 import com.app.User.User;
@@ -260,7 +259,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void deleteById_WhenIdIsValid() {
+  public void testDeleteById_WhenIdIsValid() {
     // Arrange
     Long id = 1L;
     doNothing().when(userRepository).deleteById(id);
@@ -286,7 +285,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void findById_WhenUserExists() {
+  public void testFindById_WhenUserExists() {
     // Arrange
     Long id = 1L;
     User user = new User();
@@ -299,7 +298,7 @@ public class UserServiceTest {
   }
 
   @Test
-  void findById_WhenUserNotFound_ShouldThrowException() {
+  void testFindById_WhenUserNotFound_ShouldThrowException() {
     // Arrange
     Long id = 1L;
     when(userRepository.findById(id)).thenReturn(Optional.empty());
@@ -314,7 +313,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getUserActivityLog_WhenUserHasActivities_ReturnsSuccess() {
+  public void testGetUserActivityLog_WhenUserHasActivities_ReturnsSuccess() {
     // Arrange
     Long userId = 1L;
     User mockUser = new User();
@@ -332,7 +331,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getUserActivityLog_WhenUserHasNoActivities_ReturnsError() {
+  public void testGetUserActivityLog_WhenUserHasNoActivities_ReturnsError() {
     // Arrange
     Long userId = 1L;
     when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
@@ -348,7 +347,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void addPortfolioToUser_WhenUserExists_AddsPortfolioSuccessfully() {
+  public void testAddPortfolioToUser_WhenUserExists_AddsPortfolioSuccessfully() {
     // Arrange
     Long userId = 1L;
     User user = new User();
@@ -369,7 +368,7 @@ public class UserServiceTest {
   }
 
   @Test
-  public void addPortfolioToUser_WhenUserDoesNotExist_ReturnsError() {
+  public void testAddPortfolioToUser_WhenUserDoesNotExist_ReturnsError() {
     // Arrange
     Long userId = 1L;
     Portfolio portfolio = new Portfolio();
