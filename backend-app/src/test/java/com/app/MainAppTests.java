@@ -7,7 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.client.RestTemplate;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 /**
  * Test class for MainApp.
@@ -23,7 +24,7 @@ public class MainAppTests {
      */
     @Test
     public void contextLoads() {
-        assertThat(context).isNotNull();
+        assertNotNull(context);
     }
 
     /**
@@ -32,7 +33,7 @@ public class MainAppTests {
     @Test
     public void stockServiceBeanIsLoaded() {
         StockService stockService = context.getBean(StockService.class);
-        assertThat(stockService).isNotNull();
+        assertNotNull(stockService);
     }
 
     /**
@@ -41,6 +42,6 @@ public class MainAppTests {
     @Test
     public void restTemplateBeanIsLoaded() {
         RestTemplate restTemplate = context.getBean(RestTemplate.class);
-        assertThat(restTemplate).isNotNull();
+        assertNotNull(restTemplate);
     }
 }
