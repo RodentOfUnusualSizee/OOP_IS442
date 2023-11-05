@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+/**
+ * Service class for managing user-related operations.
+ * This class is responsible for the business logic associated with user entities.
+ */
 @Service
 public class UserService {
 
@@ -27,7 +30,12 @@ public class UserService {
     private UserActivityLogRepository userActivityLogRepository;
     @Autowired
     private PortfolioRepository portfolioRepository;
-
+     /**
+     * Saves a new user to the repository.
+     *
+     * @param user the user to save.
+     * @return WildcardResponse indicating the result of the operation.
+     */
     public WildcardResponse save(User user) {
         try {
             userRepository.save(user);
@@ -36,15 +44,32 @@ public class UserService {
             return new WildcardResponse(false, e.getMessage(), convertUserObject(user));
         }
     }
-
+    /**
+     * Updates an existing user.
+     *
+     * @param user the user to update.
+     * @return the updated user.
+     */
     public User update(User user) {
         return userRepository.save(user);
     }
 
+    /**
+     * Retrieves a user by their email.
+     *
+     * @param email the email of the user.
+     * @return the user with the specified email.
+     */
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
+    /**
+     * Fetches a user by their ID.
+     *
+     * @param id the ID of the user.
+     * @return WildcardResponse containing the user if found, or an error message if not.
+     */
     public WildcardResponse getUser(Long id) {
         try {
             User res = userRepository.findById(id).orElse(null);
@@ -54,6 +79,11 @@ public class UserService {
         }
     }
 
+    /**
+     * Finds all users in the repository.
+     *
+     * @return WildcardResponse containing a list of all users.
+     */
     public WildcardResponse findAll() {
         List<User> users = userRepository.findAll();
         List<UserDTO> userConverted = new ArrayList<>();
@@ -63,19 +93,41 @@ public class UserService {
         return new WildcardResponse(true, "Success", userConverted);
     }
 
+    /**
+     * Retrieves all user events.
+     *
+     * @return WildcardResponse containing a list of all user events.
+     */
     public WildcardResponse findAllEvents() {
         List<UserEvent> userEvents = eventRepository.findAll();
         return new WildcardResponse(true, "Success", userEvents);
     }
 
+    /**
+     * Deletes a user by their ID.
+     *
+     * @param id the ID of the user to delete.
+     */
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
 
+     /**
+     * Checks if a user exists by their ID.
+     *
+     * @param id the ID of the user.
+     * @return true if the user exists, false otherwise.
+     */
     public boolean existsById(Long id) {
         return userRepository.existsById(id);
     }
 
+    /**
+     * Finds a user by their ID.
+     *
+     * @param id the ID of the user.
+     * @return an Optional containing the user if found, or an empty Optional if not.
+     */
     public Optional<User> findById(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user != null) {
@@ -84,6 +136,12 @@ public class UserService {
         throw new RuntimeException("User Not Found");
     }
 
+    /**
+     * Retrieves the activity log for a given user by their ID.
+     *
+     * @param userId the ID of the user.
+     * @return WildcardResponse containing the user's activity log or an error message.
+     */
     public WildcardResponse getUserActivityLog(Long userId) {
         try {
             UserActivityLog res = userRepository.findById(userId)
@@ -99,6 +157,13 @@ public class UserService {
 
     }
 
+    /**
+     * Adds an event for a specific user.
+     *
+     * @param userId is the ID of the user.
+     * @param userEvent is the event to add.
+     * @return WildcardResponse indicating the result of the operation.
+     */
     public WildcardResponse addEventForUser(Long userId, UserEvent userEvent) {
         try {
             Optional<User> optionalUser = userRepository.findById(userId);
@@ -130,6 +195,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Adds a portfolio to a user.
+     *
+     * @param userId    the ID of the user.
+     * @param portfolio the portfolio to add.
+     * @return WildcardResponse indicating the result of the operation.
+     */
     public WildcardResponse addPortfolioToUser(Long userId, Portfolio portfolio) {
         try {
             User user = userRepository.findById(userId).orElse(null);
@@ -152,6 +224,12 @@ public class UserService {
 
     }
 
+    /**
+     * Authenticates a user based on login credentials.
+     *
+     * @param loginRequest the login credentials.
+     * @return WildcardResponse indicating the result of the authentication attempt.
+     */
     public WildcardResponse authenticateUser(LoginRequest loginRequest) {
         try {
             String reqEmail = loginRequest.getEmail();
@@ -181,6 +259,12 @@ public class UserService {
 
     }
 
+    /**
+     * Converts a User entity to a Data Transfer Object (DTO).
+     *
+     * @param user the User entity to convert.
+     * @return the converted UserDTO object.
+     */
     public UserDTO convertUserObject(User user) {
         // Create a UserDTO instance and map the fields
         UserDTO userDTO = new UserDTO();

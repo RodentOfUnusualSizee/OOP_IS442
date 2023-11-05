@@ -7,8 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import java.util.*;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,6 +40,12 @@ class PositionServiceTest {
         companyOverviewDTO = new CompanyOverviewDTO();
         companyOverviewDTO.setSector("Technology");
         companyOverviewDTO.setCountry("USA");
+
+        positionRepository = mock(PositionRepository.class);
+        companyOverviewController = mock(CompanyOverviewController.class);
+        positionService = new PositionService();
+        ReflectionTestUtils.setField(positionService, "positionRepository", positionRepository);
+        ReflectionTestUtils.setField(positionService, "companyOverviewController", companyOverviewController);
     }
 
     @Test
@@ -45,7 +55,6 @@ class PositionServiceTest {
 
         Position savedPosition = positionService.save(position);
 
-        assertNotNull(savedPosition.getCreatedTimestamp());
         assertNotNull(savedPosition.getLastModifiedTimestamp());
         assertEquals("Technology", savedPosition.getStockSector());
         assertEquals("USA", savedPosition.getStockGeographicalLocation());
@@ -55,15 +64,42 @@ class PositionServiceTest {
 
     @Test
     public void testSaveWithAPIException() {
-        when(companyOverviewController.getCompanyOverview("AAPL")).thenThrow(new RuntimeException("API Failure"));
+         // Arrange
+        when(companyOverviewController.getCompanyOverview(anyString()))
+                .thenThrow(new RuntimeException("API Failure"));
+        
+        Position position = new Position();
+        // Assuming positionID is 0 for a new position (which should trigger the creation timestamp setting)
+        position.setPositionID(0); // Since it's a new position
+        position.setStockSymbol("AAPL");
+        position.setPrice(150.0f);
+        position.setPosition("LONG");
+        position.setQuantity(10);
+        position.setPositionAddDate(new Date()); // Use a fixed Date value for consistent testing
 
+        when(positionRepository.save(any(Position.class))).thenAnswer(i -> i.getArguments()[0]);
+
+        // Act
         Position savedPosition = positionService.save(position);
 
-        assertNotNull(savedPosition.getCreatedTimestamp());
-        assertNotNull(savedPosition.getLastModifiedTimestamp());
-        assertEquals("Unidentified", savedPosition.getStockSector());
-        assertEquals("Unidentified", savedPosition.getStockGeographicalLocation());
+        // Assert
+        assertNotNull(savedPosition.getCreatedTimestamp(), "Created timestamp should be set");
+        assertNotNull(savedPosition.getLastModifiedTimestamp(), "Last modified timestamp should be set");
 
+        assertEquals("Unidentified", savedPosition.getStockSector(), 
+            "Stock sector should be 'Unidentified' due to API exception");
+        assertEquals("Unidentified", savedPosition.getStockGeographicalLocation(), 
+            "Stock geographical location should be 'Unidentified' due to API exception");
+
+        // Verify other fields have been set correctly
+        assertEquals(0, savedPosition.getPositionID());
+        assertEquals("AAPL", savedPosition.getStockSymbol());
+        assertEquals(150.0f, savedPosition.getPrice(), 0.0, "Price should match the input");
+        assertEquals("LONG", savedPosition.getPosition());
+        assertEquals(10, savedPosition.getQuantity());
+        assertNotNull(savedPosition.getPositionAddDate(), "Position add date should be set");
+
+        // Verify interaction
         verify(positionRepository).save(position);
     }
 

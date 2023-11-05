@@ -3,7 +3,11 @@ package com.app.User;
 import java.util.*;
 import java.time.LocalDateTime;
 
-// User Data Transfer Object
+/**
+ * Data Transfer Object for user-related information.
+ * This class is used for transferring user data between processes,
+ * while hiding the implementation details of the user entity.
+ */
 public class UserDTO {
     private long id;
     private String email;
@@ -15,6 +19,9 @@ public class UserDTO {
     private LocalDateTime lastLogin;
     private UserEvent lastActivity;
 
+    /**
+     * Default constructor for UserDTO.
+     */
     public UserDTO() {
     }
 
@@ -39,13 +46,26 @@ public class UserDTO {
         return role;
     }
 
+    /**
+     * Gets the list of portfolio IDs associated with the user.
+     * @return A List of Integer representing the portfolio IDs.
+     */
     public List<Integer> getPortfolioIds() {
         return portfolioIds;
     }
 
+    /**
+     * Gets the last login time of the user.
+     * @return A LocalDateTime object representing the last login time.
+     */
     public LocalDateTime getLastLogin(){
         return lastLogin;
     }
+
+    /**
+     * Gets the last activity event of the user.
+     * @return A UserEvent object representing the last recorded activity.
+     */
     public UserEvent getLastActivity() {
         return lastActivity;
     }
@@ -83,6 +103,10 @@ public class UserDTO {
         return emailVerified;
     }
 
+    /**
+     * Sets the email verified status.
+     * @param emailVerified A boolean indicating if the user's email is verified.
+     */
     public void setEmailVerified(boolean emailVerified) {
         this.emailVerified = emailVerified;
     }

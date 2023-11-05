@@ -10,6 +10,16 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 
+/**
+ * The User class represents an entity model for a user within the system.
+ * It includes details such as email, password, first and last names, roles, email verification status,
+ * associated user activity log, and portfolios.
+ *
+ * The class is annotated with JPA annotations to define the table mapping, unique constraints,
+ * and relationships with other entities such as UserActivityLog and Portfolio.
+ *
+ * JsonIdentityInfo is used to handle circular references correctly when serializing entities to JSON.
+ */
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Table(name = "users")
@@ -34,14 +44,25 @@ public class User {
     @JsonManagedReference
     private List<Portfolio> portfolios;
 
-    // Constructor requirement by Hibernate (used by Spring Data JPA)
+    /**
+     * Default constructor required by Hibernate. Initializes a new user with email verification status set to true.
+     */
     public User() {
         this.emailVerified = true;
         // this.emailVerified = false;
 
     }
 
-    // Constructor
+    /**
+     * Parametrized constructor for creating a new User instance with specified attributes.
+     * It initializes user activity log and portfolios as well.
+     *
+     * @param email     the email of the user, must be unique.
+     * @param password  the password of the user.
+     * @param firstName the first name of the user.
+     * @param lastName  the last name of the user.
+     * @param role      the role of the user within the system.
+     */
     public User(String email, String password, String firstName, String lastName, String role) {
         this.email = email;
         this.password = password;
@@ -57,10 +78,18 @@ public class User {
 
     // ------------------ Getters and Setters (Start) ------------------
 
+    /**
+     * Retrieves the email address of the user.
+     * @return the email address.
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Sets the email address of the user.
+     * @param email the email address to set.
+     */
     public void setEmail(String email) {
         this.email = email;
     }
@@ -119,7 +148,10 @@ public class User {
 
     // ------------------- Getters and Setters (End) -------------------
 
-    // Method to add a new portfolio
+    /**
+     * Adds a new portfolio to the user's collection of portfolios.
+     * @param portfolio the portfolio to add.
+     */
     public void addPortfolio(Portfolio portfolio) {
         this.portfolios.add(portfolio);
         portfolio.setUser(this);
@@ -156,6 +188,10 @@ public class User {
         this.id = id;
     }
 
+    /**
+     * Returns whether the user's email is verified.
+     * @return true if the email is verified, false otherwise.
+     */
     public boolean isEmailVerified() {
         return emailVerified;
     }
