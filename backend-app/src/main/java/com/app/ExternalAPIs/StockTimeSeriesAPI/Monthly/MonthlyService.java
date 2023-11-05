@@ -16,6 +16,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import io.github.cdimascio.dotenv.Dotenv;
 
+/**
+ * Service class that manages the retrieval and processing of monthly stock time series data.
+ */
 @Service
 public class MonthlyService {
     @Autowired
@@ -26,6 +29,13 @@ public class MonthlyService {
 
     private String apiKey;
 
+    /**
+     * Retrieves processed monthly time series data for a given stock symbol.
+     * Data may come from the Stock database or from an external API if not present or outdated.
+     * 
+     * @param symbol Stock symbol for which monthly data is to be retrieved.
+     * @return A DTO containing the monthly time series data.
+     */
     public StockTimeSeriesMonthlyDTO getMonthlyTimeSeriesProcessed(String symbol) {
         Stock stock = stockService.getStock(symbol);
         if (stock != null && isLastRefreshedLessThanOneMonthAgo(stock.getLastRefreshed())) {
@@ -49,13 +59,13 @@ public class MonthlyService {
         return StockTimeSeriesMonthlyDTO;
     }
 
+    /**
+     * Fetches raw monthly time series data from an external API for a given stock symbol.
+     *
+     * @param symbol Stock symbol for which raw monthly time series data is to be fetched.
+     * @return A Map representing the raw JSON response from the API.
+     */
     public Map<String, Object> getMonthlyTimeSeriesRaw(String symbol) {
-
-        // Gerald: add here to search for Stock data in db
-
-        // if stock exist and lastRefreshed is less than 1 month ago use the stock Data
-        // else query as u see below
-
         Dotenv dotenv = Dotenv.load();
         this.apiKey = dotenv.get("ALPHAVANTAGE_APIKEY");
 
@@ -72,6 +82,12 @@ public class MonthlyService {
         return responseBody;
     }
 
+    /**
+     * Maps raw API response data into a DTO suitable for application use, and updates the stock repository.
+     *
+     * @param responseBody The raw API response body to be mapped.
+     * @return A DTO representation of the monthly time series data.
+     */
     private StockTimeSeriesMonthlyDTO mapResponseToDTO(Map<String, Object> responseBody) {
         // For saving into repo
         Stock newStock = new Stock();
@@ -118,6 +134,12 @@ public class MonthlyService {
         return stockTimeSeriesMonthlyDTO;
     }
 
+    /**
+     * Determines if the 'last refreshed' date of a stock's data is less than one month old.
+     *
+     * @param lastRefreshed The date string of the last time the stock data was refreshed.
+     * @return True if the last refresh date is less than one month ago, false otherwise.
+     */
     private boolean isLastRefreshedLessThanOneMonthAgo(String lastRefreshed) {
         try {
             // Parse the lastRefreshed date string into a LocalDate object

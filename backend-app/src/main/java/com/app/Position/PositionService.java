@@ -11,6 +11,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The PositionService class provides the business logic for position-related operations,
+ * interacting with the PositionRepository and external APIs to persist and retrieve position data.
+ */
 @Service
 public class PositionService {
 
@@ -20,7 +24,15 @@ public class PositionService {
     @Autowired
     private CompanyOverviewController companyOverviewController;
 
-    // Save (Create or Update) a Position
+    /**
+     * Saves a position to the database. If the position is new (id is 0),
+     * it sets the created timestamp to the current date. It always sets the last
+     * modified timestamp to the current date. Additionally, it attempts to retrieve
+     * stock sector and geographical location information via an external API call.
+     * 
+     * @param position The position object to save.
+     * @return The saved position object, with generated ID for new positions.
+     */
     public Position save(Position position) {
         if (position.getPositionID() == 0) {
             position.setCreatedTimestamp(new Date());
@@ -43,6 +55,13 @@ public class PositionService {
         return positionRepository.save(position);
     }
 
+    /**
+     * Retrieves additional information about a stock such as the sector and geographical location
+     * using an external API. This information is encapsulated into a map.
+     * 
+     * @param position The position object which contains the stock symbol.
+     * @return A map containing the stock's sector and geographical location.
+     */
     public Map<String, String> getStockAdditionalInformationAPI(Position position) {
 
         String stockSymbol = position.getStockSymbol();
@@ -58,17 +77,30 @@ public class PositionService {
         return informationMap;
     }
 
-    // Retrieve a Position by ID
+    /**
+     * Finds a position by its ID.
+     * 
+     * @param positionId The ID of the position to find.
+     * @return An Optional containing the found position or an empty Optional if not found.
+     */
     public Optional<Position> findById(Integer positionId) {
         return positionRepository.findById(positionId);
     }
 
-    // Delete a Position by ID
+    /**
+     * Deletes a position by its ID.
+     * 
+     * @param positionId The ID of the position to delete.
+     */
     public void deleteById(Integer positionId) {
         positionRepository.deleteById(positionId);
     }
 
-    // List all Positions
+    /**
+     * Retrieves all positions from the database.
+     * 
+     * @return A list of all positions.
+     */
     public List<Position> findAll() {
         return positionRepository.findAll();
     }

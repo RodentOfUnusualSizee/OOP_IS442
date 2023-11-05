@@ -12,6 +12,10 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.util.*;
 
 // PostMan: http://localhost:8080/api/stock/NewsSentimentByStock/IBM
+/**
+ * Controller for fetching and serving news sentiment data related to stock tickers.
+ * It uses an external API to fetch the data and caches the results to optimize performance.
+ */
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/stock/NewsSentimentByStock")
@@ -24,6 +28,14 @@ public class NewsSentimentByStockController {
 
     private Map<String, NewsSentimentByStockDTO> newsSentimentCache = new HashMap<>();
 
+    /**
+     * Retrieves the news sentiment data for a specific stock ticker. If the data is already
+     * present in the cache, it returns the cached data. Otherwise, it fetches the data from
+     * the external API and stores it in the cache before returning it.
+     *
+     * @param ticker The stock ticker symbol for which news sentiment data is requested.
+     * @return The {@link NewsSentimentByStockDTO} object containing news sentiment data.
+     */
     @GetMapping("/{ticker}")
     public NewsSentimentByStockDTO getNewsSentimentByTicker(@PathVariable String ticker) {
         if (newsSentimentCache.containsKey(ticker)) {
@@ -47,6 +59,13 @@ public class NewsSentimentByStockController {
         return newsSentimentDTO;
     }
 
+    /**
+     * Maps the raw response body from the external API call to a {@link NewsSentimentByStockDTO}.
+     * It parses the response structure into a structured DTO that the application can use.
+     *
+     * @param responseBody The raw response body from the external API call.
+     * @return A populated {@link NewsSentimentByStockDTO} object.
+     */
     private NewsSentimentByStockDTO mapResponseToDTO(Map<String, Object> responseBody) {
         NewsSentimentByStockDTO newsSentimentDTO = new NewsSentimentByStockDTO();
     

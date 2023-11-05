@@ -11,6 +11,9 @@ import io.github.cdimascio.dotenv.Dotenv;
 import java.util.*;
 
 // PostMan: http://localhost:8080/api/stock/topGainerLoser
+/**
+ * REST controller for fetching top gainers and losers from the stock market data.
+ */
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/stock/topGainerLoser")
@@ -23,6 +26,12 @@ public class TopGainerLoserController {
 
     private Map<String, TopGainerLoserDTO> dataCache = new HashMap<>();
 
+    /**
+     * Retrieves the top gainers and losers from the stock market.
+     * If data is cached, it returns the cached data.
+     * Otherwise, it fetches the data from an external API and caches it.
+     * @return A {@link TopGainerLoserDTO} object containing the top gainers, losers, and most actively traded stocks.
+     */
     @GetMapping
     public TopGainerLoserDTO getTopGainersAndLosers() {
         if (dataCache.containsKey("existingData")) {
@@ -43,6 +52,11 @@ public class TopGainerLoserController {
         return topGainerLoserDTO;
     }
 
+    /**
+     * Maps the API response to the {@link TopGainerLoserDTO} object.
+     * @param responseBody The response body from the API call.
+     * @return A {@link TopGainerLoserDTO} with the mapped data.
+     */
     private TopGainerLoserDTO mapResponseToDTO(Map<String, Object> responseBody) {
         TopGainerLoserDTO dto = new TopGainerLoserDTO();
 
@@ -57,6 +71,11 @@ public class TopGainerLoserController {
         return dto;
     }
 
+    /**
+     * Converts a list of maps to a list of {@link TopGainerLoserDTO.StockInfo} objects.
+     * @param data A list of maps, each representing stock info.
+     * @return A list of {@link TopGainerLoserDTO.StockInfo} objects.
+     */
     private List<TopGainerLoserDTO.StockInfo> convertToListOfStockInfo(List<Map<String, String>> data) {
         List<TopGainerLoserDTO.StockInfo> stockInfos = new ArrayList<>();
 

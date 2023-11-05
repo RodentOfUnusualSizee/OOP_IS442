@@ -3,6 +3,9 @@ package com.app.ExternalAPIs.NewsSentimentByStockAPI;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Transfer Object (DTO) for encapsulating news sentiment data related to a specific stock.
+ */
 public class NewsSentimentByStockDTO {
 
     private String items;
@@ -10,6 +13,9 @@ public class NewsSentimentByStockDTO {
     private String relevanceScoreDefinition;
     private List<Feed> feed;
 
+    /**
+     * Default constructor that initializes the feed list.
+     */
     public NewsSentimentByStockDTO() {
         this.feed = new ArrayList<>(); // Initialize the topics list here
     }
@@ -54,6 +60,9 @@ public class NewsSentimentByStockDTO {
         this.feed = feed;
     }
 
+    /**
+     * Inner class representing a single news feed entry with associated sentiment and metadata.
+     */
     public static class Feed {
         private String title;
         private String url;
@@ -197,6 +206,9 @@ public class NewsSentimentByStockDTO {
             this.tickerSentiment = tickerSentiment;
         }
 
+        /**
+         * Inner class representing a topic mentioned in the news feed.
+         */
         public static class Topic {
             private String topic;
             private double relevanceScore;
@@ -226,6 +238,9 @@ public class NewsSentimentByStockDTO {
             }
         }
 
+        /**
+         * Inner class representing the sentiment of a specific ticker mentioned in the news feed.
+         */
         public static class TickerSentiment {
             private String ticker;
             private double relevanceScore;

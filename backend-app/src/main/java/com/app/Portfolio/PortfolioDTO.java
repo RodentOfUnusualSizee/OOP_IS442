@@ -7,38 +7,122 @@ import java.util.Map;
 
 import com.app.Position.Position;
 
+/**
+ * The PortfolioDTO class represents a data transfer object for a Portfolio.
+ * This class includes a combination of identification information, financial metrics,
+ * time-related data, historical and analytical data, as well as performance metrics.
+ */
 public class PortfolioDTO {
     // --- Identification Information ---
+    /**
+     * The unique identifier for the portfolio.
+     */
     private int portfolioID;
+
+    /**
+     * The name of the portfolio.
+     */
     private String portfolioName;
 
     // --- Portfolio Description ---
+    /**
+     * A description of the investment strategy used by the portfolio.
+     */
     private String strategyDesc;
 
     // --- Financial Metrics ---
+    /**
+     * The amount of capital in USD allocated to the portfolio.
+     */
     private Float capitalUSD;
+
+    /**
+     * A list of positions held within the portfolio.
+     */
     private ArrayList<Position> positions;
+
+    /**
+     * A list of cumulative positions held within the portfolio represented as maps.
+     */
     private List<Map<String, Object>> cumPositions;
+
+    /**
+     * The current total value of the portfolio.
+     */
     private Double currentTotalPortfolioValue;
+
+    /**
+     * The beta of the portfolio, representing its volatility relative to the market.
+     */
     private Double portfolioBeta;
+
+    /**
+     * The information ratio of the portfolio, indicating the active return of an investment manager
+     * relative to the return of a benchmark.
+     */
     private Double informationRatio;
+
+    /**
+     * Year-over-Year growth rate of the portfolio's value.
+     */
     private String portfolioYoY;
+
+    /**
+     * Quarter-over-Quarter growth rate of the portfolio's value.
+     */
     private String portfolioQoQ;
+
+    /**
+     * Month-over-Month growth rate of the portfolio's value.
+     */
     private String portfolioMoM;
 
     // --- Time-Related Information ---
+    /**
+     * The timestamp indicating when the portfolio was created.
+     */
     private Date createdTimestamp;
+
+    /**
+     * The timestamp of the last modification made to the portfolio.
+     */
     private Date lastModifiedTimestamp;
 
     // --- Historical and Analytical Data ---
+    /**
+     * A map representing the historical value of the portfolio over time.
+     */
     private Map<String, Double> portfolioHistoricalValue;
+
+    /**
+     * A map representing the allocation of the portfolio's assets by sector.
+     */
     private Map<String, Double> portfolioAllocationBySector;
+
+    /**
+     * A map representing the allocation of the portfolio's assets by geographical location.
+     */
     private Map<String, Double> portfolioAllocationByGeographicalLocation;
 
     // --- Performance Metrics ---
+    /**
+     * A map of the portfolio's quarterly returns in absolute figures.
+     */
     private Map<String, String> quarterlyReturns;
+
+    /**
+     * The annualized returns of the portfolio represented as a percentage.
+     */
     private String annualizedReturnsPercentage;
+
+    /**
+     * A map of the portfolio's quarterly returns represented as percentages.
+     */
     private Map<String, String> quarterlyReturnsPercentage;
+
+    /**
+     * A map indicating the date ranges for each quarter represented in the quarterly returns.
+     */
     private Map<String, String> quarterlyDateRanges;
 
     // Constructors, getters, and setters

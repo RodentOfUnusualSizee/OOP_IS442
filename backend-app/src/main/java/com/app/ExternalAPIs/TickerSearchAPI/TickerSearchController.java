@@ -12,6 +12,10 @@ import java.util.*;
 import io.github.cdimascio.dotenv.Dotenv;
 
 // Postman: http://localhost:8080/api/stock/tickerSearch/{keyword}
+/**
+ * REST Controller providing an API endpoint for searching stock tickers.
+ * The results are fetched from the Alpha Vantage API and cached locally.
+ */
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/stock/tickerSearch")
@@ -24,6 +28,14 @@ public class TickerSearchController {
 
     private Map<String, TickerSearchDTO> dataCache = new HashMap<>();
 
+    /**
+     * Handles GET requests for ticker search with the provided keyword.
+     * If the keyword has been searched before, results are retrieved from the cache.
+     * Otherwise, a new request is made to the Alpha Vantage API, and the result is cached.
+     *
+     * @param keywords The search keyword used to query the Alpha Vantage API.
+     * @return The DTO containing the best matching tickers for the provided keyword.
+     */
     @GetMapping("/{keywords}")
     public TickerSearchDTO getTickerSearch(@PathVariable String keywords) {
         if (dataCache.containsKey(keywords)) {
@@ -48,6 +60,13 @@ public class TickerSearchController {
         return tickerSearchDTO;
     }
 
+    /**
+     * Maps the response body from the Alpha Vantage API to a TickerSearchDTO object.
+     * Filters out results that are not in USD currency.
+     *
+     * @param responseBody The raw response body from the Alpha Vantage API call.
+     * @return A TickerSearchDTO object with the relevant data mapped from the response.
+     */
     private TickerSearchDTO mapResponseToDTO(Map<String, Object> responseBody) {
         TickerSearchDTO tickerSearchDTO = new TickerSearchDTO();
         List<TickerSearchDTO.Match> bestMatches = new ArrayList<>();

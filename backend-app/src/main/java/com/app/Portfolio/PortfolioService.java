@@ -21,6 +21,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service layer class that manages portfolio operations.
+ * It offers methods to add, update, delete, and retrieve portfolios.
+ */
 @Service
 public class PortfolioService {
 
@@ -36,7 +40,12 @@ public class PortfolioService {
   @Autowired
   private MonthlyService monthlyService;
 
-  // Method to add a portfolio
+  /**
+   * Adds a portfolio to the system and associates it with a user.
+   * 
+   * @param portfolio The portfolio to add, not null, expecting user id to be set.
+   * @return WildcardResponse A response object indicating the result of the operation.
+   */
   public WildcardResponse addPortfolio(Portfolio portfolio) {
     // Here you need the userId to be present in the Portfolio object or passed
     // separately.
@@ -49,6 +58,12 @@ public class PortfolioService {
     );
   }
 
+  /**
+   * Updates an existing portfolio.
+   * 
+   * @param portfolio The portfolio with updated information, not null.
+   * @return Portfolio The updated portfolio if it exists, otherwise null.
+   */
   public Portfolio updatePortfolio(Portfolio portfolio) {
     if (portfolioRepository.existsById(portfolio.getPortfolioID())) {
       portfolio.setLastModifiedTimestamp(new Date());
@@ -57,21 +72,50 @@ public class PortfolioService {
     return null;
   }
 
-  // Method to delete a portfolio
+  /**
+   * Deletes a portfolio by its ID.
+   * 
+   * @param portfolioID The ID of the portfolio to delete.
+   */
   public void deletePortfolio(int portfolioID) {
     portfolioRepository.deleteById(portfolioID);
   }
 
-  // Method to retrieve a portfolio
+  /**
+   * Retrieves a portfolio by its ID.
+   * 
+   * @param portfolioID The ID of the portfolio to retrieve.
+   * @return Optional&lt;Portfolio&gt; The portfolio if found, otherwise an empty Optional.
+   */
   public Optional<Portfolio> getPortfolio(int portfolioID) {
     return portfolioRepository.findById(portfolioID);
   }
 
-  // Method to retrieve all portfolios of a user
+  /**
+   * Retrieves all portfolios belonging to a user.
+   * 
+   * @param user The user whose portfolios to retrieve, not null.
+   * @return List&lt;Portfolio&gt; A list of portfolios belonging to the given user.
+   */
   public List<Portfolio> getAllPortfoliosByUser(User user) {
     return user.getPortfolios();
   }
 
+  /**
+   * Checks if the portfolio has enough capital to add a new position.
+   * This method subtracts the value of the new position (price * quantity) from
+   * the current capital to simulate adding the position to the portfolio.
+   * 
+   * Note: This method will actually modify the portfolio's capital by subtracting
+   * the cost of the new position. This side effect should be considered when calling
+   * this method as it could potentially lead to incorrect capital values if not
+   * handled properly.
+   * 
+   * @param portfolio The portfolio where the new position is to be added.
+   * @param position  The new position to be added to the portfolio.
+   * @return {@code true} if the portfolio has enough capital after subtracting
+   *         the cost of the new position, {@code false} otherwise.
+   */
   public static boolean checkPortfolioCapitalForNewPosition(
     Portfolio portfolio,
     Position position
@@ -85,6 +129,15 @@ public class PortfolioService {
     return true;
   }
 
+  /**
+   * Computes cumulative positions based on a list of individual positions.
+   * This includes aggregating the positions by stock symbol and computing
+   * values such as average price, total quantity, and current value. It
+   * also enriches the position data with sector and geographical location.
+   *
+   * @param positions The list of positions to compute cumulative data for.
+   * @return A list of maps where each map represents cumulative data for a unique stock symbol.
+   */
   public List<Map<String, Object>> computeCumPositions(
     List<Position> positions
   ) {
@@ -174,6 +227,17 @@ public class PortfolioService {
     return cumPositions;
   }
 
+  /**
+   * Computes the historical value of a portfolio based on the monthly closing prices
+   * of the stocks in the portfolio. This calculation takes into account the quantity
+   * of each position at different points in time to give a historical perspective of
+   * the portfolio's value.
+   *
+   * @param portfolio           The portfolio for which historical values are being computed.
+   * @param monthlyController   The controller used to retrieve monthly stock data.
+   * @return A map where each key is a date (in YYYY-MM-DD format) and the value is the
+   *         total historical value of the portfolio for that date.
+   */
   public Map<String, Double> computePortfolioHistoricalValue(
     Portfolio portfolio,
     MonthlyController monthlyController
@@ -258,6 +322,16 @@ public class PortfolioService {
     "yyyy-MM-dd"
   );
 
+  /**
+   * Calculates the returns of a portfolio including quarterly returns,
+   * quarterly returns percentage, annualized returns, and corresponding
+   * date ranges. The calculations are based on the historical value of the
+   * portfolio over time.
+   *
+   * @param portfolio A PortfolioDTO object that includes historical value data.
+   * @return A map containing various types of return metrics such as quarterly
+   *         returns, quarterly returns percentage, and annualized returns percentage.
+   */
   public Map<String, Object> calculateReturns(PortfolioDTO portfolio) {
     Map<String, Object> returns = new HashMap<>();
     Map<String, Double> portfolioHistoricalValue = portfolio.getPortfolioHistoricalValue();
@@ -427,6 +501,14 @@ public class PortfolioService {
     return null;
   }
 
+  /**
+   * Transforms a given PortfolioDTO into a FinancialStatsDTO.
+   * This method maps the financial statistics and metrics from the portfolio
+   * into a new Data Transfer Object (DTO) that is specifically structured for financial statistics.
+   *
+   * @param portfolio The PortfolioDTO object containing the portfolio data to be transformed.
+   * @return A FinancialStatsDTO containing the relevant financial metrics extracted from the portfolio.
+   */
   public FinancialStatsDTO transformPortfolioToFinancialStatsDTO(
     PortfolioDTO portfolio
   ) {
@@ -448,6 +530,14 @@ public class PortfolioService {
     return dto;
   }
 
+  /**
+   * Transforms a Portfolio object into a PortfolioDTO (Data Transfer Object) with
+   * additional calculated fields such as cumulative positions, sector and geographical
+   * allocations, historical values, and performance metrics.
+   *
+   * @param portfolio the Portfolio object to be transformed into a DTO
+   * @return a fully populated PortfolioDTO with calculated fields
+   */
   public PortfolioDTO transformPortfolioToDTO(Portfolio portfolio) {
     // 1. Initialize an empty list to store cumulative positions and set the initial
     // total portfolio value
@@ -698,6 +788,15 @@ public class PortfolioService {
     return dto;
   }
 
+  /**
+   * Retrieves the historical portfolio value for a specific date. The date should
+   * be formatted as "YYYY-MM-DD". If the exact date is not found, it attempts to
+   * match the closest date starting with the same "YYYY-MM" prefix.
+   *
+   * @param portfolioHistoricalValue a map of date strings to historical portfolio values
+   * @param date                     the date string to retrieve the historical value for
+   * @return the historical value of the portfolio on the specified date, or null if not found
+   */
   public Double getPortfolioValueAtDate(
     Map<String, Double> portfolioHistoricalValue,
     String date
@@ -719,6 +818,12 @@ public class PortfolioService {
     return entry != null ? entry.getValue() : null;
   }
 
+  /**
+   * Calculates the monthly returns for the SPY ETF by comparing the close values
+   * of each month with the previous month.
+   *
+   * @return a map where each key is a date string and each value is the return percentage for that month
+   */
   public Map<String, Double> calculateSPYReturns() {
     StockTimeSeriesMonthlyDTO spyData = monthlyService.getMonthlyTimeSeriesProcessed(
       "SPY"
@@ -740,6 +845,13 @@ public class PortfolioService {
     return spyReturns;
   }
 
+  /**
+   * Calculates the monthly returns of a portfolio given its historical values.
+   * The return for each month is computed as the percentage change from the previous month.
+   *
+   * @param portfolioHistoricalValue a linked map of date strings to historical values of the portfolio
+   * @return a map where each key is a date string and each value is the return percentage for that month
+   */
   public Map<String, Double> calculatePortfolioReturns(
     Map<String, Double> portfolioHistoricalValue
   ) {
@@ -760,6 +872,14 @@ public class PortfolioService {
     return portfolioReturns;
   }
 
+  /**
+   * Calculates the covariance between two sets of returns. This is used in the
+   * calculation of portfolio beta.
+   *
+   * @param returns1 the first set of returns
+   * @param returns2 the second set of returns
+   * @return the covariance of the two sets of returns
+   */
   public double calculateCovariance(
     Map<String, Double> returns1,
     Map<String, Double> returns2
@@ -791,6 +911,13 @@ public class PortfolioService {
     return n > 1 ? covariance / (n - 1) : 0;
   }
 
+  /**
+   * Calculates the variance of a set of returns, which is a measure of dispersion
+   * around the mean return.
+   *
+   * @param returns a map of date strings to return percentages
+   * @return the variance of the given returns
+   */
   public double calculateVariance(Map<String, Double> returns) {
     double mean = returns
       .values()
@@ -809,6 +936,14 @@ public class PortfolioService {
     return n > 1 ? variance / (n - 1) : 0;
   }
 
+  /**
+   * Calculates the beta of a portfolio, which is a measure of the portfolio's volatility
+   * in relation to the market as represented by the SPY ETF.
+   *
+   * @param portfolioReturns a map of date strings to the portfolio's monthly returns
+   * @param spyReturns       a map of date strings to the SPY's monthly returns
+   * @return the beta of the portfolio
+   */
   public double calculatePortfolioBeta(
     Map<String, Double> portfolioReturns,
     Map<String, Double> spyReturns
@@ -819,6 +954,14 @@ public class PortfolioService {
     return variance != 0 ? covariance / variance : 0;
   }
 
+  /**
+   * Calculates the Information Ratio, which is a measure of risk-adjusted return
+   * of a portfolio in relation to a benchmark (in this case, the SPY ETF).
+   *
+   * @param portfolioReturns a map of date strings to the portfolio's monthly returns
+   * @param spyReturns       a map of date strings to the SPY's monthly returns
+   * @return the information ratio of the portfolio
+   */
   public double calculateInformationRatio(
     Map<String, Double> portfolioReturns,
     Map<String, Double> spyReturns
@@ -847,6 +990,25 @@ public class PortfolioService {
     return trackingError != 0 ? meanExcessReturn / trackingError : 0;
   }
 
+  /**
+   * Calculates the difference in financial statistics between two portfolios.
+   * 
+   * This method computes the differences between the current total portfolio value,
+   * portfolio beta, information ratio, quarterly returns, quarterly returns percentage,
+   * and annualized returns percentage of two given FinancialStatsDTO objects. It
+   * subtracts the values of portfolio2Stats from portfolio1Stats and stores the
+   * results in a new FinancialStatsDTO object, which is then returned. If any of
+   * the values are null or in an improper format, appropriate handling is done to
+   * return a default value or indicate the absence of data.
+   * 
+   * Note: This method uses private helper methods to handle null values and to clean
+   * percentage strings. It also includes logging statements to assist with
+   * debugging and validation of the data.
+   * 
+   * @param portfolio1Stats the financial statistics of the first portfolio.
+   * @param portfolio2Stats the financial statistics of the second portfolio.
+   * @return a FinancialStatsDTO object containing the differences between the two portfolios.
+   */
   public FinancialStatsDTO calculateDifference(
     FinancialStatsDTO portfolio1Stats,
     FinancialStatsDTO portfolio2Stats
@@ -965,6 +1127,14 @@ public class PortfolioService {
     return differenceStats;
   }
 
+  /**
+   * Subtracts the second double value from the first, handling nulls.
+   * If either value is null, the method returns 0.
+   *
+   * @param value1 The first double value, from which the second is to be subtracted.
+   * @param value2 The second double value, which is to be subtracted from the first.
+   * @return The result of the subtraction if neither value is null; otherwise, 0.
+   */
   private double subtractDoublesHandlingNull(Double value1, Double value2) {
     if (value1 == null || value2 == null) {
       return 0;
@@ -972,6 +1142,14 @@ public class PortfolioService {
     return value1 - value2;
   }
 
+  /**
+   * Safely formats a percentage string by removing any '%' characters and trimming whitespace.
+   * If the input is null, "N/A", or empty after trimming, it returns "N/A".
+   * It also logs the original and cleaned percentage strings to the console.
+   *
+   * @param percentage The string representing a percentage to be cleaned.
+   * @return A cleaned percentage string without the '%' character and whitespace, or "N/A" if the input is not applicable.
+   */
   private String safePercentage(String percentage) {
     if (
       percentage == null ||

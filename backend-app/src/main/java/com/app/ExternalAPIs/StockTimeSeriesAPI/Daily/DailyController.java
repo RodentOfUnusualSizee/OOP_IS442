@@ -18,6 +18,12 @@ import java.util.stream.Collectors;
 import io.github.cdimascio.dotenv.Dotenv;
 
 // Postman: http://localhost:8080/api/stock/dailyTimeSeries/{TickerSymbol}
+
+/**
+ * REST Controller for managing daily stock time series data.
+ * It provides endpoints for retrieving daily stock data, with additional
+ * filters for 30, 60, and 90 days of data.
+ */
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/stock/dailyTimeSeries")
@@ -30,6 +36,13 @@ public class DailyController {
 
     private Map<String, StockTimeSeriesDailyDTO> stockDataCache = new HashMap<>();
 
+    /**
+     * Retrieves the full daily time series for a given stock symbol.
+     * The result is cached to improve performance on subsequent requests.
+     *
+     * @param symbol the stock symbol to retrieve the data for
+     * @return a DTO containing the daily stock time series data
+     */
     @GetMapping("/{symbol}")
     public StockTimeSeriesDailyDTO getDailyTimeSeries(@PathVariable String symbol) {
         if (stockDataCache.containsKey(symbol)) {
@@ -55,21 +68,48 @@ public class DailyController {
         // return responseBody;
     }
 
+    /**
+     * Retrieves the daily time series data for the last 30 days for a given stock symbol.
+     *
+     * @param symbol the stock symbol to retrieve the data for
+     * @return a DTO containing the daily stock time series data for the last 30 days
+     */
     @GetMapping("/30/{symbol}")
     public StockTimeSeriesDailyDTO getDailyTimeSeriesFor30Days(@PathVariable String symbol) {
         return filterDataByDays(getDailyTimeSeries(symbol), 30);
     }
 
+    /**
+     * Retrieves the daily time series data for the last 60 days for a given stock symbol.
+     *
+     * @param symbol the stock symbol to retrieve the data for
+     * @return a DTO containing the daily stock time series data for the last 60 days
+     */
     @GetMapping("/60/{symbol}")
     public StockTimeSeriesDailyDTO getDailyTimeSeriesFor60Days(@PathVariable String symbol) {
         return filterDataByDays(getDailyTimeSeries(symbol), 60);
     }
 
+    /**
+     * Retrieves the daily time series data for the last 90 days for a given stock symbol.
+     *
+     * @param symbol the stock symbol to retrieve the data for
+     * @return a DTO containing the daily stock time series data for the last 90 days
+     */
     @GetMapping("/90/{symbol}")
     public StockTimeSeriesDailyDTO getDailyTimeSeriesFor90Days(@PathVariable String symbol) {
         return filterDataByDays(getDailyTimeSeries(symbol), 90);
     }
 
+    /**
+     * Filters the daily stock data to only include entries within the specified number of days.
+     * The time series data is filtered to include dates after the calculated start date based on
+     * the given number of days up to the current date. The filtered data is then sorted by date.
+     *
+     * @param fullData The complete stock time series data to be filtered.
+     * @param days The number of days from current date to include in the filtered data.
+     * @return A {@link StockTimeSeriesDailyDTO} containing only the filtered stock data points.
+     */
     private StockTimeSeriesDailyDTO filterDataByDays(StockTimeSeriesDailyDTO fullData, int days) {
         StockTimeSeriesDailyDTO filteredData = new StockTimeSeriesDailyDTO();
         filteredData.setMetaData(fullData.getMetaData());
@@ -91,6 +131,13 @@ public class DailyController {
         return filteredData;
     }
 
+    /**
+     * Converts the response body from the external API call into a {@link StockTimeSeriesDailyDTO}.
+     * This method parses both the meta data and time series data from the given response body map.
+     *
+     * @param responseBody The response body from the external API call, structured as a map.
+     * @return A {@link StockTimeSeriesDailyDTO} populated with the parsed data.
+     */
     private StockTimeSeriesDailyDTO mapResponseToDTO(Map<String, Object> responseBody) {
         StockTimeSeriesDailyDTO StockTimeSeriesDailyDTO = new StockTimeSeriesDailyDTO();
         MetaData metaData = new MetaData();
