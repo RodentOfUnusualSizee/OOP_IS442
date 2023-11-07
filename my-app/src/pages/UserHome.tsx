@@ -7,6 +7,7 @@ import { createPortfolio, getPortfolioByUserId, comparePortfolio, createNewUserE
 import { useAuth } from '../context/AuthContext';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import { PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/20/solid';
+import { showToastMessage, showToastMessageSuccess} from '../utils/transform';
 
 function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ')
@@ -124,16 +125,7 @@ function UserHome() {
         portfolioAPI.then((response) => {
             if (response["success"]) {
                 console.log(response);
-                toast.success('Successfully created Portfolio', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: false,
-                    progress: undefined,
-                    theme: "colored",
-                });
+                showToastMessageSuccess('Successfully created Portfolio');
 
                 const currentDateTime = new Date().toISOString().slice(0, 19);
 
@@ -146,28 +138,10 @@ function UserHome() {
 
                 fetchPortfolios();
             } else {
-                toast.error('Error creating portfolio', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: false,
-                    progress: undefined,
-                    theme: "colored",
-                });
+                showToastMessage('Error creating portfolio');
             }
         }).catch((error) => {
-            toast.error('Error creating portfolio', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-            });
+            showToastMessage('Error creating portfolio');
         });
         handleModalClose();
     }

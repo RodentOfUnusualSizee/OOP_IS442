@@ -183,6 +183,26 @@ export function formatPercentages(decimalPlaces: number, percentage: string) {
 
 export function showToastMessage(msg: string){
     toast.error(msg, {
-        position: toast.POSITION.TOP_RIGHT
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        progress: undefined,
+        theme: "colored",
+    });
+};
+
+export function showToastMessageSuccess(msg: string){
+    toast.success(msg, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        progress: undefined,
+        theme: "colored",
     });
 };
