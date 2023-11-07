@@ -14,7 +14,7 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
     return (
         <div>
             <div className="sm:flex sm:items-center">
-                <h1 className="text-base font-semibold leading-6 text-gray-900">
+                <h1 className="text-base font-semibold leading-6 text-gsgray90">
                     {tableTitle}
                 </h1>
                 <div className="sm:flex-auto">
@@ -24,8 +24,8 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
             <div className="flex flex-col mt-4">
                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                     <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                        <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                            <table className="min-w-full divide-y divide-gray-200">
+                        <div className="shadow overflow-hidden border-b border-gsgray20 sm:rounded-lg">
+                            <table className="min-w-full divide-y divide-gsgray20">
                                 <thead className="bg-gray-50">
                                     <tr>
                                         {tableHeaders.map((header) => (
@@ -35,7 +35,7 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
                                                 <th
                                                     key={header.key}
                                                     scope="col"
-                                                    className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider "
+                                                    className="px-6 py-3 text-center text-xs font-medium text-gsgray70 uppercase tracking-wider "
                                                 >
                                                     {header.header}
                                                 </th>
@@ -43,14 +43,14 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
                                         ))}
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-white divide-y divide-gsgray20">
                                     {tableData.map((row) => (
                                         <tr key={row.id}>
                                             {tableHeaders.map((header) => (
                                                 header.key === 'action' ? (
                                                     <td key={header.key}>
                                                         <Link to={tableLink + row.id}
-                                                            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gswhite bg-gsblue60 hover:bg-gsblue70 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gsblue50"
                                                         >
                                                             {tableAction}
                                                         </Link>
@@ -58,7 +58,7 @@ const Table = ({ tableData, tableHeaders, tableTitle, tableDescription, tableAct
                                                 ) : (
                                                     <td
                                                         key={header.key}
-                                                        className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                                                        className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gsgray90"
                                                     >
                                                         {row[header.key]}
                                                     </td>
