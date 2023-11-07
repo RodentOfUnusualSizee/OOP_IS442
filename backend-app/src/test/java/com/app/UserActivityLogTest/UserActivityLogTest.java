@@ -1,46 +1,105 @@
 package com.app.UserActivityLogTest;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.app.User.UserEvent;
 import com.app.UserActivityLog.UserActivityLog;
-
+import java.time.LocalDateTime;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 public class UserActivityLogTest {
 
-    private UserActivityLog UserActivityLog;
+  private UserActivityLog userActivityLog;
+  private final LocalDateTime testTime = LocalDateTime.now();
 
-    @BeforeEach
-    public void setUp() {
-        UserActivityLog = new UserActivityLog();
-    }
+  @BeforeEach
+  void setUp() {
+    userActivityLog = new UserActivityLog();
+  }
 
-    @Test
-    public void testAddNewEvent() {
-        LocalDateTime timestamp = LocalDateTime.now();
-        UserActivityLog.addNewEvent("login", timestamp,1);
-        UserActivityLog.addNewEvent("logout", timestamp.plusMinutes(5),1);
+  @Test
+  void addNewEvent_ShouldAddEventAndSetLastLogin_WhenEventIsLogin() {
+    String event = "login";
+    long userId = 1L;
 
-        assertEquals(2, UserActivityLog.getAllEvents().size());
-        assertEquals("login", UserActivityLog.getAllEvents().get(0).getEvent());
-        assertEquals("logout", UserActivityLog.getAllEvents().get(1).getEvent());
-        assertEquals(timestamp, UserActivityLog.getLastLogin());
-    }
+    UserEvent userEvent = userActivityLog.addNewEvent(event, testTime, userId);
 
-    @Test
-    public void testGetLastActivity() {
-        assertNull(UserActivityLog.getLastActivity());
+    // Assert the event is added to the list
+    assertEquals(1, userActivityLog.getAllEvents().size());
+    assertEquals(event, userEvent.getEvent());
+    assertEquals(testTime, userEvent.getTimestamp());
+    assertEquals(userId, userEvent.getUserId());
 
-        LocalDateTime timestamp = LocalDateTime.now();
-        UserActivityLog.addNewEvent("login", timestamp,1);
-        UserEvent lastEvent = UserActivityLog.getLastActivity();
+    // Assert last login is set
+    assertEquals(testTime, userActivityLog.getLastLogin());
+  }
 
-        assertNotNull(lastEvent);
-        assertEquals("login", lastEvent.getEvent());
-        assertEquals(timestamp, lastEvent.getTimestamp());
-    }
+  @Test
+  void addNewEvent_ShouldAddEventAndNotSetLastLogin_WhenEventIsNotLogin() {
+    String event = "logout";
+    long userId = 1L;
+
+    UserEvent userEvent = userActivityLog.addNewEvent(event, testTime, userId);
+
+    // Assert the event is added to the list
+    assertEquals(1, userActivityLog.getAllEvents().size());
+    assertEquals(event, userEvent.getEvent());
+    assertEquals(testTime, userEvent.getTimestamp());
+    assertEquals(userId, userEvent.getUserId());
+
+    // Assert last login is not set
+    assertNull(userActivityLog.getLastLogin());
+  }
+
+  @Test
+  void getAllEvents_ShouldReturnAllAddedEvents() {
+    userActivityLog.addNewEvent("login", testTime, 1L);
+    userActivityLog.addNewEvent("click", testTime.plusMinutes(5), 1L);
+
+    List<UserEvent> events = userActivityLog.getAllEvents();
+
+    // Assert we have all the events added
+    assertEquals(2, events.size());
+  }
+
+  @Test
+  void getLastLogin_ShouldReturnLastLoginTime_WhenLoginEventExists() {
+    userActivityLog.addNewEvent("login", testTime, 1L);
+
+    LocalDateTime lastLogin = userActivityLog.getLastLogin();
+
+    assertEquals(testTime, lastLogin);
+  }
+
+  @Test
+  void getLastLogin_ShouldReturnNull_WhenNoLoginEventExists() {
+    userActivityLog.addNewEvent("click", testTime, 1L);
+
+    LocalDateTime lastLogin = userActivityLog.getLastLogin();
+
+    assertNull(lastLogin);
+  }
+
+  @Test
+  void getLastActivity_ShouldReturnLastEventAdded() {
+    LocalDateTime firstEventTime = testTime;
+    LocalDateTime secondEventTime = testTime.plusMinutes(5);
+    userActivityLog.addNewEvent("login", firstEventTime, 1L);
+    userActivityLog.addNewEvent("click", secondEventTime, 1L);
+
+    UserEvent lastEvent = userActivityLog.getLastActivity();
+
+    assertNotNull(lastEvent);
+    assertEquals("click", lastEvent.getEvent());
+    assertEquals(secondEventTime, lastEvent.getTimestamp());
+  }
+
+  @Test
+  void getLastActivity_ShouldReturnNull_WhenNoEventsAdded() {
+    UserEvent lastEvent = userActivityLog.getLastActivity();
+
+    assertNull(lastEvent);
+  }
 }

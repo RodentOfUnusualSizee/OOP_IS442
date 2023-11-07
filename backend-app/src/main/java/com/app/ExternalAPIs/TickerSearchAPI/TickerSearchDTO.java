@@ -2,18 +2,32 @@ package com.app.ExternalAPIs.TickerSearchAPI;
 
 import java.util.List;
 
+/**
+ * Data Transfer Object to hold the search results for ticker symbols.
+ */
 public class TickerSearchDTO {
 
     private List<Match> bestMatches;
 
+    /**
+     * Gets the list of best match ticker symbols.
+     * @return A list of {@link Match} instances representing the best matches.
+     */
     public List<Match> getBestMatches() {
         return bestMatches;
     }
 
+    /**
+     * Sets the list of best match ticker symbols.
+     * @param bestMatches A list of {@link Match} instances representing the best matches.
+     */
     public void setBestMatches(List<Match> bestMatches) {
         this.bestMatches = bestMatches;
     }
 
+    /**
+     * Static inner class representing a single match of a ticker symbol search.
+     */
     public static class Match {
         private String symbol;
         private String name;
@@ -26,6 +40,10 @@ public class TickerSearchDTO {
         private String matchScore;
 
         // Getters
+        /**
+         * Gets the symbol of the match.
+         * @return The ticker symbol.
+         */
         public String getSymbol() {
             return symbol;
         }
@@ -55,6 +73,10 @@ public class TickerSearchDTO {
         }
 
         // Setters
+        /**
+         * Sets the symbol of the match.
+         * @param symbol The ticker symbol to set.
+         */
         public void setSymbol(String symbol) {
             this.symbol = symbol;
         }

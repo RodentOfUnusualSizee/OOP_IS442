@@ -21,6 +21,12 @@ import com.app.Portfolio.PortfolioComparisionDTOs.PortfolioComparisonDTO;
 
 import java.util.Optional;
 
+/**
+ * The PortfolioController class handles all incoming HTTP requests related to managing portfolios
+ * such as creating, updating, retrieving, and deleting portfolios, as well as managing positions within those portfolios.
+ * It acts as a part of the controller layer in the MVC architecture and is responsible for communication between
+ * the view and the model. The controller uses the services to interact with the database and perform operations.
+ */
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/portfolio")
@@ -38,7 +44,12 @@ public class PortfolioController {
     @Autowired
     private MonthlyService monthlyService;
 
-    // Endpoint to create a new portfolio
+    /**
+     * Creates a new portfolio based on the provided portfolio object.
+     *
+     * @param portfolio The portfolio object to be created.
+     * @return A ResponseEntity containing a WildcardResponse with the creation result.
+     */
     @PostMapping("/create")
     @ResponseBody
     public ResponseEntity<WildcardResponse> createPortfolio(@RequestBody Portfolio portfolio) {
@@ -51,19 +62,33 @@ public class PortfolioController {
         }
     }
 
-    // Endpoint to update an existing portfolio
+    /**
+     * Updates an existing portfolio with the given portfolio data.
+     *
+     * @param portfolio The portfolio object with updated information.
+     * @return The updated portfolio object.
+     */
     @PutMapping("/update")
     public Portfolio updatePortfolio(@RequestBody Portfolio portfolio) {
         return portfolioService.updatePortfolio(portfolio);
     }
 
-    // Endpoint to delete a portfolio
+    /**
+     * Deletes a portfolio by its ID.
+     *
+     * @param portfolioID The ID of the portfolio to delete.
+     */
     @DeleteMapping("/delete/{portfolioID}")
     public void deletePortfolio(@PathVariable int portfolioID) {
         portfolioService.deletePortfolio(portfolioID);
     }
 
-    // Endpoint to retrieve a portfolio
+    /**
+     * Retrieves a portfolio by its ID and converts it to a DTO before sending it in the response.
+     *
+     * @param portfolioID The ID of the portfolio to retrieve.
+     * @return A ResponseEntity containing a WildcardResponse with the portfolio DTO or an error message.
+     */
     @GetMapping("/get/{portfolioID}")
     public ResponseEntity<WildcardResponse> getPortfolio(@PathVariable int portfolioID) {
         try {
@@ -99,7 +124,13 @@ public class PortfolioController {
         }
     }
 
-    // Endpoint to compare portfolios
+    /**
+     * Compares two portfolios by their IDs and returns statistical comparisons in the response.
+     *
+     * @param portfolioID1 The ID of the first portfolio.
+     * @param portfolioID2 The ID of the second portfolio.
+     * @return A ResponseEntity containing a WildcardResponse with the comparison result.
+     */
     @GetMapping("/compare/{portfolioID1}/{portfolioID2}")
     public ResponseEntity<WildcardResponse> comparePortfolios(
             @PathVariable int portfolioID1,
@@ -131,7 +162,12 @@ public class PortfolioController {
         }
     }
 
-    // Endpoint to retrieve all portfolios of a user
+    /**
+     * Retrieves all portfolios associated with a given user ID.
+     *
+     * @param userID The ID of the user whose portfolios to retrieve.
+     * @return A ResponseEntity containing a WildcardResponse with the list of portfolios or an error message.
+     */
     @GetMapping("/getAllByUser/{userID}")
     @ResponseBody
     public ResponseEntity<WildcardResponse> getAllPortfoliosByUser(@PathVariable Long userID) {
@@ -165,8 +201,14 @@ public class PortfolioController {
         }
     }
 
-    /// POSIITION FUNCTIONS
-    // Retrieve a position from a portfolio
+    // POSIITION FUNCTIONS
+    /**
+     * Retrieves a specific position from a portfolio.
+     *
+     * @param portfolioID The ID of the portfolio.
+     * @param positionID  The ID of the position to retrieve.
+     * @return The requested Position object.
+     */
     @GetMapping("/{portfolioID}/position/get/{positionID}")
     public Position getPositionFromPortfolio(@PathVariable int portfolioID, @PathVariable int positionID) {
         // First, ensure the portfolio exists
@@ -178,6 +220,13 @@ public class PortfolioController {
                 .orElseThrow(() -> new RuntimeException("Position not found"));
     }
 
+    /**
+     * Creates a new position for a specified portfolio.
+     *
+     * @param portfolioID The ID of the portfolio where the position is to be created.
+     * @param newPosition The new position details to be added to the portfolio.
+     * @return A ResponseEntity containing a WildcardResponse with the result of the operation.
+     */
     @PostMapping("/{portfolioID}/position/create")
     public ResponseEntity<WildcardResponse> createPositionForPortfolio(@PathVariable int portfolioID,
             @RequestBody Position newPosition) {
@@ -235,6 +284,13 @@ public class PortfolioController {
         return ResponseEntity.ok(new WildcardResponse(true, "Success", updatedPortfolio));
     }
 
+    /**
+     * Updates a position within a specified portfolio.
+     *
+     * @param portfolioID   The ID of the portfolio containing the position.
+     * @param updatedPosition The updated details of the position.
+     * @return A ResponseEntity containing a WildcardResponse with the updated position or an error message.
+     */
     @PutMapping("/{portfolioID}/position/update")
     public ResponseEntity<WildcardResponse> updatePositionInPortfolio(@PathVariable int portfolioID,
             @RequestBody Position updatedPosition) {
@@ -305,7 +361,13 @@ public class PortfolioController {
         return ResponseEntity.ok(new WildcardResponse(true, "Position updated successfully", portfolio));
     }
 
-    // Delete a position from a portfolio
+    /**
+     * Deletes a position from a portfolio given their respective IDs.
+     *
+     * @param portfolioID The ID of the portfolio.
+     * @param positionID  The ID of the position to delete.
+     * @return The updated portfolio after deletion of the position.
+     */
     @DeleteMapping("/{portfolioID}/position/delete/{positionID}")
     public Portfolio deletePositionFromPortfolio(@PathVariable int portfolioID, @PathVariable int positionID) {
         Portfolio portfolio = portfolioService.getPortfolio(portfolioID)

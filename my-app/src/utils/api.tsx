@@ -140,15 +140,6 @@ export async function getUserById(userId: any) {
   }
 }
 
-export async function createNewUserEvent(userId: any, data: any) {
-  try {
-      const response = await axios.post(`${BASE_USER_URL}/${userId}/add-event`, data)
-      return response.data;
-  } catch (error) {
-      throw error;
-  }
-}
-
 export async function getStockPrice(stockCode: any) {
   try {
     // http://localhost:8080/api/stock/dailyTimeSeries/TSLA
@@ -237,5 +228,14 @@ export async function comparePortfolio(firstPortfolioId: any, secondPortfolioId:
     return response.data; 
   } catch (error) { 
     throw error;
+  }
+}
+
+export async function createNewUserEvent(userId: any, data: any) {
+  try {
+      const response = await axios.post(`${BASE_USER_URL}/${userId}/add-event`, data)
+      return response.data;
+  } catch (error) {
+      throw error;
   }
 }

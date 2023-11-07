@@ -15,6 +15,10 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 // Postman: http://localhost:8080/api/stock/companyOverview/{TickerSymbol}
+/**
+ * Controller for fetching company overview data from an external API.
+ * This controller provides endpoints to retrieve financial and corporate information about a company using its ticker symbol.
+ */
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/stock/companyOverview")
@@ -26,6 +30,13 @@ public class CompanyOverviewController {
 
     private Map<String, CompanyOverviewDTO> dataCache = new HashMap<>();
 
+    /**
+     * Endpoint to fetch the company overview information by its ticker symbol.
+     * If the information is already in cache, it returns the cached data; otherwise, it fetches from the external API.
+     *
+     * @param symbol The stock ticker symbol for which company overview data is requested.
+     * @return A {@link CompanyOverviewDTO} containing the company overview information.
+     */
     @PostMapping("/{symbol}")
     public CompanyOverviewDTO getCompanyOverview(@PathVariable String symbol) {
         if (dataCache.containsKey(symbol)) {
@@ -93,6 +104,12 @@ public class CompanyOverviewController {
         return companyOverviewDTO;
     }
 
+    /**
+     * Safely parses a date string into a {@link LocalDate} object. If the parsing fails, or the input is "None", null is returned.
+     *
+     * @param dateStr The date string to be parsed.
+     * @return A {@link LocalDate} object representing the parsed date or null if parsing is not possible.
+     */
     private LocalDate safelyParseDate(String dateStr) {
         if (dateStr != null && !dateStr.equals("None")) {
             try {

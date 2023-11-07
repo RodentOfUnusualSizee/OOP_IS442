@@ -6,6 +6,11 @@ import javax.persistence.*;
 
 import com.app.Stock.Stock;
 
+/**
+ * The StockDataPoint class represents a single data point for a stock's performance
+ * on a given date, including its opening, closing, high, and low prices, as well as
+ * the volume of shares traded.
+ */
 @Entity
 public class StockDataPoint {
     @Id
@@ -20,10 +25,23 @@ public class StockDataPoint {
     private double close;
     private long volume;
 
-    // Default
+    /**
+     * Default constructor for JPA.
+     */
     public StockDataPoint() {
     }
 
+    /**
+     * Constructs a new StockDataPoint with the specified date, opening price, high price, 
+     * low price, closing price, and volume of shares traded.
+     *
+     * @param date   The date of the stock data.
+     * @param open   The opening price of the stock.
+     * @param high   The highest price of the stock.
+     * @param low    The lowest price of the stock.
+     * @param close  The closing price of the stock.
+     * @param volume The volume of shares traded.
+     */
     public StockDataPoint(String date, double open, double high, double low, double close, int volume) {
         this.date = date;
         this.open = open;

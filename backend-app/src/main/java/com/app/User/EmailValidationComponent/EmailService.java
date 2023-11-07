@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 import com.app.User.User;
 import com.app.User.UserRepository;
 
+/**
+ * The EmailService class provides functionality for sending emails.
+ * It uses the JavaMailSender for sending out simple text emails.
+ */
 @Service
 public class EmailService {
 
@@ -19,6 +23,13 @@ public class EmailService {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * Sends an email with the specified content to the specified recipient.
+     * 
+     * @param toEmail The recipient's email address.
+     * @param subject The subject of the email.
+     * @param message The text content of the email body.
+     */
     public void sendEmail(String toEmail, String subject, String message) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setTo(toEmail);
@@ -28,6 +39,13 @@ public class EmailService {
         javaMailSender.send(mailMessage);
     }
 
+    /**
+     * Sends a validation email to a new user for email verification purposes.
+     * The email contains a link with a unique token for the user to verify their email.
+     * 
+     * @param user The user to whom the validation email will be sent.
+     * @return A string message indicating the result of the email sending operation.
+     */
     public String sendValidationEmail(User user) {
         String toEmail = user.getEmail();
         String token = Base64.getEncoder().encodeToString(toEmail.getBytes()); // which is base64 encoded userEmail
@@ -49,6 +67,13 @@ public class EmailService {
         }
     }
 
+    /**
+     * Validates a user's email based on the provided email address.
+     * This method assumes that the user's email token has been previously verified.
+     * 
+     * @param userEmail The email address of the user to validate.
+     * @return A Boolean indicating whether the user's email was successfully validated.
+     */
     public Boolean validateUserEmail(String userEmail) {
         try {
             User user = userRepository.findByEmail(userEmail);

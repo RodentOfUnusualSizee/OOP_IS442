@@ -2,56 +2,159 @@ package com.app.ExternalAPIs.CompanyOverviewAPI;
 
 import java.time.LocalDate;
 
+/**
+ * The {@code CompanyOverviewDTO} class is a data transfer object that encapsulates 
+ * various pieces of information about a company. It includes financial metrics, 
+ * descriptive information, and statistics commonly used in the finance and investment 
+ * industries.
+ * 
+ * <p>This class uses the builder pattern for constructing an instance and is meant 
+ * to be used in conjunction with financial data APIs to represent company overview data.</p>
+ */
 public class CompanyOverviewDTO {
+
+    /** The ticker symbol for the company. */
     private String symbol;
+
+    /** The type of asset (e.g., "Stock", "ETF"). */
     private String assetType;
+
+    /** The company's official name. */
     private String name;
+
+     /** A brief description of the company. */
     private String description;
+
+    /** The Central Index Key (CIK) used to identify the company on SEC filings. */
     private String cik;
+
+    /** The stock exchange on which the company's stock is traded. */
     private String exchange;
+
+    /** The currency in which the company's financials are reported. */
     private String currency;
+
+    /** The country where the company is headquartered. */
     private String country;
+
+    /** The sector in which the company operates. */
     private String sector;
+
+    /** The industry category to which the company belongs. */
     private String industry;
+
+    /** The physical address of the company's headquarters. */
     private String address;
+
+    /** The end of the fiscal year for the company. */
     private String fiscalYearEnd;
+
+    /** The date of the latest quarter's financial reporting. */
     private LocalDate latestQuarter;
+
+    /** The market capitalization of the company. */
     private long marketCapitalization;
+
+    /** Earnings before interest, taxes, depreciation, and amortization. */
     private long ebitda;
+
+    /** The price-to-earnings ratio. */
     private double peRatio;
+
+    /** The price/earnings-to-growth ratio. */
     private double pegRatio;
+
+    /** The book value per share. */
     private double bookValue;
+
+    /** The dividend paid per share. */
     private double dividendPerShare;
+
+    /** The dividend yield as a percentage. */
     private double dividendYield;
+
+    /** Earnings per share. */
     private double eps;
+
+     /** Revenue per share for the trailing twelve months (TTM). */
     private double revenuePerShareTTM;
+
+    /** The profit margin as a percentage. */
     private double profitMargin;
+
+    /** Operating margin for the trailing twelve months (TTM). */
     private double operatingMarginTTM;
+
+    /** Return on assets for the trailing twelve months (TTM). */
     private double returnOnAssetsTTM;
+
+    /** Return on equity for the trailing twelve months (TTM). */
     private double returnOnEquityTTM;
+
+    /** Revenue for the trailing twelve months (TTM). */
     private long revenueTTM;
+
+    /** Gross profit for the trailing twelve months (TTM). */
     private long grossProfitTTM;
+
+    /** Diluted earnings per share for the trailing twelve months (TTM). */
     private double dilutedEPSTTM;
+
+    /** Quarterly earnings growth year over year as a percentage. */
     private double quarterlyEarningsGrowthYOY;
+
+    /** Quarterly revenue growth year over year as a percentage. */
     private double quarterlyRevenueGrowthYOY;
+
+    /** The target price of the stock as forecasted by analysts. */
     private double analystTargetPrice;
+
+    /** The trailing price-to-earnings ratio. */
     private double trailingPE;
+
+    /** The forward price-to-earnings ratio. */
     private double forwardPE;
+
+    /** The price-to-sales ratio for the trailing twelve months (TTM). */
     private double priceToSalesRatioTTM;
+
+    /** The price-to-book ratio. */
     private double priceToBookRatio;
+
+     /** Enterprise value to revenue ratio. */
     private double evToRevenue;
+
+    /** Enterprise value to EBITDA ratio. */
     private double evToEBITDA;
+
+    /** The beta value, representing the volatility of the stock relative to the market. */
     private double beta;
+
+    /** The highest stock price in the last 52 weeks. */
     private double _52WeekHigh;
+
+    /** The lowest stock price in the last 52 weeks. */
     private double _52WeekLow;
+
+    /** The average stock price over the last 50 days. */
     private double _50DayMovingAverage;
+
+     /** The average stock price over the last 200 days. */
     private double _200DayMovingAverage;
+
+    /** The number of shares currently outstanding. */
     private long sharesOutstanding;
+
+    /** The date when the last dividend was paid. */
     private LocalDate dividendDate;
+
+    /** The date before which a shareholder must own shares to be eligible for the next dividend. */
     private LocalDate exDividendDate;
 
 
-    // Default constructor
+    /**
+     * Default constructor for creating an instance of CompanyOverviewDTO.
+     */
     public CompanyOverviewDTO() {
     }
 
@@ -106,6 +209,11 @@ public class CompanyOverviewDTO {
     }
     // Getters
 
+    /**
+     * Retrieves the ticker symbol for the company.
+     * 
+     * @return the ticker symbol
+     */
     public String getSymbol() {
         return symbol;
     }
@@ -292,6 +400,11 @@ public class CompanyOverviewDTO {
 
     // Setters
 
+    /**
+     * Sets the ticker symbol for the company.
+     *
+     * @param symbol the ticker symbol to set
+     */
     public void setSymbol(String symbol) {
         this.symbol = symbol;
     }

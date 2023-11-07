@@ -15,6 +15,11 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
+/**
+ * Rest controller for managing user-related operations.
+ * This controller provides REST API endpoints for CRUD operations on users,
+ * user authentication, password reset, and managing user activity logs.
+ */
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/user")
@@ -26,6 +31,12 @@ public class UserController {
     @Autowired
     private EmailService emailService;
 
+    /**
+     * Creates a new user in the system.
+     *
+     * @param user The User object to be created.
+     * @return ResponseEntity with WildcardResponse containing the user data and HTTP status.
+     */
     @PostMapping("/create")
     public ResponseEntity<WildcardResponse> createUser(@RequestBody User user) {
         WildcardResponse res = userService.save(user);
@@ -37,6 +48,14 @@ public class UserController {
         return ResponseEntity.status(500).body(res);
     }
 
+    /**
+     * Updates an existing user's information.
+     *
+     * @param id The ID of the user to update.
+     * @param user The updated User object.
+     * @return Updated User object.
+     * @throws EntityNotFoundException if the user with the specified ID does not exist.
+     */
     @PutMapping("/update/{id}")
     public User updateUser(@PathVariable Long id, @RequestBody User user) {
         // You might want to check if a user with the given ID exists before updating
@@ -48,6 +67,12 @@ public class UserController {
         return userService.update(user);
     }
 
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param id The ID of the user to retrieve.
+     * @return ResponseEntity with WildcardResponse containing the user data and HTTP status.
+     */
     @GetMapping("/get/{id}")
     public ResponseEntity<WildcardResponse> getUser(@PathVariable Long id) {
         WildcardResponse res = userService.getUser(id);
@@ -58,16 +83,32 @@ public class UserController {
 
     }
 
+    /**
+     * Retrieves a list of all users in the system.
+     *
+     * @return WildcardResponse containing the list of users.
+     */
     @GetMapping("/get/all")
     public WildcardResponse getAllUsers() {
         return userService.findAll();
     }
 
+    /**
+     * Deletes a user from the system.
+     *
+     * @param id The ID of the user to delete.
+     */
     @DeleteMapping("/delete/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
     }
 
+     /**
+     * Retrieves the activity log of a specific user.
+     *
+     * @param userId The ID of the user whose activity log is being requested.
+     * @return ResponseEntity with WildcardResponse containing the activity log and HTTP status.
+     */
     @GetMapping("/{userId}/activity-log")
     public ResponseEntity<WildcardResponse> getUserActivityLog(@PathVariable Long userId) {
         WildcardResponse activityLog = userService.getUserActivityLog(userId);
@@ -78,11 +119,23 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves all user events in the system.
+     *
+     * @return WildcardResponse containing all user events.
+     */
     @GetMapping("/all/events")
     public WildcardResponse getAllEvents() {
         return userService.findAllEvents();
     }
 
+    /**
+     * Adds an event to a specific user's activity log.
+     *
+     * @param userId The ID of the user to which the event will be added.
+     * @param userEvent The UserEvent to be added.
+     * @return ResponseEntity with WildcardResponse indicating success or failure.
+     */
     @PostMapping("/{userId}/add-event")
     public ResponseEntity<WildcardResponse> addEventForUser(
             @PathVariable Long userId,
@@ -95,6 +148,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Authenticates a user based on login credentials.
+     *
+     * @param loginRequest The login request containing the user's credentials.
+     * @return ResponseEntity with WildcardResponse containing user data on successful authentication, or error message on failure.
+     */
     @PostMapping("/login")
     @ResponseBody
     public ResponseEntity<WildcardResponse> loginUser(
@@ -108,6 +167,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Initiates the password reset process by generating a reset token.
+     *
+     * @param email The email address of the user who is resetting their password.
+     * @return ResponseEntity with WildcardResponse containing the reset token.
+     */
     @GetMapping("/resetPassword/getToken/{email}")
     @ResponseBody
     public ResponseEntity<WildcardResponse> resetPassword(
@@ -128,6 +193,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Validates the password reset token for a user.
+     *
+     * @param email The email address associated with the reset token.
+     * @param token The reset token to validate.
+     * @return ResponseEntity with WildcardResponse indicating token validation success or failure.
+     */
     @GetMapping("/resetPassword/checkToken")
     @ResponseBody
     public ResponseEntity<WildcardResponse> checkToken(
@@ -152,6 +224,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Updates the password for a user.
+     *
+     * @param email The email of the user whose password is to be updated.
+     * @param newPassword The new password for the user.
+     * @return ResponseEntity with the result of the operation.
+     */
     @PutMapping("/updatePassword")
     public ResponseEntity<?> updatePassword(@RequestParam String email, @RequestParam String newPassword) {
         try {

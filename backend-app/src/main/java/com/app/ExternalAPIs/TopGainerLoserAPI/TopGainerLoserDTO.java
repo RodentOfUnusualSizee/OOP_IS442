@@ -2,6 +2,9 @@ package com.app.ExternalAPIs.TopGainerLoserAPI;
 
 import java.util.List;
 
+/**
+ * Data Transfer Object (DTO) representing the details of top gainers, losers, and most actively traded stocks.
+ */
 public class TopGainerLoserDTO {
 
     private String metadata;
@@ -55,7 +58,9 @@ public class TopGainerLoserDTO {
         this.mostActivelyTraded = mostActivelyTraded;
     }
 
-    // Inner static class to capture the details of each stock
+    /**
+     * Inner static class that represents information about an individual stock.
+     */
     public static class StockInfo {
         private String ticker;
         private String price;
