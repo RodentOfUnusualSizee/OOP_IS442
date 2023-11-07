@@ -48,8 +48,8 @@ public class User {
      * Default constructor required by Hibernate. Initializes a new user with email verification status set to true.
      */
     public User() {
-        this.emailVerified = true;
-        // this.emailVerified = false;
+        // this.emailVerified = true;
+        this.emailVerified = false;
 
     }
 
