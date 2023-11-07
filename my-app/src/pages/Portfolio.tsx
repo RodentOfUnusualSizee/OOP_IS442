@@ -65,13 +65,13 @@ function Portfolio() {
         { header: 'Stock Sector', key: 'stockSector' },
         { header: 'Total Quantity', key: 'totalQuantity' },
         { header: 'Average Price', key: 'averagePrice' },
-        { header: 'Current Price', key: 'currentValue' },
+        { header: 'Current Value', key: 'currentValue' },
         { header: 'Action', key: 'action' }
     ];
 
-    const tableTitle = 'Stocks';
-    const tableDescription = 'List of stocks in portfolio and related data';
-    const tableAction = "View Portfolio Stock Record";
+    const tableTitle = 'List of Stock Positions in Portfolio';
+    const tableDescription = '';
+    const tableAction = "View Stock Record";
 
     const tableLink = '/StockRecord?id=' + portfolioId + '&stock=';
 
@@ -106,6 +106,7 @@ function Portfolio() {
     });
 
     const handleTabClick = (index: any) => {
+        document.getElementById("searchSymbol")!.classList.remove("hidden");
         setActiveTab(index);
         setSelectedTicker(tickers[index]);
         setStockCode(tickers[index].symbol);
@@ -346,6 +347,8 @@ function Portfolio() {
         setDate("");
         setQuantity("");
         setPrice("");
+        setSummaryStr("");
+        setTickers([]);
     }
 
     const handleButtons = (e: any) => {
@@ -411,39 +414,38 @@ function Portfolio() {
         handleModalClose();
     }
 
+    const [summaryStr, setSummaryStr] = useState<string>("");
     const summary = () => {
-        const summary = document.getElementById("summary") as HTMLSpanElement;
-        summary.innerHTML = side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
+        // construct the string
+        setSummaryStr(`${side} ${quantity} ${stockCode} @ ${price} USD on ${date}`);
     }
 
     // TODO isloading
-
     return (
         <div className='overflow-x-hidden'>
             <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
             <div>
-                <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
-                    <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                <div className="lg:flex lg:items-center lg:justify-between my-6 px-6 max-w-screen-2xl mx-auto">
+                    <h3 className="text-2xl font-bold leading-7 text-gsgray90 sm:truncate sm:text-3xl sm:tracking-tight">
                         {PortfolioData.name}
                     </h3>
                     <div className="min-w-0 flex-1">
                         <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6 mx-2">
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <BriefcaseIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                                {PortfolioData.strategy}
-                            </div>
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <CurrencyDollarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                            <div className="mt-2 flex items-center text-sm text-gsgray70">
+                                <CurrencyDollarIcon className="mr-1.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
                                 ${PortfolioData.value}
                             </div>
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <BanknotesIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                            <div className="mt-2 flex items-center text-sm text-gsgray70">
+                                <BanknotesIcon className="mr-1.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
                                 ${PortfolioData.capital}
                             </div>
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                            <div className="mt-2 flex items-center text-sm text-gsgray70">
+                                <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
                                 {todayString}
-
+                            </div>
+                            <div className="mt-2 flex items-center text-sm text-gsgray70">
+                                <BriefcaseIcon className="mr-1.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                                {PortfolioData.strategy}
                             </div>
                         </div>
                     </div>
@@ -451,25 +453,25 @@ function Portfolio() {
                         <span className="hidden sm:block">
                             <button
                                 type="button"
-                                className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                className="inline-flex items-center rounded-md bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                 onClick={handleAddClick}
                             >
-                                <PencilIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <PencilIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gsgray70" aria-hidden="true" />
                                 Add
                             </button>
                         </span>
                     </div>
                 </div>
-                <div className="my-2 px-6">
+                <div className="my-2 px-6 max-w-screen-2xl mx-auto">
                     <h3 className="text-base font-semibold leading-6 text-gray-900">Portfolio Stats</h3>
                     <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
                         {stats.map((item) => (
                             <div
                                 key={item.name}
-                                className={`overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 ${item.stat.includes('-') ? 'text-red-500' : item.stat.includes('+') ? 'text-green-500' : 'text-gray-900'
+                                className={`overflow-hidden rounded-lg bg-gswhite px-4 py-5 shadow sm:p-6 ${item.stat.includes('-') ? 'text-red-500' : item.stat.includes('+') ? 'text-green-500' : 'text-gray-900'
                                     }`}
                             >
-                                <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
+                                <dt className="truncate text-sm font-medium text-gsgray60">{item.name}</dt>
                                 <dd className="mt-1 text-3xl font-semibold tracking-tight">{item.stat}</dd>
                             </div>
                         ))}
@@ -477,7 +479,8 @@ function Portfolio() {
                 </div>
             </div>
 
-            <div className="my-6 px-6">
+            {/* Portfolio Performance Section */}
+            <div className="my-6 px-6 max-w-screen-2xl mx-auto" >
                 <h3 className='font-semibold'>Portfolio Performance</h3>
                 <div className="flex my-6">
                     <LineChartComponent data={linechartdata} width={600} height={300} ></LineChartComponent>
@@ -486,14 +489,14 @@ function Portfolio() {
                 <div className='my-2 px-6'>
                     <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
                         {performanceStats.map((item) => (
-                            <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-                                <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
+                            <div key={item.name} className="overflow-hidden rounded-lg bg-gswhite px-4 py-5 shadow sm:p-6">
+                                <dt className="truncate text-sm font-medium text-gsgray60">{item.name}</dt>
 
                                 <dd className={classNames(
-                                    item.stat.includes('-') ? 'text-red-600' : 'text-green-600', 'mt-1 text-3xl font-semibold tracking-tight text-gray-900')}>{item.stat}</dd>
+                                    item.stat.includes('-') ? 'text-gsred60' : 'text-gsgreen60', 'mt-1 text-3xl font-semibold tracking-tight text-gsgray90')}>{item.stat}</dd>
                                 <p
                                     className={classNames(
-                                        item.stat.includes('-') ? 'text-red-600' : 'text-green-600',
+                                        item.stat.includes('-') ? 'text-gsred60' : 'text-gsgreen60',
                                         'ml-2 flex items-baseline text-sm font-semibold'
                                     )}
                                 >
@@ -509,24 +512,26 @@ function Portfolio() {
                 </div>
             </div>
 
-            <div className="my-6 px-6">
-                <h3 className="text-base font-semibold leading-6 text-gray-900">Portfolio Benchmarks</h3>
+            {/* Portfolio Benchmark Section */}
+            <div className="my-6 px-6 max-w-screen-2xl mx-auto">
+                <h3 className="text-2xl font-semibold leading-6 text-gsgray90">Portfolio Benchmarks</h3>
                 <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
                     {benchmarks.map((item) => (
                         <div
                             key={item.name}
-                            className={`overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 ${parseInt(item.stat) > 0.5 ? 'text-green-600' : 'text-red-600'
+                            className={`overflow-hidden rounded-lg bg-gswhite px-4 py-5 shadow sm:p-6 ${parseInt(item.stat) > 0.5 ? 'text-gsgreen60' : 'text-gsred60'
                                 }`}
                         >
-                            <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
-                            <dt className="truncate text-xs font-small text-gray-500 py-2" style={{ maxWidth: '500px', overflow: 'visible', whiteSpace: 'normal' }}>{item.desc}</dt>
+                            <dt className="truncate text-sm font-medium text-gsgray70">{item.name}</dt>
+                            <dt className="truncate text-xs font-small mx-auto text-gsgray70 py-2" style={{ maxWidth: '500px', overflow: 'visible', whiteSpace: 'normal' }}>{item.desc}</dt>
                             <dd className="mt-1 text-3xl font-semibold tracking-tight">{item.stat}</dd>
                         </div>
                     ))}
                 </dl>
             </div>
 
-            <div className="my-6 px-6">
+            {/* List of Stock and Related Data */}
+            <div className="my-6 px-6 max-w-screen-2xl mx-auto max-w">
                 <Table
                     tableData={stockTableData}
                     tableHeaders={tableHeaders}
@@ -536,6 +541,7 @@ function Portfolio() {
                     tableLink={tableLink}
                 />
             </div>
+
             {showModal && (
                 <div className="fixed z-10 inset-0 overflow-y-auto">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -543,8 +549,8 @@ function Portfolio() {
                             <div onClick={handleModalClose} className="absolute inset-0 bg-gsgray20 opacity-75"></div>
                         </div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div className="inline-block align-bottom bg-gswhite rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-gswhite px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                 <div className="items-center">
                                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-center">
                                         <h3 className="font-semibold leading-6 text-gsgray90 text-3xl" id="modal-title">Add New Position</h3>
@@ -567,15 +573,15 @@ function Portfolio() {
                                                     required
                                                 >
                                                 </input>
-                                                <button onClick={(e) => handleSearch()} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Search</button>
+                                                <button onClick={(e) => handleSearch()} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsblue60 mx-2 px-3 py-2 text-sm font-semibold text-gswhite shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsblue70 sm:mt-0 sm:w-auto">Search</button>
                                             </div>
 
-                                            <div>
+                                            <div id="searchSymbol">
                                                 {tickers.map((ticker, index) => (
                                                     <button
                                                         key={ticker.symbol}
                                                         className={`my-1 px-4 py-2 mx-1 rounded-full ${activeTab === index
-                                                            ? 'bg-blue-500 text-white'
+                                                            ? 'bg-blue-500 text-gswhite'
                                                             : 'bg-gray-300 text-gray-700'
                                                             }`}
                                                         onClick={(e) => handleTabClick(index)}
@@ -605,19 +611,23 @@ function Portfolio() {
                                                 </input>
                                             </div>
 
-                                            <div className="mb-3 flex">
-                                                <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
-                                                    id="price"
-                                                    type="number"
-                                                    placeholder="Stock Price"
-                                                    required
-                                                    value={price}
-                                                    onChange={(e) => setPrice(e.target.value)}
-                                                    onKeyUp={summary}
-                                                    onMouseUp={summary}
-                                                >
-                                                </input>
-                                                <button onClick={(e) => handleMarketPrice()} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 mx-2 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Use Market Price</button>
+                                            <div className="mb-3 flex rounded-md shadow-sm">
+                                                <span className="inline-flex items-center rounded-l-md border border-gsgray20 px-3 text-gray-500 sm:text-sm">
+                                                USD
+                                                </span>
+                                                <input
+                                                className="appearance-none w-full flex-1 rounded-none rounded-r-md border border-gsgray20 py-2 px-3 text-gsgray90 sm:text-sm sm:leading-6"
+                                                id="price"
+                                                type="number"
+                                                placeholder="Stock Price"
+                                                required
+                                                value={price}
+                                                onChange={(e) => setPrice(e.target.value)}
+                                                onKeyUp={summary}
+                                                onMouseUp={summary}
+                                                step={0.01}
+                                                />
+                                                <button onClick={(e) => handleMarketPrice()} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsblue60 mx-2 px-3 py-3 text-sm font-semibold text-gswhite shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsblue70 sm:mt-0 sm:w-auto">Use Today's Market Price</button>
                                             </div>
 
                                             <div className="mb-3">
@@ -636,13 +646,13 @@ function Portfolio() {
                                         </form>
 
                                         <div className="mb-3">
-                                            <span id="summary"></span>
+                                            <span id="summary">{summaryStr}</span>
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                            <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
+                                            <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-gswhite shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
 
-                                            <button type="submit" onClick={(e) => handleButtons(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Position</button>
+                                            <button type="submit" onClick={(e) => handleButtons(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-gswhite shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Position</button>
                                         </div>
                                     </div>
                                 </div>
