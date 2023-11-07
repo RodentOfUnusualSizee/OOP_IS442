@@ -1,3 +1,5 @@
+import { ToastContainer, toast } from 'react-toastify';
+
 interface TickerSentiment {
     ticker: string;
     relevanceScore: number;
@@ -178,3 +180,9 @@ export function formatPercentages(decimalPlaces: number, percentage: string) {
 
     return roundedPercentage.toFixed(decimalPlaces) + "%";
 }
+
+export function showToastMessage(msg: string){
+    toast.error(msg, {
+        position: toast.POSITION.TOP_RIGHT
+    });
+};

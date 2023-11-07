@@ -42,12 +42,11 @@ export function AuthProvider(props: { children: React.ReactNode }) {
                 "email": email,
                 "password": password
             });
-            console.log("This");
-            console.log(response.data.data);
+            console.log(response.data);
             setAuthUser(response.data.data)
             setIsLoggedIn(true);
             localStorage.setItem('authToken', JSON.stringify(response.data.data));
-            return response.data.data.role;
+            return response.data;
         } catch (error) {
             console.error(error);
             throw error; // this will allow you to use .catch when calling login

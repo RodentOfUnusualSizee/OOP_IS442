@@ -7,6 +7,8 @@ import '../styles/home.css';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+import { Slide, toast, ToastContainer } from 'react-toastify';
+import {showToastMessage} from '../utils/transform';
 import { EyeIcon } from '@heroicons/react/20/solid';
 import { EyeSlashIcon } from '@heroicons/react/24/solid';
 
@@ -26,30 +28,28 @@ function Home() {
 
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
-    const [error, setError] = React.useState<string>("");
 
     const submitLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        // alert("Email: " + email + ", Password: " + password );
         try {
-            const userRole = (await login(email, password)) as unknown as string;
-            console.log("User Role:", userRole);
-            let role = userRole;
-            if (role === "user") {
-                navigate("/UserHome");
-            }
-            else {
-                navigate("/AdminHome");
-            }
-        } catch (error : unknown) {
-            if (error instanceof Error) {
-                console.error("An error occurred during login", error);
-                alert(error.cause);
-                setError(error.message);
+            const data = await login(email, password) as any;
+
+            if (data.message === "Success"){
+                const userRole = data["data"]["role"];
+
+                let role = userRole;
+                if (role === "user") {
+                    navigate("/UserHome");
+                }
+                else {
+                    navigate("/AdminHome");
+                }
             } else {
-                console.error("An error occurred during login", error);
-                setError("An error occurred during login");
+                showToastMessage("Account not verified");
             }
+
+        } catch (error : unknown) {
+            showToastMessage("Invalid Username or Password");
         }
     }
 
@@ -101,9 +101,6 @@ function Home() {
                                         (<EyeSlashIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)}/>)} 
                                     </div>
                                 </div>
-                                <div id="errorMessage" className="text-gsred60 text-sm font-medium w-full pb-4 px-2 place-items-center">
-                                    {error}
-                                </div>
                                 <div id="loginButtons">
                                     <button className="bg-gsblue60 hover:bg-gsblue70 text-gswhite font-medium w-28 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="Login">
                                         Login
@@ -141,6 +138,7 @@ function Home() {
                     </div>
                 }
             </div>
+            <ToastContainer transition={Slide} />
             <Footer></Footer>
         </div>
     )
