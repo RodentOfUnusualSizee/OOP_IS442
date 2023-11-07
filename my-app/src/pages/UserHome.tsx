@@ -87,6 +87,7 @@ function UserHome() {
     const [portfolioCapital, setPortfolioCapital] = React.useState<string>("");
     const [portfolioStrategy, setPortfolioStrategy] = React.useState<string>("");
 
+    // Modal Open and Close
     const handleAddClick = () => {
         setShowModal(true);
     }
@@ -99,6 +100,7 @@ function UserHome() {
         setPortfolioStrategy("");
     }
 
+    // Submit Form handler
     const handleSubmit = (e: any) => {
         e.preventDefault();
         let portfolio = {
@@ -176,7 +178,7 @@ function UserHome() {
             setPortfolioOneStats(portfolioOneStats);
             setPortfolioTwoStats(portfolioTwoStats);
             setPortfolioDifference(portfolioDifference);
-
+    
             setPortfolioCheck(true);
         }
     }
@@ -190,6 +192,7 @@ function UserHome() {
         ));
     };
 
+    // Line Divider Component
     const renderDivider = (dividerValue: string) => {
         return (
             <div className="px-4 py-5 sm:p-6">
@@ -236,6 +239,8 @@ function UserHome() {
                     <div className="mx-auto mt-8 max-w-2xl mb-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
                         <PortfolioCard portfolioList={portfolioData}></PortfolioCard>
                     </div>
+
+            {/* START OF COMPARISON */}
                     {
                         data.length >= 2 ? (
                             <div className="relative my-4 px-6 max-w-7xl mx-auto">
@@ -260,11 +265,11 @@ function UserHome() {
                         <div className="max-w-7xl mx-auto">
                             <div className="mx-auto max-w-2xl lg:text-center">
                                 <p className="mt-2 text-3xl font-bold tracking-tight text-gsgray90 sm:text-4xl">
-                                    Portfolio Comparisor
+                                    Portfolio Comparison
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gsgray70">
-                                    Compare two portfolios and see how they differ in terms of performance,
-                                    risk and returns. Learn more about your portfolios and make better decisions.
+                                    Compare two portfolios to see how they differ in terms of Performance,
+                                    Risk and Returns. Learn more about your portfolios and make better decisions.
                                 </p>
                             </div>
                             <div className='flex my-4 px-6'>
@@ -299,14 +304,18 @@ function UserHome() {
                                     </select>
                                 </div>
                             </div>
+
                             <div className='my-2 px-6'>
-                                <button onClick={handleComparison} className="col-start-3 col-span-2 bg-gsblue50 hover:bg-gsblue60 text-white font-bold py-2 px-4 rounded">Begin Comparison</button>
+                                <button onClick={handleComparison} className="col-start-3 col-span-2 bg-gsblue60 hover:bg-gsblue70 text-gswhite font-bold py-2 px-4 rounded">Compare Portfolios</button>
                                 {/* Error message */}
-                                <div id='summaryError' className="text-gsred60 text-md italic hidden">Please choose different portfolios</div>
+                                <div id='summaryError' className="text-gsred60 text-md italic hidden">Please choose 2 different Portfolios</div>
                             </div>
+
                             {portfolioCheck ? (
                                 <div className="pb-8">
                                     <div className='flex my-4 px-6'>
+
+
                                         {/* Card One */}
                                         <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
                                             <div className="px-4 py-5 sm:px-6">
@@ -314,7 +323,7 @@ function UserHome() {
                                             </div>
                                             <div className='my-2 mx-2'>
                                                 <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
-                                                <p className="text-gsgray90">{portfolioOneStats.currentTotalPortfolioValue}</p>
+                                                <p className="text-gsgray90">${portfolioOneStats.currentTotalPortfolioValue}</p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
@@ -478,6 +487,7 @@ function UserHome() {
                                             </div>
                                         </div>
 
+
                                         {/* Card Two */}
                                         <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
                                             <div className="px-4 py-5 sm:px-6">
@@ -485,7 +495,7 @@ function UserHome() {
                                             </div>
                                             <div className='my-2 mx-2'>
                                                 <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
-                                                <p className="text-gsgray90">{portfolioTwoStats.currentTotalPortfolioValue}</p>
+                                                <p className="text-gsgray90">${portfolioTwoStats.currentTotalPortfolioValue}</p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
