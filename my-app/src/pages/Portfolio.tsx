@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Loading from './Loading';
 import {
     BriefcaseIcon,
     CalendarIcon,
@@ -15,11 +14,11 @@ import {
 import LineChartComponent from '../components/LineChartComponent';
 import PieChartComponent from '../components/PieChartComponent';
 import Table from '../components/Table';
-import { createPortfolioPosition, getPortfolioByUserId, getTickerData, getStockPrice } from '../utils/api';
+import { createPortfolioPosition, getPortfolioByUserId, getTickerData, getStockPrice, createNewUserEvent } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from "react-router-dom";
 import { Slide, toast, ToastContainer } from 'react-toastify';
-import { roundTo, roundToString, formatPercentages, formatVolume } from '../utils/transform';
+import { roundTo, roundToString } from '../utils/transform';
 
 
 function classNames(...classes: String[]) {
@@ -116,6 +115,15 @@ function Portfolio() {
         const priceData = getStockPrice(selectedTicker.symbol);
         priceData.then((response) => {
             setPrice(response["timeSeries"][0]["close"]);
+
+            const currentDateTime = new Date().toISOString().slice(0, 19);
+
+            const event_data = {
+                "event": "GET_MARKET_PRICE " + selectedTicker.symbol,
+                "timestamp": currentDateTime,
+            }
+
+            createNewUserEvent(authUser.id, event_data);
         }).catch((error) => {
             console.log(error);
         });
@@ -127,6 +135,17 @@ function Portfolio() {
             setUserIsLoggedIn(true);
             setUserId(authUser.id);
             setUserRole(authUser.role);
+
+            const currentDateTime = new Date().toISOString().slice(0, 19);
+
+
+            const event_data = {
+                "event": "VIEW_PORTFOLIO " + portfolioId,
+                "timestamp": currentDateTime,
+            }
+
+            createNewUserEvent(authUser.id, event_data);
+
             if (!hasFetchedData) {
                 refreshData(portfolioId);
                 setHasFetchedData(true);
@@ -151,7 +170,17 @@ function Portfolio() {
     async function tickerData(stockCode: string) {
         try {
             const response = await getTickerData(stockCode);
-            console.log(response);
+
+
+            const currentDateTime = new Date().toISOString().slice(0, 19);
+
+            const event_data = {
+                "event": "SEARCH_TICKER " + stockCode,
+                "timestamp": currentDateTime,
+            }
+
+            createNewUserEvent(authUser.id, event_data);
+
             return response;
         } catch (error) {
             console.error(error);
@@ -163,7 +192,6 @@ function Portfolio() {
         try {
             const stockSymbol = (document.getElementById("stockSearch") as HTMLInputElement).value;
             const tickers = await tickerData(stockSymbol);
-            console.log(tickers);
             setTickers(
                 tickers['bestMatches'].map((ticker: any) => ({
                     symbol: ticker.symbol,
@@ -181,7 +209,7 @@ function Portfolio() {
     function organiseData(data: any) {
         const portfolio = data.find((portfolio: any) => portfolio.portfolioID.toString() === portfolioId);
 
-        setPortfolioData({ name: portfolio.portfolioName, strategy: portfolio.strategyDesc, value: roundToString(parseFloat(portfolio.currentTotalPortfolioValue),2), capital: roundToString(parseFloat(portfolio.capitalUSD),2) });
+        setPortfolioData({ name: portfolio.portfolioName, strategy: portfolio.strategyDesc, value: roundToString(parseFloat(portfolio.currentTotalPortfolioValue), 2), capital: roundToString(parseFloat(portfolio.capitalUSD), 2) });
 
         // table
         setStockTableData(portfolio.cumPositions.map((position: any) => ({
@@ -189,8 +217,8 @@ function Portfolio() {
             stockSymbol: position.stockSymbol,
             stockSector: position.stockSector,
             totalQuantity: position.totalQuantity,
-            averagePrice: "$" + roundToString(position.averagePrice,2),
-            currentValue: "$" + roundToString(position.currentValue,2),
+            averagePrice: "$" + roundToString(position.averagePrice, 2),
+            currentValue: "$" + roundToString(position.currentValue, 2),
         })));
 
         // parse through portfolio data
@@ -203,7 +231,7 @@ function Portfolio() {
 
         for (var k in allocation) {
             let val = roundTo(allocation[k], 4);
-            tempPieChartData.push({ "name": k, "value": roundTo(val,2) });
+            tempPieChartData.push({ "name": k, "value": roundTo(val, 2) });
         }
 
         setPiechartdata(tempPieChartData);
@@ -215,7 +243,7 @@ function Portfolio() {
 
 
         for (var h in historicalVal) {
-            tempLineChartData.push({ "date": h, "price": roundTo(historicalVal[h],2)})
+            tempLineChartData.push({ "date": h, "price": roundTo(historicalVal[h], 2) })
         }
 
         tempLineChartData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // sort by date
@@ -343,6 +371,17 @@ function Portfolio() {
                     theme: "colored",
                 });
                 console.log(response);
+
+
+                const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                const event_data = {
+                    "event": "ADD_POSITION " + stockCode + " TO PORTFOLIO " + portfolioId,
+                    "timestamp": currentDateTime,
+                }
+
+                createNewUserEvent(authUser.id, event_data);
+
                 refreshData(portfolioId);
             } else {
                 toast.error('Error adding position to portfolio, please try again later', {
@@ -497,7 +536,6 @@ function Portfolio() {
                     tableLink={tableLink}
                 />
             </div>
-
             {showModal && (
                 <div className="fixed z-10 inset-0 overflow-y-auto">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">

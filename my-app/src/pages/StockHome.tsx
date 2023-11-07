@@ -5,6 +5,7 @@ import Table from '../components/Table';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid'
 import { getStockStats } from '../utils/api';
 import { formatVolume, formatPercentages, roundTo, roundToString } from '../utils/transform';
+import { useAuth } from '../context/AuthContext';
 
 function StockHome() {
 
@@ -37,6 +38,14 @@ function StockHome() {
         topLosers: StockData[];
     }
 
+    const { authUser, isLoggedIn } = useAuth();
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
+
+    const [userIsLoggedIn, setUserIsLoggedIn] = useState<boolean>(true);
+    const [userId, setUserId] = useState<number>(1);
+    const [userRole, setUserRole] = useState<string>("user");
+    const management = userRole === "admin" || userRole === "user";
+
     const [tableData, setTableData] = useState<StockDataGroup>({
         mostActivelyTraded: [],
         topGainers: [],
@@ -67,22 +76,29 @@ function StockHome() {
 
 
     useEffect(() => {
+        if (authUser) {
+            console.log(authUser);
+            setUserId(authUser.id);
+            setUserRole(authUser.role);
+            setUserIsLoggedIn(true);
+        }
+
         const getStocks = async () => {
             const stocksFromServer = await getStockStats();
             const mostActiveStock = stocksFromServer['mostActivelyTraded'][0];
             const topGainerStock = stocksFromServer['topGainers'][0];
             const topLoserStock = stocksFromServer['topLosers'][0];
 
-            const mostActivelyTradedWithId = stocksFromServer['mostActivelyTraded'].map((stock : StockData, index : number) => ({
+            const mostActivelyTradedWithId = stocksFromServer['mostActivelyTraded'].map((stock: StockData, index: number) => ({
                 ...stock,
                 id: stock['ticker'],
-                price: "$"  + roundToString(parseFloat(stock['price']), 2),
+                price: "$" + roundToString(parseFloat(stock['price']), 2),
                 changeAmount: roundTo(stock['changeAmount'], 2),
                 changePercentage: formatPercentages(2, stock['changePercentage']),
                 volume: formatVolume(stock['volume']),
             }));
 
-            const topGainersWithId = stocksFromServer['topGainers'].map((stock : StockData, index : number) => ({
+            const topGainersWithId = stocksFromServer['topGainers'].map((stock: StockData, index: number) => ({
                 ...stock,
                 id: stock['ticker'],
                 price: "$" + roundToString(parseFloat(stock['price']), 2),
@@ -91,7 +107,7 @@ function StockHome() {
                 volume: formatVolume(stock['volume'])
             }));
 
-            const topLosersWithId = stocksFromServer['topLosers'].map((stock : StockData, index : number) => ({
+            const topLosersWithId = stocksFromServer['topLosers'].map((stock: StockData, index: number) => ({
                 ...stock,
                 id: stock['ticker'],
                 price: "$" + roundToString(parseFloat(stock['price']), 2),
@@ -130,22 +146,18 @@ function StockHome() {
                 }
             ])
 
-            
-
             setTableData({
                 mostActivelyTraded: mostActivelyTradedWithId,
                 topGainers: topGainersWithId,
                 topLosers: topLosersWithId,
             });
-
-            console.log(tableData)
         };
         getStocks()
-    }, [tableData])
+    },[authUser])
 
     return (
         <div className="overflow-x-hidden">
-            <Header management={true} userType={"user"} login={true} ></Header>
+            <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
             <div>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
                     <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">

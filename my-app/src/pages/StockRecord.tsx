@@ -66,11 +66,11 @@ function StockRecord() {
 
     useEffect(() => {
         if (authUser) {
-            console.log("auth loaded");
-
             setUserId(authUser.id);
             setUserRole(authUser.role);
             setUserIsLoggedIn(true);
+
+            
 
             const queryParams = new URLSearchParams(location.search);
             const stockCode = queryParams.get("stock");
