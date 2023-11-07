@@ -6,7 +6,7 @@ import StockLineChart from '../components/StockLineChart';
 import Loading from './Loading';
 import NewsFeed from '../components/NewsFeed';
 import NoStock from './NoStock';
-import { getStockOverview, getStockNews, getStockHistoricalValues, getPortfolioByUserId, createPortfolioPosition } from '../utils/api';
+import { getStockOverview, getStockNews, getStockHistoricalValues, getPortfolioByUserId, createPortfolioPosition, createNewUserEvent } from '../utils/api';
 import { getTickerFeed, getStockPriceStats } from '../utils/transform';
 import {
     MapPinIcon,
@@ -72,6 +72,15 @@ function Stock() {
                 if (stockPriceStats.length === 0) {
                     setStockPriceStats(getStockPriceStats(historicalValues.timeSeries));
                 }
+
+                const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                const event_data = {
+                    "event": "FETCH STOCK " + symbol + " PRICE FOR " + days + " DAYS",
+                    "timestamp": currentDateTime,
+                }
+
+                createNewUserEvent(authUser.id, event_data);
             } catch (error) {
                 console.error("Error fetching stock details:", error);
             }
@@ -95,6 +104,15 @@ function Stock() {
 
             const queryParams = new URLSearchParams(location.search);
             const symbol = queryParams.get('ticker');
+
+            const currentDateTime = new Date().toISOString().slice(0, 19);
+
+            const event_data = {
+                "event": "VIEW STOCK " + symbol,
+                "timestamp": currentDateTime,
+            }
+
+            createNewUserEvent(authUser.id, event_data);
 
             if (!symbol) {
                 console.error("Ticker not provided in the query parameter");
@@ -206,6 +224,27 @@ function Stock() {
                     progress: undefined,
                     theme: "colored",
                 });
+
+                if (side === "BUY") {
+                    const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                    const event_data = {
+                        "event": "ADDED LONG " + stockCode + " POSITION IN PORTFOLIO " + selectedPortfolio,
+                        "timestamp": currentDateTime
+                    }
+
+                    createNewUserEvent(authUser.id, event_data);
+                } else {
+                    const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                    const event_data = {
+                        "event": "ADDED SELLTOCLOSE " + stockCode + " POSITION IN PORTFOLIO " + selectedPortfolio,
+                        "timestamp": currentDateTime
+                    }
+
+                    createNewUserEvent(authUser.id, event_data);
+                }
+
             } else {
                 toast.error('Error adding ' + stockCode + ' to portfolio, please try again later', {
                     position: "top-right",
@@ -219,7 +258,7 @@ function Stock() {
                 });
             }
         }).catch((error) => {
-            toast.error('Error accessing portfolio selected, please try again later', {
+            toast.error('Error adding stock to portfolio, Not enough capital in portfolio', {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,

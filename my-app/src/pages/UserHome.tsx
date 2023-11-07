@@ -3,7 +3,7 @@ import Loading from './Loading';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
-import { createPortfolio, getPortfolioByUserId, comparePortfolio } from '../utils/api';
+import { createPortfolio, getPortfolioByUserId, comparePortfolio, createNewUserEvent } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import { PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/20/solid';
@@ -49,7 +49,6 @@ function UserHome() {
     const [userRole, setUserRole] = React.useState<string>("");
     const [userIsLoggedIn, setUserIsLoggedIn] = React.useState<boolean>(false);
     const management = userRole === "admin" || userRole === "user";
-    console.log(authUser);
 
     function fetchPortfolios(user: number = userId) {
         const portfolio = getPortfolioByUserId(user);
@@ -70,6 +69,15 @@ function UserHome() {
                 setHasFetchedData(true);
                 setIsLoading(false);
             }
+
+            const currentDateTime = new Date().toISOString().slice(0, 19);
+
+            const event_data = {
+                "event": "VIEW ALL PORTFOLIOS",
+                "timestamp": currentDateTime,
+            }
+
+            createNewUserEvent(authUser.id, event_data);
         } else {
             console.log("auth never loaded");
         }
@@ -126,6 +134,16 @@ function UserHome() {
                     progress: undefined,
                     theme: "colored",
                 });
+
+                const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                const event_data = {
+                    "event": "CREATE PORTFOLIO",
+                    "timestamp": currentDateTime,
+                }
+
+                createNewUserEvent(authUser.id, event_data);
+
                 fetchPortfolios();
             } else {
                 toast.error('Error creating portfolio', {
@@ -178,7 +196,16 @@ function UserHome() {
             setPortfolioOneStats(portfolioOneStats);
             setPortfolioTwoStats(portfolioTwoStats);
             setPortfolioDifference(portfolioDifference);
-    
+
+            const currentDateTime = new Date().toISOString().slice(0, 19);
+
+            const event_data = {
+                "event": "COMPARE PORTFOLIOS " + firstPortfolio + " | " + secondPortfolio,
+                "timestamp": currentDateTime,
+            }
+
+            createNewUserEvent(authUser.id, event_data);
+
             setPortfolioCheck(true);
         }
     }
@@ -219,7 +246,7 @@ function UserHome() {
         <div>
             <div className="UserHome">
                 <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
-                <div className='container mx-auto max-w-screen-xl h-screen rounded-l place-items-center'>
+                <div className='container mx-auto max-w-screen-xl rounded-l place-items-center'>
                     <div className="bg-white py-12 sm:py-12 my-2">
                         <div className="mx-auto max-w-7xl px-6 lg:px-8">
                             <div className="mx-auto max-w-2xl lg:text-center">
@@ -240,7 +267,7 @@ function UserHome() {
                         <PortfolioCard portfolioList={portfolioData}></PortfolioCard>
                     </div>
 
-            {/* START OF COMPARISON */}
+                    {/* START OF COMPARISON */}
                     {
                         data.length >= 2 ? (
                             <div className="relative my-4 px-6 max-w-7xl mx-auto">

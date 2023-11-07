@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from "../context/AuthContext";
 import Table from "../components/Table";
-import { getPortfolioByPortfolioId, getStockPrice, createPortfolioPosition } from "../utils/api";
+import { getPortfolioByPortfolioId, getStockPrice, createPortfolioPosition, createNewUserEvent } from "../utils/api";
 import { getStockRecordsByStockCode, formatTimestamp } from "../utils/transform";
 import { PencilIcon, EyeIcon } from '@heroicons/react/20/solid';
 import { toast, ToastContainer, Slide } from 'react-toastify';
@@ -38,12 +38,12 @@ function StockRecord() {
                 dateAdded: formatTimestamp(record.createdTimestamp),
                 position: record.position,
                 quantity: record.quantity,
-                price: "$" + roundToString(record.price,2),
-                totalCost: "$" + roundToString(record.price * record.quantity,2),
+                price: "$" + roundToString(record.price, 2),
+                totalCost: "$" + roundToString(record.price * record.quantity, 2),
                 currentValue:
                     record.position === "LONG"
-                        ? "$" + roundToString(currentValue * record.quantity,2)
-                        : "$" + roundToString(record.price * record.quantity,2),
+                        ? "$" + roundToString(currentValue * record.quantity, 2)
+                        : "$" + roundToString(record.price * record.quantity, 2),
             }));
 
             const cumPositions = response.data.cumPositions;
@@ -56,8 +56,8 @@ function StockRecord() {
 
             setStockStats([
                 { name: "Total Net Stock Quantity", stat: netStockQuantity },
-                { name: "Total Stock Cost", stat: '$' + roundToString(totalStockCost,2) },
-                { name: "Unrealized Profit/Loss", stat: '$' + roundToString(profitLoss,2) },
+                { name: "Total Stock Cost", stat: '$' + roundToString(totalStockCost, 2) },
+                { name: "Unrealized Profit/Loss", stat: '$' + roundToString(profitLoss, 2) },
             ]);
         } catch (error) {
             console.log(error);
@@ -70,11 +70,18 @@ function StockRecord() {
             setUserRole(authUser.role);
             setUserIsLoggedIn(true);
 
-            
-
             const queryParams = new URLSearchParams(location.search);
             const stockCode = queryParams.get("stock");
             const portfolioId = queryParams.get("id");
+
+            const currentDateTime = new Date().toISOString().slice(0, 19);
+
+            const event_data = {
+                "event": "VIEW_STOCK_RECORD " + stockCode + " IN PORTFOLIO " + portfolioId,
+                "timestamp": currentDateTime
+            }
+
+            createNewUserEvent(authUser.id, event_data);
 
             setStockCode(stockCode || "");
             setPortfolioId(portfolioId || "");
@@ -162,6 +169,27 @@ function StockRecord() {
                     progress: undefined,
                     theme: "colored",
                 });
+
+                if (side === "BUY") {
+                    const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                    const event_data = {
+                        "event": "ADDED LONG " + stockCode + "POSITION IN PORTFOLIO " + portfolioId,
+                        "timestamp": currentDateTime
+                    }
+
+                    createNewUserEvent(authUser.id, event_data);
+                } else {
+                    const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                    const event_data = {
+                        "event": "ADDED SELLTOCLOSE " + stockCode + "POSITION IN PORTFOLIO " + portfolioId,
+                        "timestamp": currentDateTime
+                    }
+
+                    createNewUserEvent(authUser.id, event_data);
+                }
+
                 getStockRecords(stockCode, portfolioId);
             } else {
                 toast.error('Failed to add ' + stockCode + 'record to portfolio', {
