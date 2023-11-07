@@ -160,7 +160,7 @@ public class UserController {
             @RequestBody LoginRequest loginRequest) {
         WildcardResponse result = userService.authenticateUser(loginRequest);
 
-        if (result.getData() != null) {
+        if (result.getSuccess() == true) {
             return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(result); // 401 Unauthorized

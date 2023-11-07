@@ -15,9 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 /**
  * Service class for managing user-related operations.
- * This class is responsible for the business logic associated with user entities.
+ * This class is responsible for the business logic associated with user
+ * entities.
  */
 @Service
 public class UserService {
@@ -30,7 +32,8 @@ public class UserService {
     private UserActivityLogRepository userActivityLogRepository;
     @Autowired
     private PortfolioRepository portfolioRepository;
-     /**
+
+    /**
      * Saves a new user to the repository.
      *
      * @param user the user to save.
@@ -44,6 +47,7 @@ public class UserService {
             return new WildcardResponse(false, e.getMessage(), convertUserObject(user));
         }
     }
+
     /**
      * Updates an existing user.
      *
@@ -68,7 +72,8 @@ public class UserService {
      * Fetches a user by their ID.
      *
      * @param id the ID of the user.
-     * @return WildcardResponse containing the user if found, or an error message if not.
+     * @return WildcardResponse containing the user if found, or an error message if
+     *         not.
      */
     public WildcardResponse getUser(Long id) {
         try {
@@ -112,7 +117,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-     /**
+    /**
      * Checks if a user exists by their ID.
      *
      * @param id the ID of the user.
@@ -126,7 +131,8 @@ public class UserService {
      * Finds a user by their ID.
      *
      * @param id the ID of the user.
-     * @return an Optional containing the user if found, or an empty Optional if not.
+     * @return an Optional containing the user if found, or an empty Optional if
+     *         not.
      */
     public Optional<User> findById(Long id) {
         Optional<User> user = userRepository.findById(id);
@@ -140,7 +146,8 @@ public class UserService {
      * Retrieves the activity log for a given user by their ID.
      *
      * @param userId the ID of the user.
-     * @return WildcardResponse containing the user's activity log or an error message.
+     * @return WildcardResponse containing the user's activity log or an error
+     *         message.
      */
     public WildcardResponse getUserActivityLog(Long userId) {
         try {
@@ -160,7 +167,7 @@ public class UserService {
     /**
      * Adds an event for a specific user.
      *
-     * @param userId is the ID of the user.
+     * @param userId    is the ID of the user.
      * @param userEvent is the event to add.
      * @return WildcardResponse indicating the result of the operation.
      */
@@ -178,7 +185,7 @@ public class UserService {
                 userActivityLog = new UserActivityLog();
             }
 
-            UserEvent event = userActivityLog.addNewEvent( userEvent.getEvent(),
+            UserEvent event = userActivityLog.addNewEvent(userEvent.getEvent(),
                     userEvent.getTimestamp(), user.getId());
             userActivityLogRepository.save(userActivityLog);
             user.setUserActivityLog(userActivityLog);
@@ -240,7 +247,7 @@ public class UserService {
 
             }
             if (user.isEmailVerified() == false) {
-                return new WildcardResponse(false, "Account is not yet verified.", null);
+                return new WildcardResponse(true, "Account is not yet verified.", null);
             } else {
                 if (user != null) {
                     String password = user.getPassword();
