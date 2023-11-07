@@ -160,20 +160,20 @@ function StockHome() {
             <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
             <div>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
-                    <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                    <h3 className="mx-auto text-2xl font-bold leading-7 text-gsgray90 sm:truncate sm:text-3xl sm:tracking-tight">
                         All Stocks
                     </h3>
                 </div>
-                <div className="my-2 px-6">
-                    <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-3 md:divide-x md:divide-y-0">
+                <div className="my-2 px-6 max-w-7xl mx-auto">
+                    <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-gswhite shadow md:grid-cols-3 md:divide-x md:divide-y-0">
                         {statsDetails.map((item) => (
                             <div key={item.name} className="px-4 py-5 sm:p-6">
-                                <dt className="text-base font-normal text-gray-900">{item.name}</dt>
+                                <dt className="text-base font-normal text-gsgray90">{item.name}</dt>
                                 <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                    <div className="flex items-baseline text-2xl font-semibold text-gray-900">
+                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                         {item.ticker}
                                     </div>
-                                    <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
+                                    <div className="flex items-baseline text-2xl font-semibold text-gsgray90">
                                         ${item.state}
                                     </div>
                                     <div
@@ -203,11 +203,11 @@ function StockHome() {
                     </dl>
                 </div>
             </div >
-            <span className="isolate inline-flex rounded-md shadow-sm my-4 py-4">
+            <span className="isolate inline-flex rounded-md shadow-sm my-8">
                 <button
                     type="button"
                     onClick={() => setSelectedTable('mostActivelyTraded')}
-                    className={`relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${selectedTable === 'mostActivelyTraded' ? 'bg-indigo-500 text-indigo' : ''
+                    className={`relative inline-flex items-center rounded-l-md bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 ring-1 ring-inset ring-gsgray30 hover:bg-gsgray20 focus:z-10 ${selectedTable === 'mostActivelyTraded' ? '' : ''
                         }`}
                 >
                     Most Actively Traded Stocks
@@ -215,7 +215,7 @@ function StockHome() {
                 <button
                     type="button"
                     onClick={() => setSelectedTable('topGainers')}
-                    className={`relative -ml-px inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${selectedTable === 'topGainers' ? 'bg-indigo-500 text-indigo' : ''
+                    className={`relative -ml-px inline-flex items-center bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 ring-1 ring-inset ring-gsgray30 hover:bg-gsgray20 focus:z-10 ${selectedTable === 'topGainers' ? 'bg-gsgray90' : ''
                         }`}
                 >
                     Top Gainer Stocks
@@ -223,13 +223,13 @@ function StockHome() {
                 <button
                     type="button"
                     onClick={() => setSelectedTable('topLosers')}
-                    className={`relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 ${selectedTable === 'topLosers' ? 'bg-indigo-500 text-indigo' : ''
+                    className={`relative -ml-px inline-flex items-center rounded-r-md bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 ring-1 ring-inset ring-gsgray30 hover:bg-gsgray20 focus:z-10 ${selectedTable === 'topLosers' ? 'bg-gsgray90' : ''
                         }`}
                 >
                     Top Loser Stocks
                 </button>
             </span>
-            <div className='px-6 my-4'>
+            <div className='px-6 mt-2 mb-12 max-w-7xl mx-auto'>
                 <Table
                     tableTitle={tableTitle[selectedTable as keyof typeof tableTitle]}
                     tableData={tableData[selectedTable as keyof typeof tableData]}
