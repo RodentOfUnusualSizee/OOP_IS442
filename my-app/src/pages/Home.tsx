@@ -8,9 +8,11 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 import { Slide, toast, ToastContainer } from 'react-toastify';
-import {showToastMessage} from '../utils/transform';
+import { showToastMessage } from '../utils/transform';
 import { EyeIcon } from '@heroicons/react/20/solid';
 import { EyeSlashIcon } from '@heroicons/react/24/solid';
+import { createNewUserEvent } from '../utils/api';
+
 
 function Home() {
 
@@ -34,10 +36,21 @@ function Home() {
         try {
             const data = await login(email, password) as any;
 
-            if (data.message === "Success"){
+            if (data.message === "Login Successful") {
                 const userRole = data["data"]["role"];
 
                 let role = userRole;
+
+                const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                const event_data = {
+                    "event": "LOGIN",
+                    "timestamp": currentDateTime,
+                }
+
+                await createNewUserEvent(data["data"]["id"], event_data)
+
+
                 if (role === "user") {
                     navigate("/UserHome");
                 }
@@ -48,7 +61,7 @@ function Home() {
                 showToastMessage("Account not verified");
             }
 
-        } catch (error : unknown) {
+        } catch (error: unknown) {
             showToastMessage("Invalid Username or Password");
         }
     }
@@ -63,7 +76,7 @@ function Home() {
                 {loginClicked ? (
                     <CSSTransition
                         in={loginClicked}
-                        timeout={300}   
+                        timeout={300}
                         classNames="fade"
                         unmountOnExit
                         onExit={() => setLoginClicked(false)}
@@ -88,7 +101,7 @@ function Home() {
                                 <div className="relative mt-2 rounded-md shadow-sm">
                                     <input className="sappearance-none block w-full bg-gswhite text-gsgrey70 border border-gsgray40 rounded py-3 px-4 mb-3 leading-tight focus:bg-white focus:border-gsgray-70"
                                         id="password"
-                                        type= {showPassword ? "text" : "password"}
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="Password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
@@ -97,8 +110,8 @@ function Home() {
 
                                     <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                         {showPassword ?
-                                        (<EyeIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)}/>):
-                                        (<EyeSlashIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)}/>)} 
+                                            (<EyeIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />) :
+                                            (<EyeSlashIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />)}
                                     </div>
                                 </div>
                                 <div id="loginButtons">
