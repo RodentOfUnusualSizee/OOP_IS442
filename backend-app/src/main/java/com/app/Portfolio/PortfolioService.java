@@ -446,8 +446,8 @@ public class PortfolioService {
         String yoy = "N/A";
         String mom = "N/A";
 
-        System.out.println("cumPositions");
-        System.out.println(cumPositions);
+        // System.out.println("cumPositions");
+        // System.out.println(cumPositions);
 
         if (!cumPositions.isEmpty()) {
             // 14 Calculate YoY
@@ -459,7 +459,7 @@ public class PortfolioService {
                 yoy = String.format("%.2f%%", ((currentTotalPortfolioValue - valueOneYearAgo)
                         / valueOneYearAgo) * 100);
             }
-            System.out.println("YoY Caluculated");
+            // System.out.println("YoY Caluculated");
             // 15 Calculate QoQ
             Map<String, String> quarterlyDateRanges = (Map<String, String>) returns.get("quarterlyDateRanges");
             LocalDate currentDate = LocalDate.now();
@@ -491,7 +491,7 @@ public class PortfolioService {
                 qoq = String.format("%.2f%%", qoqValue);
 
             }
-            System.out.println("QoQ Caluculated");
+            // System.out.println("QoQ Caluculated");
 
             // 16 Calculate MoM
             LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
@@ -503,7 +503,7 @@ public class PortfolioService {
                         ((currentTotalPortfolioValue - valueOneMonthAgo) / valueOneMonthAgo) * 100);
             }
 
-            System.out.println("MoM Caluculated");
+            // System.out.println("MoM Caluculated");
         }
 
         // 17. Compute YoY,QoQ,MoM
@@ -675,18 +675,17 @@ public class PortfolioService {
             String cleanedValue1 = safePercentage(value1);
             String cleanedValue2 = safePercentage(
                     portfolio2Stats.getQuarterlyReturnsPercentage().getOrDefault(quarter, "N/A"));
-            System.out.println("Quarter: " + quarter + ", Cleaned Value1: " + cleanedValue1 + ", Cleaned Value2: "
-                    + cleanedValue2); // Log cleaned values
+            // System.out.println("Quarter: " + quarter + ", Cleaned Value1: " + cleanedValue1 + ", Cleaned Value2: "
+                    // + cleanedValue2); 
             if ("N/A".equals(cleanedValue1) || "N/A".equals(cleanedValue2)) {
                 quarterlyReturnsPercentageDifference.put(quarter, "N/A");
             } else {
                 try {
                     double difference = Double.parseDouble(cleanedValue1) - Double.parseDouble(cleanedValue2);
                     quarterlyReturnsPercentageDifference.put(quarter, String.format("%.2f%%", difference));
-                    System.out.println("Calculated difference for " + quarter + ": " + difference); // Log calculated
-                                                                                                    // difference
+                    // System.out.println("Calculated difference for " + quarter + ": " + difference); 
                 } catch (NumberFormatException e) {
-                    System.out.println("Number format exception for quarter: " + quarter); // Log the exception
+                    // System.out.println("Number format exception for quarter: " + quarter); 
                     quarterlyReturnsPercentageDifference.put(quarter, "N/A");
                 }
             }
@@ -708,10 +707,10 @@ public class PortfolioService {
             return "N/A";
         } else {
             // Log the original string
-            System.out.println("Original percentage string: '" + percentage + "'");
+            // System.out.println("Original percentage string: '" + percentage + "'");
             String cleanedPercentage = percentage.replace("%", "").trim();
             // Log the cleaned string
-            System.out.println("Cleaned percentage string: '" + cleanedPercentage + "'");
+            // System.out.println("Cleaned percentage string: '" + cleanedPercentage + "'");
             return cleanedPercentage;
         }
     }
