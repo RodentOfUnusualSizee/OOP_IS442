@@ -50,14 +50,19 @@ function StockRecord() {
             const filteredCumPositions = getStockRecordsByStockCode(cumPositions, stockCode);
             const netStockQuantity = filteredCumPositions[0].totalQuantity;
             const totalStockCost = filteredCumPositions[0].totalQuantity * filteredCumPositions[0].averagePrice;
-            const profitLoss = filteredCumPositions[0].currentValue * netStockQuantity - totalStockCost;
+            const profitLoss = filteredCumPositions[0].currentValue - totalStockCost;
 
             setStockRecords(stockRecords);
 
             setStockStats([
                 { name: "Total Net Stock Quantity", stat: netStockQuantity },
+
                 { name: "Total Stock Cost", stat: '$' + roundToString(totalStockCost, 2) },
-                { name: "Unrealized Profit/Loss", stat: '$' + roundToString(profitLoss, 2) },
+
+                { name: "Unrealized Profit/Loss", stat: profitLoss > 0
+                    ? '$' + roundToString(profitLoss, 2)
+                    : '-$' + roundToString(Math.abs(profitLoss), 2)
+                },
             ]);
         } catch (error) {
             console.log(error);
@@ -132,6 +137,7 @@ function StockRecord() {
         setDate("");
         setQuantity("");
         setPrice("");
+        setSummaryStr("");
     }
 
     // form inputs
@@ -219,9 +225,10 @@ function StockRecord() {
         handleModalClose();
     }
 
+    const [summaryStr, setSummaryStr] = React.useState<string>("");
     const summary = () => {
-        const summary = document.getElementById("summary") as HTMLSpanElement;
-        summary.innerHTML = side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
+        // construct the string
+        setSummaryStr(`${side} ${quantity} ${stockCode} @ ${price} USD on ${date}`);
     }
 
 
@@ -230,17 +237,17 @@ function StockRecord() {
             <Header management={management} userType={userRole} login={userIsLoggedIn} />
             <div className='my-2 px-6 container mx-auto max-w-screen-xl h-screen rounded-l place-items-center'>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
-                    <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                    <h3 className="text-2xl font-bold leading-7 text-gsgray90 sm:truncate sm:text-3xl sm:tracking-tight">
                         {stockCode + " Records"}
                     </h3>
                     <div className="mt-5 flex lg:ml-4 lg:mt-0">
                         <span className="hidden sm:block">
                             <button
                                 type="button"
-                                className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                className="inline-flex items-center rounded-md bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                 onClick={handleAddClick}
                             >
-                                <PencilIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <PencilIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gsgray70" aria-hidden="true" />
                                 Add New Position
                             </button>
                         </span>
@@ -248,9 +255,9 @@ function StockRecord() {
                             <Link to={'/Stock?ticker=' + stockCode}>
                                 <button
                                     type="button"
-                                    className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                    className="inline-flex items-center rounded-md bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                 >
-                                    <EyeIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                    <EyeIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gsgray70" aria-hidden="true" />
                                     View Stock Performance
                                 </button>
                             </Link>
@@ -260,18 +267,22 @@ function StockRecord() {
                 <div className='my-2 px-6'>
                     <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
                         {stockStats.map((item) => (
-                            <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-                                <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
-
-                                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{item.stat}</dd>
-                                <p className="ml-2 flex items-baseline text-sm font-semibold"></p>
+                            <div key={item.name} className="overflow-hidden rounded-lg bg-gswhite px-4 py-5 shadow sm:p-6">
+                                <dt className="truncate text-sm font-medium text-gsgray70">{item.name}</dt>
+                                <dd className="mt-1 text-3xl font-semibold tracking-tight text-gsgray90">{item.stat}</dd>
                             </div>
                         ))}
                     </dl>
                 </div>
                 <div className='my-2 px-6'>
-                    <Table tableTitle={tableTitle} tableData={stockRecords} tableDescription={tableDescription} tableHeaders={tableHeaders} tableAction={tableAction} tableLink={tableLink}></Table>
-                    <Link to={"/portfolio?id=" + portfolioId} className="inline-block rounded border border-indigo-600 my-4 px-12 py-3 text-sm font-medium text-indigo-600 hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring active:bg-indigo-500">
+                    <Table 
+                    tableTitle={tableTitle} 
+                    tableData={stockRecords} 
+                    tableDescription={tableDescription} 
+                    tableHeaders={tableHeaders} 
+                    tableAction={tableAction} 
+                    tableLink={tableLink}></Table>
+                    <Link to={"/portfolio?id=" + portfolioId} className="inline-block rounded border border-gsblue60 my-4 px-12 py-3 text-sm font-medium text-gsblue60 hover:bg-gsblue60 hover:text-white focus:outline-none focus:ring active:bg-gsblue60">
                         Back to Portfolio
                     </Link>
                 </div>
@@ -284,8 +295,8 @@ function StockRecord() {
                             <div onClick={handleModalClose} className="absolute inset-0 bg-gsgray20 opacity-75"></div>
                         </div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div className="inline-block align-bottom bg-gswhite rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-gswhite px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                 <div className="items-center">
                                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-center">
                                         <h3 className="font-semibold leading-6 text-gsgray90 text-3xl" id="modal-title">Add New Position</h3>
@@ -308,7 +319,6 @@ function StockRecord() {
                                                 </div>
                                                 <input type="hidden" name="stockCode" value={stockCode} />
                                             </div>
-                                            {/* These should be autofilled in the future, hardcoded for now */}
                                             <div className="mb-3">
                                                 <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
                                                     id="quantity"
@@ -333,6 +343,7 @@ function StockRecord() {
                                                     onChange={(e) => setPrice(e.target.value)}
                                                     onKeyUp={summary}
                                                     onMouseUp={summary}
+                                                    step={0.01}
                                                 >
                                                 </input>
                                             </div>
@@ -353,7 +364,7 @@ function StockRecord() {
                                         </form>
 
                                         <div className="mb-3">
-                                            <span id="summary">-</span>
+                                            <span id="summary">{summaryStr}</span>
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

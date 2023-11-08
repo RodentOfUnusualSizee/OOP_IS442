@@ -26,7 +26,7 @@ function PortfolioModal<T>({ data }: ModalProps<T>) {
     const handleButtons = () => {
         const form = document.getElementById("my-form") as HTMLFormElement;
         form.submit();
-        alert("Side: " + side + ", Stock Code: " + stockCode + ", Date: " + date + ", Quantity: " + quantity + ", Price: " + price);
+        // alert("Side: " + side + ", Stock Code: " + stockCode + ", Date: " + date + ", Quantity: " + quantity + ", Price: " + price);
     }
 
     return (

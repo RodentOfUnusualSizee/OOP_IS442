@@ -1,17 +1,18 @@
 import React, { useRef } from 'react';
-import emailjs from '@emailjs/browser';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useSearchParams } from "react-router-dom";
+import { Slide, ToastContainer } from 'react-toastify';
 import { getResetPasswordToken,  sendResetPasswordEmail, checkResetPasswordToken, resetPassword} from '../utils/api';
+import { showToastMessage, showToastMessageSuccess } from '../utils/transform';
+
+import { EyeIcon } from '@heroicons/react/20/solid';
+import { EyeSlashIcon } from '@heroicons/react/24/solid';
 
 function ResetPassword() {
 
     // user input
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
-    const [msg, setMsg] = React.useState<string>("");
-    const [errorMsg, setErrorMsg] = React.useState<string>("");
 
 
     // token
@@ -26,10 +27,10 @@ function ResetPassword() {
         try {
             const response1 = await getResetPasswordToken(email);
             const response2 = await sendResetPasswordEmail(email, response1.data.token);
-            setMsg(response2);
+            showToastMessageSuccess(response2)
 
         } catch (error) {
-            setErrorMsg("Email does not exist.")
+            showToastMessage("Email does not exist")
             console.log(error);
         }
     };
@@ -65,13 +66,13 @@ function ResetPassword() {
             
             passwordReset.then((response) => {
                 console.log(response);
-                setMsg(response);
+                showToastMessageSuccess(response);
                 
             }).catch((error) => {
                 console.log(error);
             });
         } else {
-            setErrorMsg("Your password is invalid. Please try again.")
+            showToastMessage("Your password is invalid. Please try again.")
         }
     };
 
@@ -108,6 +109,7 @@ function ResetPassword() {
         }
     }
 
+    const [showPassword, setShowPassword] = React.useState<boolean>(false);
 
     return (
     <div>
@@ -120,26 +122,21 @@ function ResetPassword() {
                         Reset Password
                     </p>
                     <form className="bg-white shadow-md rounded p-8 m-10" ref={form} onSubmit={sendEmail}>
-                        <div className="mb-4">
+                        <div className="relative mt-2 rounded-md shadow-sm">
                             <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
                                 id="email"
-                                type="text"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                onKeyUp={() => {
-                                    setErrorMsg("");
-                                    setMsg("");
-                                }}
                                 required
                             >
                             </input>
-                        </div>
-                        <div id="" className="text-gsgreen60 text-sm font-light w-30 pb-2 px-2">
-                            {msg}
-                        </div>
-                        <div id="" className="text-gsred60 text-sm font-light w-30 pb-2 px-2">
-                            {errorMsg}
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                {showPassword ?
+                                    (<EyeIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />) :
+                                    (<EyeSlashIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />)}
+                            </div>
                         </div>
                         <div id="loginButtons">
                             <input className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded mx-2" type="submit" value="Reset Password" />
@@ -161,34 +158,31 @@ function ResetPassword() {
                             >
                             </input>
                         </div>
-                        <div className="mb-4">
+                        <div className="relative mt-2 rounded-md shadow-sm">
                             <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
                                 id="password"
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 onKeyUp={() => {
                                     passwordReqs();
-                                    setErrorMsg("");
-                                    setMsg("");
                                 }}
                                 required>
                             </input>
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                                {showPassword ?
+                                    (<EyeIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />) :
+                                    (<EyeSlashIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />)}
+                            </div>
                         </div>
                         <div>
-                            <ul className="">
+                            <ul className="py-2">
                                 <li className="text-xs font-thin" id="rq1">• Your password can be 8-25 characters long</li>
                                 <li className="text-xs font-thin" id="rq2">• Include at least one Uppercase and Lowercase Character</li>
                                 <li className="text-xs font-thin" id="rq3">• At least 1 symbol used</li>
                                 <li className="text-xs font-thin" id="rq4">• At least 1 number used</li>
                             </ul>
-                        </div>
-                        <div id="" className="text-gsgreen60 text-sm font-light w-30 pb-2 px-2 pt-2">
-                            {msg}
-                        </div>
-                        <div id="" className="text-gsred60 text-sm font-light w-30 pb-2 px-2">
-                            {errorMsg}
                         </div>
                         <div id="loginButtons">
                             <input className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-4 rounded mx-2" type="submit" value="Reset Password" />
@@ -197,6 +191,7 @@ function ResetPassword() {
                 </div>
             }
             </div>
+            <ToastContainer transition={Slide} />
             <Footer></Footer>
         </div>
     );
