@@ -206,3 +206,11 @@ export function showToastMessageSuccess(msg: string){
         theme: "colored",
     });
 };
+
+export function toReadableDate(isoDate: string | null): string {
+    if (!isoDate) {
+      return "N.D";
+    }
+    const date = new Date(isoDate);
+    return date.toLocaleString();
+  };

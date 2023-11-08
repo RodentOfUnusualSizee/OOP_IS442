@@ -6,6 +6,8 @@ import Table from '../components/Table';
 import { getAllEvents } from '../utils/api';
 import { format } from 'date-fns';
 import UserInfoModal from '../components/UserInfoModal';
+import { toReadableDate} from '../utils/transform';
+
 // create Event interface
 interface Event {
     userId: number;
@@ -124,7 +126,7 @@ function Audit() {
         eventTableRow = {
             userId: event.userId,
             event: event.event,
-            timestamp: event.timestamp,
+            timestamp: toReadableDate(event.timestamp),
             viewUser: <button data-id={event["userId"]} onClick={handleClick} className="rounded-md text-sm font-medium text-gsgray90 transition hover:bg-slate-400 bg-slate-200 p-2 " >View More</button>
         }
         eventTableData.push(eventTableRow)
