@@ -323,7 +323,9 @@ function UserHome() {
                                             </div>
                                             <div className='my-2 mx-2'>
                                                 <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
-                                                <p className="text-gsgray90">${portfolioOneStats.currentTotalPortfolioValue}</p>
+                                                <p className="text-gsgray90">
+                                                    ${portfolioOneStats.currentTotalPortfolioValue.toFixed(2)}
+                                                </p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
@@ -495,7 +497,7 @@ function UserHome() {
                                             </div>
                                             <div className='my-2 mx-2'>
                                                 <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
-                                                <p className="text-gsgray90">${portfolioTwoStats.currentTotalPortfolioValue}</p>
+                                                <p className="text-gsgray90">${portfolioTwoStats.currentTotalPortfolioValue.toFixed(2)}</p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
@@ -673,7 +675,10 @@ function UserHome() {
                                                             : ' text-gsgreen60',
                                                         'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-xl font-medium md:mt-2 lg:mt-0'
                                                     )}>
-                                                    {portfolioDifference.currentTotalPortfolioValue}</p>
+                                                    {(portfolioDifference.currentTotalPortfolioValue < 0) 
+                                                    ? "-$" + portfolioDifference.currentTotalPortfolioValue.toFixed(2).replace("-", "")
+                                                    : "$" + portfolioDifference.currentTotalPortfolioValue.toFixed(2)}
+                                                    </p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
