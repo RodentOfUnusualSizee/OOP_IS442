@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { createNewUserEvent } from '../utils/api';
 
 interface HeaderProps {
     management: boolean;
@@ -11,7 +12,7 @@ interface HeaderProps {
 
 const Header = ({ management, userType, login }: HeaderProps) => {
 
-    const { logout } = useAuth();
+    const {authUser ,logout } = useAuth();
     const navigate = useNavigate();
 
     const userLinks = [
@@ -31,21 +32,8 @@ const Header = ({ management, userType, login }: HeaderProps) => {
             link: "adminhome"
         },
         {
-            name: "Portfolio Watch",
+            name: "Audit Watch",
             link: "audit"
-        },
-        {
-            name: "Data Management",
-            link: "datamanagement"
-
-        },
-        {
-            name: "Manage Portfolios",
-            link: "userhome"
-        },
-        {
-            name: "Stocks",
-            link: "stockhome"
         }
     ];
 
@@ -53,9 +41,17 @@ const Header = ({ management, userType, login }: HeaderProps) => {
     const [user, getUser] = useState<String>(userType);
     const [isLogin, getLogin] = useState<boolean>(login);
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        const currentDateTime = new Date().toISOString().slice(0, 19);
+
+        const event_data = {
+            "event": "LOGOUT",
+            "timestamp": currentDateTime,
+        }
+
+        await createNewUserEvent(authUser.id, event_data);
         logout();
-        alert("Logged out");
+        // alert("Logged out");
         navigate("/");
     }
 
@@ -70,10 +66,10 @@ const Header = ({ management, userType, login }: HeaderProps) => {
                         <img src='/images/gs-white.png' className='h-8 w-auto' />
                     </Link>
                 ) : (
-                <Link to={"/userhome"} className="block text-white-600">
-                    <span className="sr-only">Home</span>
-                    <img src='/images/gs-white.png' className='h-8 w-auto' />
-                </Link>
+                    <Link to={"/userhome"} className="block text-white-600">
+                        <span className="sr-only">Home</span>
+                        <img src='/images/gs-white.png' className='h-8 w-auto' />
+                    </Link>
                 )}
 
                 <div className="flex flex-1 items-center justify-end md:justify-between">

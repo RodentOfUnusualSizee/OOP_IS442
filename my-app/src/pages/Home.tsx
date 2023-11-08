@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CSSTransition } from 'react-transition-group';
@@ -7,49 +7,54 @@ import '../styles/home.css';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+import { Slide, ToastContainer } from 'react-toastify';
+import { showToastMessage } from '../utils/transform';
 import { EyeIcon } from '@heroicons/react/20/solid';
 import { EyeSlashIcon } from '@heroicons/react/24/solid';
+import { createNewUserEvent } from '../utils/api';
+
 
 function Home() {
-
-    interface authToken {
-        id: number;
-        email: string;
-        role: string;
-    }
-
-    const { login, setAuthUser, setIsLoggedIn } = useAuth();
+    const { login} = useAuth();
     const navigate = useNavigate();
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
-    let homePage = false;
 
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");
-    const [error, setError] = React.useState<string>("");
 
     const submitLogin = async (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        // alert("Email: " + email + ", Password: " + password );
         try {
-            const userRole = (await login(email, password)) as unknown as string;
-            console.log("User Role:", userRole);
-            let role = userRole;
-            if (role === "user") {
-                navigate("/UserHome");
-            }
-            else {
-                navigate("/AdminHome");
-            }
-        } catch (error : unknown) {
-            if (error instanceof Error) {
-                console.error("An error occurred during login", error);
-                alert(error.cause);
-                setError(error.message);
+            const data = await login(email, password) as any;
+
+            if (data.message === "Login Successful") {
+                const userRole = data["data"]["role"];
+
+                let role = userRole;
+
+                const currentDateTime = new Date().toISOString().slice(0, 19);
+
+                const event_data = {
+                    "event": "LOGIN",
+                    "timestamp": currentDateTime,
+                }
+
+                await createNewUserEvent(data["data"]["id"], event_data)
+
+
+                if (role === "user") {
+                    navigate("/UserHome");
+                }
+                else {
+                    navigate("/AdminHome");
+                }
             } else {
-                console.error("An error occurred during login", error);
-                setError("An error occurred during login");
+                showToastMessage("Account not verified");
             }
+
+        } catch (error: unknown) {
+            showToastMessage("Invalid Username or Password");
         }
     }
 
@@ -63,7 +68,7 @@ function Home() {
                 {loginClicked ? (
                     <CSSTransition
                         in={loginClicked}
-                        timeout={300}   
+                        timeout={300}
                         classNames="fade"
                         unmountOnExit
                         onExit={() => setLoginClicked(false)}
@@ -88,7 +93,7 @@ function Home() {
                                 <div className="relative mt-2 rounded-md shadow-sm">
                                     <input className="sappearance-none block w-full bg-gswhite text-gsgrey70 border border-gsgray40 rounded py-3 px-4 mb-3 leading-tight focus:bg-white focus:border-gsgray-70"
                                         id="password"
-                                        type= {showPassword ? "text" : "password"}
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="Password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
@@ -97,12 +102,9 @@ function Home() {
 
                                     <div className="absolute inset-y-0 right-0 flex items-center pr-3">
                                         {showPassword ?
-                                        (<EyeIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)}/>):
-                                        (<EyeSlashIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)}/>)} 
+                                            (<EyeIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />) :
+                                            (<EyeSlashIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />)}
                                     </div>
-                                </div>
-                                <div id="errorMessage" className="text-gsred60 text-sm font-medium w-full pb-4 px-2 place-items-center">
-                                    {error}
                                 </div>
                                 <div id="loginButtons">
                                     <button className="bg-gsblue60 hover:bg-gsblue70 text-gswhite font-medium w-28 py-2 px-2 rounded-sm mx-2" type="submit" onClick={submitLogin} name="Login">
@@ -141,6 +143,7 @@ function Home() {
                     </div>
                 }
             </div>
+            <ToastContainer transition={Slide} />
             <Footer></Footer>
         </div>
     )

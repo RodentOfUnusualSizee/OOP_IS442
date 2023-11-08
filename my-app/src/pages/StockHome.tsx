@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Table from '../components/Table';
 import { ArrowDownIcon, ArrowUpIcon } from '@heroicons/react/20/solid'
-import { getStockStats } from '../utils/api';
+import { getStockStats, createNewUserEvent } from '../utils/api';
 import { formatVolume, formatPercentages, roundTo, roundToString } from '../utils/transform';
 import { useAuth } from '../context/AuthContext';
 
@@ -77,11 +77,19 @@ function StockHome() {
 
     useEffect(() => {
         if (authUser) {
-            console.log(authUser);
             setUserId(authUser.id);
             setUserRole(authUser.role);
             setUserIsLoggedIn(true);
         }
+
+        const currentDateTime = new Date().toISOString().slice(0, 19);
+
+        const event_data = {
+            "event" : "VIEW ALL STOCKS",
+            "timestamp": currentDateTime,
+        }
+
+        createNewUserEvent(authUser.id, event_data);
 
         const getStocks = async () => {
             const stocksFromServer = await getStockStats();
@@ -153,7 +161,7 @@ function StockHome() {
             });
         };
         getStocks()
-    },[authUser])
+    }, [authUser])
 
     return (
         <div className="overflow-x-hidden">

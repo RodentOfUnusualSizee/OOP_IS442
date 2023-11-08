@@ -49,7 +49,7 @@ public class UserActivityLog {
         events.add(newEvent);
 
         // Update Last login
-        if ("login".equals(event)) {
+        if ("LOGIN".equals(event)) {
             lastLogin = timestamp;
         }
         return newEvent;

@@ -1,3 +1,5 @@
+import { ToastContainer, toast } from 'react-toastify';
+
 interface TickerSentiment {
     ticker: string;
     relevanceScore: number;
@@ -178,3 +180,37 @@ export function formatPercentages(decimalPlaces: number, percentage: string) {
 
     return roundedPercentage.toFixed(decimalPlaces) + "%";
 }
+
+export function showToastMessage(msg: string){
+    toast.error(msg, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        progress: undefined,
+        theme: "colored",
+    });
+};
+
+export function showToastMessageSuccess(msg: string){
+    toast.success(msg, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: false,
+        progress: undefined,
+        theme: "colored",
+    });
+};
+
+export function toReadableDate(isoDate: string | null): string {
+    if (!isoDate) {
+      return "N.D";
+    }
+    const date = new Date(isoDate);
+    return date.toLocaleString();
+  };

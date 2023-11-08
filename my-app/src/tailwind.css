@@ -764,6 +764,11 @@ video {
   margin-bottom: auto;
 }
 
+.my-8 {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
 .-ml-0 {
   margin-left: -0px;
 }
@@ -874,6 +879,10 @@ video {
 
 .mt-8 {
   margin-top: 2rem;
+}
+
+.mb-12 {
+  margin-bottom: 3rem;
 }
 
 .block {
@@ -1335,6 +1344,11 @@ video {
 
 .border-transparent {
   border-color: transparent;
+}
+
+.border-gsgray20 {
+  --tw-border-opacity: 1;
+  border-color: rgb(220 227 232 / var(--tw-border-opacity));
 }
 
 .bg-blue-500 {
@@ -1895,6 +1909,11 @@ video {
   --tw-ring-color: rgb(22 163 74 / 0.2);
 }
 
+.ring-gsgray30 {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(193 204 214 / var(--tw-ring-opacity));
+}
+
 .filter {
   -webkit-filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
           filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
@@ -1988,6 +2007,11 @@ code {
   background-color: rgb(148 163 184 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-gsgray20:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(220 227 232 / var(--tw-bg-opacity));
+}
+
 .hover\:text-gray-200\/75:hover {
   color: rgb(229 231 235 / 0.75);
 }
@@ -2061,6 +2085,11 @@ code {
 .focus\:ring-indigo-500:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity));
+}
+
+.focus\:ring-gsblue50:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(61 141 245 / var(--tw-ring-opacity));
 }
 
 .focus\:ring-offset-2:focus {
