@@ -71,7 +71,7 @@ function ResetPassword() {
                 console.log(error);
             });
         } else {
-            setErrorMsg("Your password is invalid. Please try again.")
+            setErrorMsg("Your password is invalid or Email does not exist. Please try again.")
         }
     };
 

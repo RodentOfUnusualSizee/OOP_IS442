@@ -31,7 +31,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
+    "start-legacy": "react-scripts --openssl-legacy-provider start",
+    "start": "react-scripts start",
     "build": "react-scripts --openssl-legacy-provider build",
     "build:tailwind": "tailwindcss build -i src/index.css -o src/tailwind.css --watch",
     "test": "react-scripts test",
