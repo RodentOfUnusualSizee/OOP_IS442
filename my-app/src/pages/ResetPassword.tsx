@@ -127,18 +127,13 @@ function ResetPassword() {
                         <div className="relative mt-2 rounded-md shadow-sm">
                             <input className="shadow appearance-none border rounded w-full py-2 px-3 my-2 text-gsgray70 leading-tight"
                                 id="email"
-                                type={showPassword ? "text" : "password"}
+                                type="text"
                                 placeholder="Email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                             >
                             </input>
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                {showPassword ?
-                                    (<EyeIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />) :
-                                    (<EyeSlashIcon className="h-5 w-5 text-gsgray60" aria-hidden="true" onClick={() => setShowPassword(prevState => !prevState)} />)}
-                            </div>
                         </div>
                         <div id="loginButtons">
                             <input className="bg-gsblue60 hover:bg-gsblue70 text-white font-light w-30 py-2 px-2 rounded mx-2" type="submit" value="Reset Password" />
