@@ -38,7 +38,7 @@ Disclaimer: As this is a school project, we made use of some mock data in develo
 **Class Diagram**
 
 You can view our class diagram here: <a href="https://viewer.diagrams.net/index.html?tags=%7B%7D&highlight=0000ff&edit=_blank&layers=1&nav=1#G1MiuEm-PZ1pJqC2lAcIQvO2HyBRdX3kef">Class Diagram</a>
-Note: You will need a Google account to access the diagram.
+</br>Note: You will need a Google account to access the diagram.
 
 # How to Set Up the Application
 To set up and run our application, firstly clone this GitHub repository through GitHub Desktop or run `gh repo clone RodentOfUnusualSizee/OOP_IS442` in the GitHub CLI.
@@ -65,12 +65,12 @@ You can find the Java documentation in `backend-app\target\apidocs\index.html` a
 **IS442 OOP G2 Team 1**
 <table>
     <tr>
-        <td align="center"><img src="" width="150px;" alt=""/><br /><sub><b>Brandon</b></sub></a></td>
-        <td align="center"><img src="" width="150px;" alt=""/><br /><sub><b>Caleb</b></sub></a></td>
-        <td align="center"><img src="" width="150px;" alt=""/><br /><sub><b>Ching Rou</b></sub></a></td>
-        <td align="center"><img src="" width="150px;" alt=""/><br /><sub><b>Gerald</b></sub></a></td>
-        <td align="center"><img src="" width="150px;" alt=""/><br /><sub><b>Lin Tao</b></sub></a></td>
-        <td align="center"><img src="" width="150px;" alt=""/><br /><sub><b>Yan Wee</b></sub></a></td>
+        <td align="center"><sub><b>Brandon</b></sub></td>
+        <td align="center"><sub><b>Caleb</b></sub></td>
+        <td align="center"><sub><b>Ching Rou</b></sub></td>
+        <td align="center"><sub><b>Gerald</b></sub></td>
+        <td align="center"><sub><b>Lin Tao</b></sub></td>
+        <td align="center"><sub><b>Yan Wee</b></sub></td>
     </tr>
 </table>
 
