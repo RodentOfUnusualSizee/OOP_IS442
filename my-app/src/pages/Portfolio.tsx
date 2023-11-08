@@ -8,7 +8,6 @@ import {
     PencilIcon,
     ArrowUpIcon,
     ArrowDownIcon,
-    TagIcon,
     BanknotesIcon
 } from '@heroicons/react/20/solid';
 import LineChartComponent from '../components/LineChartComponent';

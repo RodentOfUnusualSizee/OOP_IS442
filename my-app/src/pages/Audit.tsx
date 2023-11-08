@@ -1,10 +1,8 @@
 import React, { ReactElement } from 'react';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import Table from '../components/Table';
 import { getAllEvents } from '../utils/api';
-import { format } from 'date-fns';
 import UserInfoModal from '../components/UserInfoModal';
 import { toReadableDate} from '../utils/transform';
 

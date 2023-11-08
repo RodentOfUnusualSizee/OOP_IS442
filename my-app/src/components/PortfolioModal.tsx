@@ -5,10 +5,6 @@ interface ModalProps<T> {
     data: T;
 }
 
-function getStockCodes(){
-    return null;
-}
-
 // Create a generic functional component
 function PortfolioModal<T>({ data }: ModalProps<T>) {
 
