@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
 import Table from '../components/Table';
 import { getAllUsers } from '../utils/api';

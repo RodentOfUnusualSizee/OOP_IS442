@@ -15,7 +15,7 @@ import { roundToString } from "../utils/transform";
 function StockRecord() {
 
     const location = useLocation();
-    const { authUser, isLoggedIn } = useAuth();
+    const { authUser } = useAuth();
     const [isLoading, setIsLoading] = React.useState<boolean>(true);
     const [userId, setUserId] = React.useState<number>(1);
     const [userRole, setUserRole] = React.useState<string>("user");

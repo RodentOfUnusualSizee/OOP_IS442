@@ -1,7 +1,4 @@
-import React,{ReactElement} from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { useAuth } from '../context/AuthContext';
+import React from 'react';
 import Table from '../components/Table';
 import { getActivityLogById } from '../utils/api';
 import { format } from 'date-fns';

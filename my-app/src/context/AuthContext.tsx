@@ -9,9 +9,6 @@ export interface AuthContextInterface {
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
     login: (username: string, password: string) => void;
     logout: () => void;
-
-    // portfolioId: any;
-    // setPortfolioId: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const AuthContext = React.createContext<AuthContextInterface | undefined>(undefined);
