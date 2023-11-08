@@ -202,7 +202,7 @@ function UserHome() {
                         <div className="w-full border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-center">
-                        <span className="bg-white px-2 text-sm text-gray-500">{dividerValue}</span>
+                        <span className="bg-gswhite px-2 text-sm text-gray-500">{dividerValue}</span>
                     </div>
                 </div>
             </div>
@@ -221,10 +221,9 @@ function UserHome() {
             <div className="UserHome">
                 <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
                 <div className='container mx-auto max-w-screen-xl rounded-l place-items-center'>
-                    <div className="bg-white py-12 sm:py-12 my-2">
+                    <div className="bg-gswhite py-12 sm:py-12 my-2">
                         <div className="mx-auto max-w-7xl px-6 lg:px-8">
                             <div className="mx-auto max-w-2xl lg:text-center">
-                                <h2 className="text-base font-semibold leading-7 text-indigo-600">Management</h2>
                                 <p className="mt-2 text-3xl font-bold tracking-tight text-gsgray90 sm:text-4xl">
                                     Your Portfolios
                                 </p>
@@ -235,7 +234,7 @@ function UserHome() {
                         </div>
                     </div>
                     <div className="grid grid-cols-6" id="AddNewPortBtn">
-                        <button onClick={handleAddClick} className="col-start-3 col-span-2 bg-gsgreen50 hover:bg-gsgreen60 text-white font-bold py-2 px-4 rounded">Create New Portfolio</button>
+                        <button onClick={handleAddClick} className="col-start-3 col-span-2 bg-gsgreen50 hover:bg-gsgreen60 text-gswhite font-bold py-2 px-4 rounded">Create New Portfolio</button>
                     </div>
                     <div className="mx-auto mt-8 max-w-2xl mb-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
                         <PortfolioCard portfolioList={portfolioData}></PortfolioCard>
@@ -251,7 +250,7 @@ function UserHome() {
                                 <div className="relative flex justify-center">
                                     <button
                                         type="button" onClick={(e) => setShowComparison(!showComparison)}
-                                        className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                        className="inline-flex items-center gap-x-1.5 rounded-full bg-gswhite px-3 py-1.5 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                     >
                                         <PlusIcon className="-ml-1 -mr-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                                         Compare Portfolios
@@ -318,8 +317,8 @@ function UserHome() {
 
 
                                         {/* Card One */}
-                                        <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
-                                            <div className="px-4 py-5 sm:px-6">
+                                        <div className="overflow-hidden bg-gswhite flex-1 my-2 mx-2">
+                                            <div className="px-4 pt-5 sm:px-6">
                                                 {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName}
                                             </div>
                                             <div className='my-2 mx-2'>
@@ -339,7 +338,7 @@ function UserHome() {
                                             </div>
                                             {renderDivider("Quarterly Returns")}
                                             <div>
-                                                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                                <dl className="mt-5 grid grid-cols-1 overflow-hidden border border-gsgray20 bg-gswhite md:grid-cols-2 md:divide-x">
                                                     <div key="Q1" className="px-4 py-5 sm:p-6">
                                                         <dt className="text-base font-normal text-gsgray90">Q1</dt>
                                                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -413,7 +412,7 @@ function UserHome() {
                                                 </dl>
                                             </div>
                                             <div>
-                                                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                                <dl className="grid grid-cols-1 overflow-hidden bg-gswhite border border-gsgray20 border-t-0 md:grid-cols-2 md:divide-x">
                                                     <div key="Q3" className="px-4 py-5 sm:p-6">
                                                         <dt className="text-base font-normal text-gsgray90">Q3</dt>
                                                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -490,8 +489,8 @@ function UserHome() {
 
 
                                         {/* Card Two */}
-                                        <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
-                                            <div className="px-4 py-5 sm:px-6">
+                                        <div className="overflow-hidden bg-gswhite divide flex-1 my-2 mx-2">
+                                            <div className="px-4 pt-5 sm:px-6">
                                                 {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}
                                             </div>
                                             <div className='my-2 mx-2'>
@@ -511,7 +510,7 @@ function UserHome() {
                                             </div>
                                             {renderDivider("Quarterly Returns")}
                                             <div>
-                                                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                                <dl className="mt-5 grid grid-cols-1 overflow-hidden border border-gsgray20 bg-gswhite md:grid-cols-2 md:divide-x">
                                                     <div key="Q1" className="px-4 py-5 sm:p-6">
                                                         <dt className="text-base font-normal text-gsgray90">Q1</dt>
                                                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -585,7 +584,7 @@ function UserHome() {
                                                 </dl>
                                             </div>
                                             <div>
-                                                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                                <dl className="grid grid-cols-1 overflow-hidden border border-gsgray20 border-t-0 bg-gswhite md:grid-cols-2 md:divide-x">
                                                     <div key="Q3" className="px-4 py-5 sm:p-6">
                                                         <dt className="text-base font-normal text-gsgray90">Q3</dt>
                                                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -662,9 +661,9 @@ function UserHome() {
                                     </div>
 
                                     {/* Comparison Summary */}
-                                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                                    <div className="mx-auto max-w-7xl mt-2 px-4 sm:px-6 lg:px-8">
                                         <h6>Comparison Summary of {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName} to {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}</h6>
-                                        <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
+                                        <div className=" overflow-hidden rounded-lg bg-gswhite flex-1 my-2 mx-2">
                                             <div className='my-2 mx-2'>
                                                 <h4 className="text-lg font-semibold text-gsgray90">Total Portfolio Value</h4>
                                                 <p
@@ -702,7 +701,7 @@ function UserHome() {
                                         </div>
                                         {renderDivider("Quarterly Returns")}
                                         <div>
-                                            <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 border border-gsgray20 overflow-hidden rounded-lg bg-gswhite md:grid-cols-2 md:divide-x md:divide-y-0">
                                                 <div key="Q1" className="px-4 py-5 sm:p-6">
                                                     <dt className="text-base font-normal text-gsgray90">Q1</dt>
                                                     <dd className="mt-1 flex justify-center md:block lg:flex">
@@ -736,7 +735,7 @@ function UserHome() {
                                             </dl>
                                         </div>
                                         <div>
-                                            <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <dl className="grid grid-cols-1 border border-gsgray20 border-t-0 divide-y divide-gsgray20 overflow-hidden bg-gswhite md:grid-cols-2 md:divide-x md:divide-y-0">
                                                 <div key="Q3" className="px-4 py-5 sm:p-6">
                                                     <dt className="text-base font-normal text-gsgray90">Q3</dt>
                                                     <dd className="mt-1 flex justify-center md:block lg:flex">
@@ -784,8 +783,8 @@ function UserHome() {
                             <div onClick={handleModalClose} className="absolute inset-0 bg-gsgray20 opacity-75"></div>
                         </div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div className="inline-block align-bottom bg-gswhite rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-gswhite px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                 <div className="items-center">
                                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-center">
                                         <h3 className="font-semibold leading-6 text-gsgray90 text-3xl" id="modal-title">Create a New Portfolio</h3>
@@ -835,9 +834,9 @@ function UserHome() {
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                            <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
+                                            <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-gswhite shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
 
-                                            <button type="submit" onClick={(e) => handleSubmit(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Portfolio</button>
+                                            <button type="submit" onClick={(e) => handleSubmit(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-gswhite shadow-sm hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Portfolio</button>
                                         </div>
                                     </div>
                                 </div>

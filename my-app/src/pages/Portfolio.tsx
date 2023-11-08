@@ -414,7 +414,7 @@ function Portfolio() {
         handleModalClose();
     }
 
-    const [summaryStr, setSummaryStr] = useState<string>("");
+    const [summaryStr, setSummaryStr] = React.useState<string>("");
     const summary = () => {
         // construct the string
         setSummaryStr(`${side} ${quantity} ${stockCode} @ ${price} USD on ${date}`);
