@@ -1,11 +1,11 @@
 import React from 'react';
-import { EyeIcon } from "@heroicons/react/24/solid";
+import { EyeIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { Link } from 'react-router-dom';
 import { formatVolume } from '../utils/transform';
 
 interface PortfolioCardProps {
     portfolioList: Portfolio[];
-    
+    onDelete: (id: number) => void;
 }
 
 interface Portfolio {
@@ -15,7 +15,7 @@ interface Portfolio {
     capital: number;
 }
 
-const PortfolioCard = ({portfolioList}: PortfolioCardProps) => {
+const PortfolioCard = ({ portfolioList, onDelete }: PortfolioCardProps) => {
     return (
         <div>
             <ul role="list" className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -48,6 +48,16 @@ const PortfolioCard = ({portfolioList}: PortfolioCardProps) => {
                                         <Link to={`/portfolio?id=${portfolio.id}`}>View Portfolio</Link>
                                     </a>
                                 </div>
+                            </div>
+                            <div className="-mt-px flex divide-x divide-gray-200">
+                                <button
+                                    type="button"
+                                    className="relative inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-red-900"
+                                    onClick={() => onDelete(portfolio.id)}
+                                >
+                                    <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+                                    Delete Portfolio
+                                </button>
                             </div>
                         </div>
                     </li>

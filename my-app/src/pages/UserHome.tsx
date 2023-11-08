@@ -3,11 +3,12 @@ import Loading from './Loading';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
-import { createPortfolio, getPortfolioByUserId, comparePortfolio, createNewUserEvent } from '../utils/api';
+import { createPortfolio, getPortfolioByUserId, comparePortfolio, deletePortfolio, createNewUserEvent } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import { PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/20/solid';
-import { showToastMessage, showToastMessageSuccess} from '../utils/transform';
+import { showToastMessage, showToastMessageSuccess } from '../utils/transform';
+import Swal from 'sweetalert2';
 
 function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ')
@@ -184,6 +185,30 @@ function UserHome() {
         }
     }
 
+    const handleDelete = (id: number) => {
+        Swal.fire({
+            title: 'Are you sure you want to delete Portfolio ' + id + '?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result: any) => {
+            if (result.isConfirmed) {
+                const deletePortfolioAPI = deletePortfolio(id);
+                showToastMessageSuccess('Successfully deleted Portfolio');
+                deletePortfolioAPI.then((response) => {
+                    console.log(response);
+                    fetchPortfolios();
+                })
+            } else if (result.isDismissed) {
+                showToastMessage('Delete operation was canceled');
+                console.log('Delete operation was canceled');
+            }
+        });
+    };
+
 
     const renderOptions = () => {
         return data.map((item) => (
@@ -202,7 +227,7 @@ function UserHome() {
                         <div className="w-full border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-center">
-                        <span className="bg-white px-2 text-sm text-gray-500">{dividerValue}</span>
+                        <span className="bg-gswhite px-2 text-sm text-gray-500">{dividerValue}</span>
                     </div>
                 </div>
             </div>
@@ -220,25 +245,25 @@ function UserHome() {
         <div>
             <div className="UserHome">
                 <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
-                <div className='container mx-auto max-w-screen-xl rounded-l place-items-center'>
-                    <div className="bg-white py-12 sm:py-12 my-2">
-                        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                            <div className="mx-auto max-w-2xl lg:text-center">
-                                <h2 className="text-base font-semibold leading-7 text-indigo-600">Management</h2>
+                <div className='container mx-auto rounded-l place-items-center'>
+                    <div className="bg-gswhite py-12 sm:py-12 my-2">
+                        <div className="mx-auto max-w-screen-2xl px-6 lg:px-8">
+                            <div className="mx-auto max-w-screen-2xl lg:text-center">
                                 <p className="mt-2 text-3xl font-bold tracking-tight text-gsgray90 sm:text-4xl">
                                     Your Portfolios
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gsgray70">
-                                    All your portfolios at Goldman Sachs at a glance. View your portfolios, create new strategies or edit the portfolios you manage. Browse stocks on the market using our in-house tool and enhance your portfolios.
+                                    All your portfolios at Goldman Sachs at a glance. View your portfolios, create new strategies or edit the portfolios you manage. 
+                                    <br></br>Browse stocks on the market using our in-house tool and enhance your portfolios.
                                 </p>
                             </div>
                         </div>
                     </div>
                     <div className="grid grid-cols-6" id="AddNewPortBtn">
-                        <button onClick={handleAddClick} className="col-start-3 col-span-2 bg-gsgreen50 hover:bg-gsgreen60 text-white font-bold py-2 px-4 rounded">Create New Portfolio</button>
+                        <button onClick={handleAddClick} className="col-start-3 col-span-2 bg-gsgreen50 hover:bg-gsgreen60 text-gswhite font-bold py-2 px-4 rounded">Create New Portfolio</button>
                     </div>
                     <div className="mx-auto mt-8 max-w-2xl mb-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
-                        <PortfolioCard portfolioList={portfolioData}></PortfolioCard>
+                        <PortfolioCard portfolioList={portfolioData} onDelete={handleDelete}></PortfolioCard>
                     </div>
 
                     {/* START OF COMPARISON */}
@@ -251,7 +276,7 @@ function UserHome() {
                                 <div className="relative flex justify-center">
                                     <button
                                         type="button" onClick={(e) => setShowComparison(!showComparison)}
-                                        className="inline-flex items-center gap-x-1.5 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                        className="inline-flex items-center gap-x-1.5 rounded-full bg-gswhite px-3 py-1.5 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                     >
                                         <PlusIcon className="-ml-1 -mr-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
                                         Compare Portfolios
@@ -318,13 +343,15 @@ function UserHome() {
 
 
                                         {/* Card One */}
-                                        <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
-                                            <div className="px-4 py-5 sm:px-6">
+                                        <div className="overflow-hidden bg-gswhite flex-1 my-2 mx-2">
+                                            <div className="px-4 pt-5 sm:px-6">
                                                 {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName}
                                             </div>
                                             <div className='my-2 mx-2'>
                                                 <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
-                                                <p className="text-gsgray90">${portfolioOneStats.currentTotalPortfolioValue}</p>
+                                                <p className="text-gsgray90">
+                                                    ${portfolioOneStats.currentTotalPortfolioValue.toFixed(2)}
+                                                </p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
@@ -339,7 +366,7 @@ function UserHome() {
                                             </div>
                                             {renderDivider("Quarterly Returns")}
                                             <div>
-                                                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                                <dl className="mt-5 grid grid-cols-1 overflow-hidden border border-gsgray20 bg-gswhite md:grid-cols-2 md:divide-x">
                                                     <div key="Q1" className="px-4 py-5 sm:p-6">
                                                         <dt className="text-base font-normal text-gsgray90">Q1</dt>
                                                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -413,7 +440,7 @@ function UserHome() {
                                                 </dl>
                                             </div>
                                             <div>
-                                                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                                <dl className="grid grid-cols-1 overflow-hidden bg-gswhite border border-gsgray20 border-t-0 md:grid-cols-2 md:divide-x">
                                                     <div key="Q3" className="px-4 py-5 sm:p-6">
                                                         <dt className="text-base font-normal text-gsgray90">Q3</dt>
                                                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -490,13 +517,13 @@ function UserHome() {
 
 
                                         {/* Card Two */}
-                                        <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
-                                            <div className="px-4 py-5 sm:px-6">
+                                        <div className="overflow-hidden bg-gswhite divide flex-1 my-2 mx-2">
+                                            <div className="px-4 pt-5 sm:px-6">
                                                 {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}
                                             </div>
                                             <div className='my-2 mx-2'>
                                                 <h4 className="text-lg font-semibold">Total Portfolio Value</h4>
-                                                <p className="text-gsgray90">${portfolioTwoStats.currentTotalPortfolioValue}</p>
+                                                <p className="text-gsgray90">${portfolioTwoStats.currentTotalPortfolioValue.toFixed(2)}</p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
@@ -511,7 +538,7 @@ function UserHome() {
                                             </div>
                                             {renderDivider("Quarterly Returns")}
                                             <div>
-                                                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                                <dl className="mt-5 grid grid-cols-1 overflow-hidden border border-gsgray20 bg-gswhite md:grid-cols-2 md:divide-x">
                                                     <div key="Q1" className="px-4 py-5 sm:p-6">
                                                         <dt className="text-base font-normal text-gsgray90">Q1</dt>
                                                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -585,7 +612,7 @@ function UserHome() {
                                                 </dl>
                                             </div>
                                             <div>
-                                                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                                <dl className="grid grid-cols-1 overflow-hidden border border-gsgray20 border-t-0 bg-gswhite md:grid-cols-2 md:divide-x">
                                                     <div key="Q3" className="px-4 py-5 sm:p-6">
                                                         <dt className="text-base font-normal text-gsgray90">Q3</dt>
                                                         <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -662,9 +689,9 @@ function UserHome() {
                                     </div>
 
                                     {/* Comparison Summary */}
-                                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                                    <div className="mx-auto max-w-7xl mt-2 px-4 sm:px-6 lg:px-8">
                                         <h6>Comparison Summary of {data.find((item) => item.portfolioID === parseInt(firstPortfolio))?.portfolioName} to {data.find((item) => item.portfolioID === parseInt(secondPortfolio))?.portfolioName}</h6>
-                                        <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow flex-1 my-2 mx-2">
+                                        <div className=" overflow-hidden rounded-lg bg-gswhite flex-1 my-2 mx-2">
                                             <div className='my-2 mx-2'>
                                                 <h4 className="text-lg font-semibold text-gsgray90">Total Portfolio Value</h4>
                                                 <p
@@ -674,7 +701,10 @@ function UserHome() {
                                                             : ' text-gsgreen60',
                                                         'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-xl font-medium md:mt-2 lg:mt-0'
                                                     )}>
-                                                    {portfolioDifference.currentTotalPortfolioValue}</p>
+                                                    {(portfolioDifference.currentTotalPortfolioValue < 0)
+                                                        ? "-$" + portfolioDifference.currentTotalPortfolioValue.toFixed(2).replace("-", "")
+                                                        : "$" + portfolioDifference.currentTotalPortfolioValue.toFixed(2)}
+                                                </p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
@@ -702,7 +732,7 @@ function UserHome() {
                                         </div>
                                         {renderDivider("Quarterly Returns")}
                                         <div>
-                                            <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 border border-gsgray20 overflow-hidden rounded-lg bg-gswhite md:grid-cols-2 md:divide-x md:divide-y-0">
                                                 <div key="Q1" className="px-4 py-5 sm:p-6">
                                                     <dt className="text-base font-normal text-gsgray90">Q1</dt>
                                                     <dd className="mt-1 flex justify-center md:block lg:flex">
@@ -736,7 +766,7 @@ function UserHome() {
                                             </dl>
                                         </div>
                                         <div>
-                                            <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-white shadow md:grid-cols-2 md:divide-x md:divide-y-0">
+                                            <dl className="grid grid-cols-1 border border-gsgray20 border-t-0 divide-y divide-gsgray20 overflow-hidden bg-gswhite md:grid-cols-2 md:divide-x md:divide-y-0">
                                                 <div key="Q3" className="px-4 py-5 sm:p-6">
                                                     <dt className="text-base font-normal text-gsgray90">Q3</dt>
                                                     <dd className="mt-1 flex justify-center md:block lg:flex">
@@ -784,8 +814,8 @@ function UserHome() {
                             <div onClick={handleModalClose} className="absolute inset-0 bg-gsgray20 opacity-75"></div>
                         </div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div className="inline-block align-bottom bg-gswhite rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-gswhite px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                 <div className="items-center">
                                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-center">
                                         <h3 className="font-semibold leading-6 text-gsgray90 text-3xl" id="modal-title">Create a New Portfolio</h3>
@@ -835,9 +865,9 @@ function UserHome() {
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                                            <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
+                                            <button type="button" onClick={handleModalClose} className="inline-flex w-full justify-center rounded-md bg-gsgray70 px-3 py-2 text-sm font-semibold text-gswhite shadow-sm hover:bg-gsgray90 sm:ml-3 sm:w-auto">Cancel</button>
 
-                                            <button type="submit" onClick={(e) => handleSubmit(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Portfolio</button>
+                                            <button type="submit" onClick={(e) => handleSubmit(e)} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsgreen50 px-3 py-2 text-sm font-semibold text-gswhite shadow-sm hover:bg-gsgreen60 sm:mt-0 sm:w-auto">Add Portfolio</button>
                                         </div>
                                     </div>
                                 </div>

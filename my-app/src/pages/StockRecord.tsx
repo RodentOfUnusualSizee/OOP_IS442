@@ -235,7 +235,7 @@ function StockRecord() {
     return (
         <div className="PortfolioRecord">
             <Header management={management} userType={userRole} login={userIsLoggedIn} />
-            <div className='my-2 px-6 container mx-auto max-w-screen-xl h-screen rounded-l place-items-center'>
+            <div className='my-2 px-6 container mx-auto max-w-screen-2xl h-screen rounded-l place-items-center'>
                 <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
                     <h3 className="text-2xl font-bold leading-7 text-gsgray90 sm:truncate sm:text-3xl sm:tracking-tight">
                         {stockCode + " Records"}

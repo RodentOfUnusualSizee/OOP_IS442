@@ -69,6 +69,8 @@ function ResetPassword() {
                 showToastMessageSuccess(response);
                 
             }).catch((error) => {
+               showToastMessage("This Email does not exist")
+
                 console.log(error);
             });
         } else {
