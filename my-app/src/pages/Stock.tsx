@@ -199,6 +199,7 @@ function Stock() {
         setDate("");
         setQuantity("");
         setPrice("");
+        setSummaryStr("");
     }
 
     const handleButtons = (e: any) => {
@@ -272,9 +273,10 @@ function Stock() {
         handleModalClose();
     }
 
+    const [summaryStr, setSummaryStr] = React.useState<string>("");
     const summary = () => {
-        const summary = document.getElementById("summary") as HTMLSpanElement;
-        summary.innerHTML = side + " " + quantity + " " + stockCode + " @ $" + price + " on " + date;
+        // construct the string
+        setSummaryStr(`${side} ${quantity} ${stockCode} @ ${price} USD on ${date}`);
     }
 
     if (isLoading) {
@@ -289,30 +291,30 @@ function Stock() {
         <div>
             <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
             <div>
-                <div className="lg:flex lg:items-center lg:justify-between my-6 px-6">
-                    <h3 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                <div className="lg:flex lg:items-center lg:justify-between my-6 px-6 max-w-screen-2xl mx-auto">
+                    <h3 className="text-2xl font-bold leading-7 text-gsgray90 sm:truncate sm:text-3xl sm:tracking-tight">
                         {stockCode}
                     </h3>
                     <div className="min-w-0 flex-1">
                         <div className="mt-1 flex flex-col sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6 mx-2">
                             {stockDetails.country !== "" ? (
-                                <div className="mt-2 flex items-center text-sm text-gray-500">
-                                    <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                                <div className="mt-2 flex items-center text-sm text-gsgray70">
+                                    <MapPinIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gsgray70" aria-hidden="true" />
                                     {stockDetails.country}
                                 </div>
                             ) : (
                                 <div></div>
                             )}
                             {stockDetails.industry !== "" ? (
-                                <div className="mt-2 flex items-center text-sm text-gray-500">
-                                    <TagIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                                <div className="mt-2 flex items-center text-sm text-gsgray70">
+                                    <TagIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gsgray70" aria-hidden="true" />
                                     {stockDetails.industry}
                                 </div>
                             ) : (
                                 <div></div>
                             )}
-                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
+                            <div className="mt-2 flex items-center text-sm text-gsgray70">
+                                <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gsgray70" aria-hidden="true" />
                                 {formattedDate}
                             </div>
                         </div>
@@ -321,10 +323,10 @@ function Stock() {
                         <span className="hidden sm:block">
                             <button
                                 type="button"
-                                className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                className="inline-flex items-center rounded-md bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 shadow-sm ring-1 ring-inset ring-gsgray40 hover:bg-gray-50"
                                 onClick={handleAddClick}
                             >
-                                <PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                <PlusCircleIcon className="-ml-0.5 mr-1.5 h-5 w-5 text-gsgray70" aria-hidden="true" />
                                 Add Stock to Portfolio
                             </button>
                         </span>
@@ -332,16 +334,16 @@ function Stock() {
                 </div>
             </div>
             <div className='my-2 px-6'>
-                <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3 max-w-screen-2xl mx-auto">
                     {stockStats.map((item) => (
-                        <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6">
-                            <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
+                        <div key={item.name} className="overflow-hidden rounded-lg bg-gswhite px-4 py-5 shadow sm:p-6">
+                            <dt className="truncate text-sm font-medium text-gsgray90">{item.name}</dt>
 
                             <dd className={classNames(
-                                item.stat > 0 ? 'text-green-600' : 'text-red-600', 'mt-1 text-3xl font-semibold tracking-tight text-gray-900')}>{item.stat}%</dd>
+                                item.stat > 0 ? 'text-gsgreen60' : 'text-gsred60', 'mt-1 text-3xl font-semibold tracking-tight text-gsgray90')}>{item.stat}%</dd>
                             <p
                                 className={classNames(
-                                    item.stat > 0 ? 'text-green-600' : 'text-red-600',
+                                    item.stat > 0 ? 'text-gsgreen60' : 'text-gsred60',
                                     'ml-2 flex items-baseline text-sm font-semibold'
                                 )}
                             >
@@ -355,54 +357,54 @@ function Stock() {
                     ))}
                 </dl>
             </div>
-            <div className='my-6 px-6 w-full'>
+            <div className='my-6 px-6 w-full max-w-screen-2xl mx-auto'>
                 <div className="relative">
                     <div className="w-full inset-0 flex items-center" aria-hidden="true">
                         <div className=" border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-start">
-                        <span className="bg-white pr-3 text-base font-semibold leading-6 text-gray-900">Stock Price History</span>
+                        <span className="bg-gswhite pr-3 text-base font-semibold leading-6 text-gsgray90">Stock Price History</span>
                     </div>
                 </div>
                 <span className="isolate inline-flex rounded-md shadow-sm">
                     <button
                         type="button" onClick={() => getStockValues(30)}
-                        className="relative inline-flex items-center rounded-l-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+                        className="relative inline-flex items-center rounded-l-md bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 ring-1 ring-inset ring-gsgray40 hover:bg-gray-50 focus:z-10"
                     >
                         30 Days
                     </button>
                     <button
                         type="button" onClick={() => getStockValues(60)}
-                        className="relative -ml-px inline-flex items-center bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+                        className="relative -ml-px inline-flex items-center bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 ring-1 ring-inset ring-gsgray40 hover:bg-gray-50 focus:z-10"
                     >
                         60 Days
                     </button>
                     <button
                         type="button" onClick={() => getStockValues(90)}
-                        className="relative -ml-px inline-flex items-center rounded-r-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10"
+                        className="relative -ml-px inline-flex items-center rounded-r-md bg-gswhite px-3 py-2 text-sm font-semibold text-gsgray90 ring-1 ring-inset ring-gsgray40 hover:bg-gray-50 focus:z-10"
                     >
                         90 Days
                     </button>
                 </span>
             </div>
-            <div className='my-2 px-6'>
+            <div className='my-2 px-6 max-w-screen-2xl mx-auto'>
                 {stockHistoricalValues.length > 0 && <StockLineChart data={stockHistoricalValues}></StockLineChart>}
             </div>
-            <div className='my-4 px-6'>
-                <h3 className="text-base font-semibold leading-6 text-gray-900">Last 30 days</h3>
-                <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-3 md:divide-x md:divide-y-0">
+            <div className='my-4 px-6 max-w-screen-2xl mx-auto'>
+                <h3 className="text-base font-semibold leading-6 text-gsgray90">Last 30 days</h3>
+                <dl className="mt-5 grid grid-cols-1 divide-y divide-gsgray40 overflow-hidden rounded-lg bg-gswhite border border-gsgray40 md:grid-cols-3 md:divide-x md:divide-y-0">
                     {stockPriceStats.map((item) => (
                         <div key={item.name} className="px-4 py-5 sm:p-6">
-                            <dt className="text-base font-normal text-gray-900">{item.name}</dt>
+                            <dt className="text-base font-normal text-gsgray90">{item.name}</dt>
                             <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-                                <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
-                                    {item.stat}
-                                    <span className="ml-2 text-sm font-medium text-gray-500">from {item.previousStat}</span>
+                                <div className="flex items-baseline text-3xl font-semibold text-gsgray90">
+                                    ${item.stat}
+                                    <span className="ml-2 text-sm font-medium text-gsgray50">from ${item.previousStat}</span>
                                 </div>
 
                                 <div
                                     className={classNames(
-                                        item.changeType === 'increase' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800',
+                                        item.changeType === 'increase' ? 'bg-green-100 text-gsgreen60' : 'bg-red-100 text-gsred60',
                                         'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0'
                                     )}
                                 >
@@ -419,7 +421,9 @@ function Stock() {
                                     )}
 
                                     <span className="sr-only"> {item.changeType === 'increase' ? 'Increased' : 'Decreased'} by </span>
-                                    {item.change}
+                                    {(item.change.includes("-")) 
+                                                    ? "-$" + item.change.replace("-", "") + " (" + ((parseInt(item.change)/item.previousStat) *-100).toFixed(2) + "%)"
+                                                    : "$" + item.change + " (" + ((parseInt(item.change)/item.previousStat) *100).toFixed(2) + "%)"}
                                 </div>
                             </dd>
                         </div>
@@ -427,21 +431,21 @@ function Stock() {
                 </dl>
             </div>
 
-            <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 py-4 px-6 my-2">
+            <div className="sm:px-6 lg:px-8 py-4 px-6 my-2 max-w-screen-2xl mx-auto">
                 <div className="relative">
                     <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                        <div className="w-full border-t border-gray-300" />
+                        <div className="w-full border-t border-gsgray30" />
                     </div>
                     <div className="relative flex justify-start">
-                        <span className="bg-white pr-3 text-base font-semibold leading-6 text-gray-900">Company</span>
+                        <span className="bg-gswhite pr-3 text-base font-semibold leading-6 text-gsgray90">Company</span>
                     </div>
                 </div>
                 {stockNews.length > 0 ? (
-                    <div className="my-4 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+                    <div className="my-4 divide-y divide-gsgray20 overflow-hidden rounded-lg bg-gswhite shadow">
                         <div className="px-4 py-5 sm:px-6 font-semibold bg-gsblue60 text-gswhite">
                             Description
                         </div>
-                        <div className="px-4 py-5 sm:p-6">
+                        <div className="px-4 py-5 sm:p-6 text-center">
                             {stockDetails.description}
                         </div>
                     </div>
@@ -452,7 +456,7 @@ function Stock() {
 
             {stockNews.length > 0 ? (
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 py-4 px-6 my-2">
-                    <div className="divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow">
+                    <div className="divide-y divide-gsgray20 overflow-hidden rounded-lg bg-gswhite shadow">
                         <div className="px-4 py-5 sm:px-6 font-semibold bg-gsblue60 text-gswhite">
                             News Feed
                         </div>
@@ -472,8 +476,8 @@ function Stock() {
                             <div onClick={handleModalClose} className="absolute inset-0 bg-gsgray20 opacity-75"></div>
                         </div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div className="inline-block align-bottom bg-gswhite rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-gswhite px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                 <div className="items-center">
                                     <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-center">
                                         <h3 className="font-semibold leading-6 text-gsgray90 text-3xl" id="modal-title">Add New Position</h3>
@@ -521,6 +525,21 @@ function Stock() {
 
                                             <div className="mb-3">
                                                 <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
+                                                    id="price"
+                                                    type="number"
+                                                    placeholder="Stock Price"
+                                                    required
+                                                    value={price}
+                                                    onChange={(e) => setPrice(e.target.value)}
+                                                    onKeyUp={summary}
+                                                    onMouseUp={summary}
+                                                    step={0.01}
+                                                >
+                                                </input>
+                                            </div>
+
+                                            <div className="mb-3">
+                                                <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
                                                     id="date"
                                                     type="date"
                                                     required
@@ -532,24 +551,10 @@ function Stock() {
                                                 >
                                                 </input>
                                             </div>
-
-                                            <div className="mb-3">
-                                                <input className="appearance-none border rounded w-full py-2 px-3 text-gsgray70 leading-tight"
-                                                    id="price"
-                                                    type="number"
-                                                    placeholder="Stock Price"
-                                                    required
-                                                    value={price}
-                                                    onChange={(e) => setPrice(e.target.value)}
-                                                    onKeyUp={summary}
-                                                    onMouseUp={summary}
-                                                >
-                                                </input>
-                                            </div>
                                         </form>
 
                                         <div className="mb-3">
-                                            <span id="summary"></span>
+                                            <span id="summary">{summaryStr}</span>
                                         </div>
                                         <hr className=""></hr>
                                         <div className="px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">

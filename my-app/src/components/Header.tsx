@@ -58,7 +58,7 @@ const Header = ({ management, userType, login }: HeaderProps) => {
 
     return (
         <header className="bg-gsgray90">
-            <div className="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto flex h-16 max-w-screen-2xl items-center gap-8 px-4 sm:px-6 lg:px-8">
                 {!isLogin ? (
                     // Switch between admin and userhome
                     <Link to={"/"} className="block text-white-600">
