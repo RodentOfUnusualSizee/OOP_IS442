@@ -32,21 +32,8 @@ const Header = ({ management, userType, login }: HeaderProps) => {
             link: "adminhome"
         },
         {
-            name: "Portfolio Watch",
+            name: "Audit Watch",
             link: "audit"
-        },
-        {
-            name: "Data Management",
-            link: "datamanagement"
-
-        },
-        {
-            name: "Manage Portfolios",
-            link: "userhome"
-        },
-        {
-            name: "Stocks",
-            link: "stockhome"
         }
     ];
 
