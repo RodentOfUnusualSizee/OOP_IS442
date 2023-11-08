@@ -33,7 +33,7 @@ Disclaimer: As this is a school project, we made use of some mock data in develo
 # System Architecture and Class Diagrams
 **System Architecture**
 
-<img src="ReadmeFiles\SystemArchitecture.png">
+<img src="ReadmeFiles\SystemArchitecture.jpg">
 
 **Class Diagram**
 
