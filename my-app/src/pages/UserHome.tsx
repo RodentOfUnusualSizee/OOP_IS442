@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
 import { createPortfolio, getPortfolioByUserId, comparePortfolio, deletePortfolio, createNewUserEvent } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { Slide, toast, ToastContainer } from 'react-toastify';
+import { Slide, ToastContainer } from 'react-toastify';
 import { PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/20/solid';
 import { showToastMessage, showToastMessageSuccess } from '../utils/transform';
 import Swal from 'sweetalert2';

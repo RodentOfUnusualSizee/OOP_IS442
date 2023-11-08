@@ -1,10 +1,6 @@
-import React, { ReactElement } from 'react';
-import Header from './Header';
-import Footer from './Footer';
-import { useAuth } from '../context/AuthContext';
-import Table from './Table';
+import React from 'react';
 import { getUserById } from '../utils/api';
-import { format } from 'date-fns';
+
 interface UserInfoModalProps {
     selectedId: number;
     showModal: boolean;
