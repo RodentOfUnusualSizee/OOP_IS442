@@ -185,7 +185,7 @@ function UserHome() {
         }
     }
 
-    const handleDelete = (id : number) => {
+    const handleDelete = (id: number) => {
         Swal.fire({
             title: 'Are you sure you want to delete Portfolio ' + id + '?',
             text: "You won't be able to revert this!",
@@ -194,19 +194,14 @@ function UserHome() {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, delete it!'
-        }).then((result : any) => {
+        }).then((result: any) => {
             if (result.isConfirmed) {
                 const deletePortfolioAPI = deletePortfolio(id);
+                showToastMessageSuccess('Successfully deleted Portfolio');
                 deletePortfolioAPI.then((response) => {
-                    if (response["success"]) {
-                        showToastMessageSuccess('Successfully deleted Portfolio');
-                        fetchPortfolios();
-                    } else {
-                        showToastMessage('Error deleting portfolio');
-                    }
-                }).catch((error) => {
-                    showToastMessage('Error deleting portfolio');
-                });
+                    console.log(response);
+                    fetchPortfolios();
+                })
             } else if (result.isDismissed) {
                 showToastMessage('Delete operation was canceled');
                 console.log('Delete operation was canceled');
