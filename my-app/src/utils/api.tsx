@@ -231,6 +231,15 @@ export async function comparePortfolio(firstPortfolioId: any, secondPortfolioId:
   }
 }
 
+export async function deletePortfolio(portfolioId: any) {
+  try {
+    const response = await axios.delete(`${BASE_PORTFOLIO_URL}/delete/${portfolioId}`);
+    return response.data; 
+  } catch ( error ) {
+    throw error;
+  }
+}
+
 export async function createNewUserEvent(userId: any, data: any) {
   try {
       const response = await axios.post(`${BASE_USER_URL}/${userId}/add-event`, data)

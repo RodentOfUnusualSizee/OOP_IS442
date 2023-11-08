@@ -3,11 +3,12 @@ import Loading from './Loading';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PortfolioCard from '../components/PortfolioCard';
-import { createPortfolio, getPortfolioByUserId, comparePortfolio, createNewUserEvent } from '../utils/api';
+import { createPortfolio, getPortfolioByUserId, comparePortfolio, deletePortfolio, createNewUserEvent } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import { PlusIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/react/20/solid';
-import { showToastMessage, showToastMessageSuccess} from '../utils/transform';
+import { showToastMessage, showToastMessageSuccess } from '../utils/transform';
+import Swal from 'sweetalert2';
 
 function classNames(...classes: any) {
     return classes.filter(Boolean).join(' ')
@@ -184,6 +185,35 @@ function UserHome() {
         }
     }
 
+    const handleDelete = (id : number) => {
+        Swal.fire({
+            title: 'Are you sure you want to delete Portfolio ' + id + '?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result : any) => {
+            if (result.isConfirmed) {
+                const deletePortfolioAPI = deletePortfolio(id);
+                deletePortfolioAPI.then((response) => {
+                    if (response["success"]) {
+                        showToastMessageSuccess('Successfully deleted Portfolio');
+                        fetchPortfolios();
+                    } else {
+                        showToastMessage('Error deleting portfolio');
+                    }
+                }).catch((error) => {
+                    showToastMessage('Error deleting portfolio');
+                });
+            } else if (result.isDismissed) {
+                showToastMessage('Delete operation was canceled');
+                console.log('Delete operation was canceled');
+            }
+        });
+    };
+
 
     const renderOptions = () => {
         return data.map((item) => (
@@ -237,7 +267,7 @@ function UserHome() {
                         <button onClick={handleAddClick} className="col-start-3 col-span-2 bg-gsgreen50 hover:bg-gsgreen60 text-gswhite font-bold py-2 px-4 rounded">Create New Portfolio</button>
                     </div>
                     <div className="mx-auto mt-8 max-w-2xl mb-16 sm:mt-20 lg:mt-24 lg:max-w-4xl">
-                        <PortfolioCard portfolioList={portfolioData}></PortfolioCard>
+                        <PortfolioCard portfolioList={portfolioData} onDelete={handleDelete}></PortfolioCard>
                     </div>
 
                     {/* START OF COMPARISON */}
@@ -675,10 +705,10 @@ function UserHome() {
                                                             : ' text-gsgreen60',
                                                         'inline-flex items-baseline rounded-full px-2.5 py-0.5 text-xl font-medium md:mt-2 lg:mt-0'
                                                     )}>
-                                                    {(portfolioDifference.currentTotalPortfolioValue < 0) 
-                                                    ? "-$" + portfolioDifference.currentTotalPortfolioValue.toFixed(2).replace("-", "")
-                                                    : "$" + portfolioDifference.currentTotalPortfolioValue.toFixed(2)}
-                                                    </p>
+                                                    {(portfolioDifference.currentTotalPortfolioValue < 0)
+                                                        ? "-$" + portfolioDifference.currentTotalPortfolioValue.toFixed(2).replace("-", "")
+                                                        : "$" + portfolioDifference.currentTotalPortfolioValue.toFixed(2)}
+                                                </p>
                                             </div>
                                             {renderDivider("Portfolio Statistics")}
                                             <div className='my-1 flex'>
