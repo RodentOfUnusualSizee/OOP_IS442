@@ -1,7 +1,10 @@
-package com.app.Position;
+package com.app.PositionTest;
 
 import com.app.ExternalAPIs.CompanyOverviewAPI.CompanyOverviewController;
 import com.app.ExternalAPIs.CompanyOverviewAPI.CompanyOverviewDTO;
+import com.app.Position.PositionRepository;
+import com.app.Position.PositionService;
+import com.app.Position.Position;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
