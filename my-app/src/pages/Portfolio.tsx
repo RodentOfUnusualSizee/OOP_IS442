@@ -397,6 +397,8 @@ function Portfolio() {
                     progress: undefined,
                     theme: "colored",
                 });
+
+                handleModalClose();
             }
         }).catch((error) => {
             toast.error('Error adding stock to portfolio, Not enough capital in portfolio', {
@@ -410,6 +412,7 @@ function Portfolio() {
                 theme: "colored",
             });
             console.log(error);
+            handleModalClose();
         });
         handleModalClose();
     }
