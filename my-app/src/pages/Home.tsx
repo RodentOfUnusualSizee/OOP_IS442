@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { CSSTransition } from 'react-transition-group';
@@ -7,7 +7,7 @@ import '../styles/home.css';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-import { Slide, toast, ToastContainer } from 'react-toastify';
+import { Slide, ToastContainer } from 'react-toastify';
 import { showToastMessage } from '../utils/transform';
 import { EyeIcon } from '@heroicons/react/20/solid';
 import { EyeSlashIcon } from '@heroicons/react/24/solid';
@@ -15,18 +15,10 @@ import { createNewUserEvent } from '../utils/api';
 
 
 function Home() {
-
-    interface authToken {
-        id: number;
-        email: string;
-        role: string;
-    }
-
-    const { login, setAuthUser, setIsLoggedIn } = useAuth();
+    const { login} = useAuth();
     const navigate = useNavigate();
 
     const [loginClicked, setLoginClicked] = React.useState<boolean>(false);
-    let homePage = false;
 
     const [email, setEmail] = React.useState<string>("");
     const [password, setPassword] = React.useState<string>("");

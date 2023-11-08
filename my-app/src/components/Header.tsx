@@ -64,7 +64,7 @@ const Header = ({ management, userType, login }: HeaderProps) => {
 
         await createNewUserEvent(authUser.id, event_data);
         logout();
-        alert("Logged out");
+        // alert("Logged out");
         navigate("/");
     }
 
