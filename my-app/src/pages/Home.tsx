@@ -63,7 +63,7 @@ function Home() {
     return (
         <div>
             <Header management={false} userType="admin" login={false}></Header>
-            <div className="container mx-auto max-w-screen-xl h-screen rounded-l p-8 grid place-items-center">
+            <div className="container mx-auto max-w-screen-2xl h-screen rounded-l p-8 grid place-items-center">
                 {/* Login Modal */}
                 {loginClicked ? (
                     <CSSTransition
@@ -74,8 +74,8 @@ function Home() {
                         onExit={() => setLoginClicked(false)}
                     >
                         <div>
-                            <img src="/images/gs-blue.png" className="w-20 mb-6 mx-auto"></img>
-                            <p className="text-4xl text-gray-700 font-bold mb-5">
+                            <img src="/images/gs-blue.png" className="w-24 mb-6 mx-auto"></img>
+                            <p className="text-4xl text-gsgray90 font-bold mb-5">
                                 Portfolio Performance Analyser App
                             </p>
                             <form className="bg-white shadow-md rounded p-8 m-10">
@@ -129,10 +129,10 @@ function Home() {
                         </div>
                     </CSSTransition>
                 ) :
-                    <div>
+                    <div className="mx-auto max-w-screen-2xl">
                         {/* Initial Landing Page */}
-                        <img src="/images/gs-blue.png" className="w-20 mb-6 mx-auto"></img>
-                        <p className="text-4xl text-gray-700 font-bold mb-5">
+                        <img src="/images/gs-blue.png" className="w-24 mb-6 mx-auto"></img>
+                        <p className="text-4xl text-gsgray90 font-bold mb-5">
                             Portfolio Performance Analyser App
                         </p>
                         {/* Login and Register buttons - out of modal */}

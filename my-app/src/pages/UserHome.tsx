@@ -250,15 +250,16 @@ function UserHome() {
         <div>
             <div className="UserHome">
                 <Header management={management} userType={userRole} login={userIsLoggedIn} ></Header>
-                <div className='container mx-auto max-w-screen-xl rounded-l place-items-center'>
+                <div className='container mx-auto rounded-l place-items-center'>
                     <div className="bg-gswhite py-12 sm:py-12 my-2">
-                        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-                            <div className="mx-auto max-w-2xl lg:text-center">
+                        <div className="mx-auto max-w-screen-2xl px-6 lg:px-8">
+                            <div className="mx-auto max-w-screen-2xl lg:text-center">
                                 <p className="mt-2 text-3xl font-bold tracking-tight text-gsgray90 sm:text-4xl">
                                     Your Portfolios
                                 </p>
                                 <p className="mt-6 text-lg leading-8 text-gsgray70">
-                                    All your portfolios at Goldman Sachs at a glance. View your portfolios, create new strategies or edit the portfolios you manage. Browse stocks on the market using our in-house tool and enhance your portfolios.
+                                    All your portfolios at Goldman Sachs at a glance. View your portfolios, create new strategies or edit the portfolios you manage. 
+                                    <br></br>Browse stocks on the market using our in-house tool and enhance your portfolios.
                                 </p>
                             </div>
                         </div>
