@@ -1,5 +1,6 @@
 import React from 'react';
 import { getUserById } from '../utils/api';
+import { toReadableDate } from '../utils/transform';
 
 interface UserInfoModalProps {
     selectedId: number;
@@ -121,7 +122,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ selectedId, showModal, se
                                                     <div className="grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4">
                                                         <dt className="font-medium text-gray-900">Last Login Timestamp</dt>
                                                         <dd className="text-gray-700 sm:col-span-2">
-                                                            {user.lastLogin}
+                                                            {toReadableDate(user.lastLogin)}
                                                         </dd>
                                                     </div>
 
@@ -135,7 +136,7 @@ const UserInfoModal: React.FC<UserInfoModalProps> = ({ selectedId, showModal, se
                                                     <div className="grid grid-cols-1 gap-1 p-3 sm:grid-cols-3 sm:gap-4">
                                                         <dt className="font-medium text-gray-900">Last Activity Timestamp</dt>
                                                         <dd className="text-gray-700 sm:col-span-2">
-                                                            {user.lastActivity.timestamp}
+                                                            {toReadableDate(user.lastActivity.timestamp)}
                                                         </dd>
                                                     </div>
                                                 </dl>
