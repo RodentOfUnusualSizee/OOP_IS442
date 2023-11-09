@@ -340,6 +340,7 @@ function Portfolio() {
     }
 
     const handleModalClose = () => {
+        console.log("Modal close ran");
         setShowModal(false);
         setSide("");
         setStockCode("");
@@ -348,6 +349,7 @@ function Portfolio() {
         setPrice("");
         setSummaryStr("");
         setTickers([]);
+        setSelectedTicker({ symbol: '', name: '', type: '', currency: '' });
     }
 
     const handleButtons = (e: any) => {
@@ -384,9 +386,39 @@ function Portfolio() {
 
                 createNewUserEvent(authUser.id, event_data);
 
+                handleModalClose();
+
                 refreshData(portfolioId);
             } else {
-                toast.error('Error adding position to portfolio, please try again later', {
+                if (side === "BUY") {
+                    toast.error('Error adding position to portfolio, not enough capital in portfolio', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: false,
+                        progress: undefined,
+                        theme: "colored",
+                    });
+                } else {
+                    toast.error('Error adding SELL position in portfolio, stock quantity not enough', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: false,
+                        progress: undefined,
+                        theme: "colored",
+                    });
+                }
+
+                handleModalClose();
+            }
+        }).catch((error) => {
+            if (side === "BUY") {
+                toast.error('Error adding position to portfolio, not enough capital in portfolio', {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -396,23 +428,22 @@ function Portfolio() {
                     progress: undefined,
                     theme: "colored",
                 });
-
-                handleModalClose();
+            } else {
+                toast.error('Error adding SELL position in portfolio, stock quantity not enough', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                });
             }
-        }).catch((error) => {
-            toast.error('Error adding stock to portfolio, Not enough capital in portfolio', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: false,
-                progress: undefined,
-                theme: "colored",
-            });
-            console.log(error);
+
             handleModalClose();
         });
+
         handleModalClose();
     }
 
@@ -615,19 +646,19 @@ function Portfolio() {
 
                                             <div className="mb-3 flex rounded-md shadow-sm">
                                                 <span className="inline-flex items-center rounded-l-md border border-gsgray20 px-3 text-gray-500 sm:text-sm">
-                                                USD
+                                                    USD
                                                 </span>
                                                 <input
-                                                className="appearance-none w-full flex-1 rounded-none rounded-r-md border border-gsgray20 py-2 px-3 text-gsgray90 sm:text-sm sm:leading-6"
-                                                id="price"
-                                                type="number"
-                                                placeholder="Stock Price"
-                                                required
-                                                value={price}
-                                                onChange={(e) => setPrice(e.target.value)}
-                                                onKeyUp={summary}
-                                                onMouseUp={summary}
-                                                step={0.01}
+                                                    className="appearance-none w-full flex-1 rounded-none rounded-r-md border border-gsgray20 py-2 px-3 text-gsgray90 sm:text-sm sm:leading-6"
+                                                    id="price"
+                                                    type="number"
+                                                    placeholder="Stock Price"
+                                                    required
+                                                    value={price}
+                                                    onChange={(e) => setPrice(e.target.value)}
+                                                    onKeyUp={summary}
+                                                    onMouseUp={summary}
+                                                    step={0.01}
                                                 />
                                                 <button onClick={(e) => handleMarketPrice()} className="mt-3 inline-flex w-full justify-center rounded-md bg-gsblue60 mx-2 px-3 py-3 text-sm font-semibold text-gswhite shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gsblue70 sm:mt-0 sm:w-auto">Use Today's Market Price</button>
                                             </div>
